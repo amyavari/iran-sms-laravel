@@ -1,0 +1,82 @@
+name: "Bug Report"
+description: "Report something that's broken."
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "## Bug Report\nPlease provide the details below to help us quickly identify and resolve the issue."
+
+  - type: input
+    id: package-version
+    attributes:
+      label: "Iran Sms Version"
+      description: "Provide the Iran Sms version that you are using."
+      placeholder: 1.0.0
+    validations:
+      required: true
+
+  - type: input
+    id: php-version
+    attributes:
+      label: "PHP Version"
+      description: "Provide the PHP version that you are using."
+      placeholder: 8.2.0
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "Description"
+      description: "Provide a clear description of the problem."
+      placeholder: "Explain what happened..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: "Expected Behavior"
+      description: "What should have happened?"
+      placeholder: "I expected the app to..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: "Actual Behavior"
+      description: "What actually happened?"
+      placeholder: "Instead, this happened..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: "Steps to Reproduce"
+      description: "List the steps to reproduce the bug."
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. See error '...'"
+    validations:
+      required: false
+
+  - type: input
+    id: environment
+    attributes:
+      label: "Environment"
+      description: "Provide your system information."
+      placeholder: "OS, Framework details, etc."
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: "Relevant Logs or Error Messages"
+      description: "Paste any error messages or logs here."
+      render: shell
+    validations:
+      required: false

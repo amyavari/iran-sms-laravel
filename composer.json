@@ -1,0 +1,79 @@
+{
+    "name": "amyavari/iran-sms-laravel",
+    "description": "A simple and convenient way to send SMS through Iranian SMS providers",
+    "keywords": [
+        "sms",
+        "laravel",
+        "iran",
+        "iran-sms-laravel",
+        "amyavari"
+    ],
+    "type": "library",
+    "homepage": "https://github.com/amyavari/iran-sms-laravel",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ali Mohammad Yavari",
+            "email": "ali.m.yavari70@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "spatie/laravel-package-tools": "^1.92",
+        "illuminate/contracts": "^10.0||^11.0||^12.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.5",
+        "laravel/pint": "^1.22",
+        "orchestra/testbench": "^10.4",
+        "larastan/larastan": "^3.4",
+        "mockery/mockery": "^1.6",
+        "rector/rector": "^2.0",
+        "nunomaduro/mock-final-classes": "^1.2",
+        "brianium/paratest": "^7.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "AliYavari\\IranSms\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "AliYavari\\IranSms\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "lint": "pint -v",
+        "refactor": "rector process --ansi",
+        "test:coverage": "XDEBUG_MODE=coverage paratest",
+        "test:lint": "pint --test -v",
+        "test:refactor": "rector process --dry-run --ansi",
+        "test:types": "phpstan analyse --configuration=phpstan.neon.dist --ansi --memory-limit=1G",
+        "test:unit": "paratest",
+        "test": [
+            "@test:coverage",
+            "@test:lint",
+            "@test:refactor",
+            "@test:types",
+            "@test:unit"
+        ]
+    },
+    "scripts-descriptions": {
+        "lint": "Run Laravel Pint to automatically fix code style issues.",
+        "refactor": "Run Rector to automatically refactor code.",
+        "test:coverage": "Run unit tests with code coverage report.",
+        "test:lint": "Run Laravel Pint to check code style without fixing issues.",
+        "test:refactor": "Run Rector to check refactor needs without fixing issues.",
+        "test:types": "Run static analysis to check for type errors in the codebase.",
+        "test:unit": "Run unit tests using PHPUnit."
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "AliYavari\\IranSms\\IranSmsServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
