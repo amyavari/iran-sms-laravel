@@ -1,0 +1,64 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - main
+      - ci/test
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        php: [8.2, 8.3, 8.4]
+        laravel: [10.*, 11.*, 12.*]
+        dependency-version: [prefer-lowest, prefer-stable]
+        include:
+          - laravel: 10.*
+            testbench: 8.*
+          - laravel: 11.*
+            testbench: 9.*
+          - laravel: 12.*
+            testbench: 10.*
+
+    name: Tests P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.os }} - ${{ matrix.dependency-version }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@2.32.0
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, mbstring, zip, fileinfo
+          coverage: none
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        shell: bash
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v4.2.0
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: dependencies-php-${{ matrix.php }}-os-${{ matrix.os }}-version-${{ matrix.dependency-version }}-composer-${{ hashFiles('composer.lock','composer.json') }}
+          restore-keys: dependencies-php-${{ matrix.php }}-os-${{ matrix.os }}-version-${{ matrix.dependency-version }}-composer-
+
+      - name: Install Laravel version
+        run: |
+          composer remove illuminate/contracts --no-interaction --no-update
+          composer remove --dev orchestra/testbench larastan/larastan brianium/paratest phpunit/phpunit --no-interaction --no-update
+          composer require "illuminate/contracts:${{ matrix.laravel }}" --no-interaction --no-update
+          composer require --dev "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+
+      - name: Install Composer dependencies
+        run: composer update --${{ matrix.dependency-version }} --no-interaction --prefer-dist
+
+      - name: Run unit test
+        run: php ./vendor/bin/phpunit --do-not-cache-result
