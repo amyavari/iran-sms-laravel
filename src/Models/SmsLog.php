@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Models;
+namespace AliYavari\IranSms\Models;
 
 use AliYavari\IranSms\Enums\Type;
 use Illuminate\Database\Eloquent\Model;
