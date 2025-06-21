@@ -17,7 +17,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
-use ReflectionMethod;
 
 final class DriverTest extends TestCase
 {
@@ -35,8 +34,7 @@ final class DriverTest extends TestCase
     {
         $sms = $this->sms(from: '1234');
 
-        $getSender = new ReflectionMethod(TestDriver::class, 'getSender');
-        $senderNumber = $getSender->invoke($sms);
+        $senderNumber = $this->callProtectedMethod($sms, 'getSender');
 
         $this->assertSame('1234', $senderNumber);
         $this->assertSame('getDefaultSender', $sms->whatIsCalled);
@@ -48,8 +46,7 @@ final class DriverTest extends TestCase
         $sms = $this->sms(from: '1234');
         $returnedSms = $sms->from('123456789');
 
-        $getSender = new ReflectionMethod(TestDriver::class, 'getSender');
-        $senderNumber = $getSender->invoke($sms);
+        $senderNumber = $this->callProtectedMethod($sms, 'getSender');
 
         $this->assertInstanceOf(TestDriver::class, $returnedSms);
         $this->assertSame('123456789', $senderNumber);
@@ -263,13 +260,11 @@ final class DriverTest extends TestCase
     #[Test]
     public function it_serialize_string_message_successfully(): void
     {
-        $serializeContent = new ReflectionMethod(TestDriver::class, 'serializeContent');
-
         // Otp
         $sms = $this->sms();
         $sms->otp('091234567', 'OTP Message');
 
-        $content = $serializeContent->invoke($sms);
+        $content = $this->callProtectedMethod($sms, 'serializeContent');
 
         $this->assertSame(['message' => 'OTP Message'], $content);
 
@@ -277,7 +272,7 @@ final class DriverTest extends TestCase
         $sms = $this->sms();
         $sms->text('091234567', 'Text Message');
 
-        $content = $serializeContent->invoke($sms);
+        $content = $this->callProtectedMethod($sms, 'serializeContent');
 
         $this->assertSame(['message' => 'Text Message'], $content);
     }
@@ -287,10 +282,9 @@ final class DriverTest extends TestCase
     {
         $sms = $this->sms();
 
-        $serializeContent = new ReflectionMethod(TestDriver::class, 'serializeContent');
-
         $sms->pattern('091234567', 'pattern_code', ['key' => 'value']);
-        $content = $serializeContent->invoke($sms);
+
+        $content = $this->callProtectedMethod($sms, 'serializeContent');
 
         $this->assertSame([
             'code' => 'pattern_code',
@@ -303,9 +297,7 @@ final class DriverTest extends TestCase
     {
         $sms = Mockery::namedMock('\Class\Namespace\CustomNameDriver', TestDriver::class);
 
-        $getDriverName = new ReflectionMethod(TestDriver::class, 'getDriverName');
-        $driverName = $getDriverName->invoke($sms);
-
+        $driverName = $this->callProtectedMethod($sms, 'getDriverName');
         /**
          * ------------------
          * Logic Explanation:
@@ -321,15 +313,12 @@ final class DriverTest extends TestCase
         $sms = $this->sms();
         $sms->otp('091234567', 'OTP Message')->send();
 
-        $storeLog = new ReflectionMethod(TestDriver::class, 'storeLog');
-        $storeLog->invoke($sms);
-
-        $serializeContent = new ReflectionMethod(TestDriver::class, 'serializeContent'); // This is not this test's concern.
+        $this->callProtectedMethod($sms, 'storeLog');
 
         $this->assertDatabaseHas(SmsLog::class, [
             'type' => Type::Otp,
             'to' => json_encode(['091234567']),
-            'content' => json_encode($serializeContent->invoke($sms)),
+            'content' => json_encode($this->callProtectedMethod($sms, 'serializeContent')),  // This is not this test's concern.
         ]);
     }
 
@@ -339,15 +328,12 @@ final class DriverTest extends TestCase
         $sms = $this->sms();
         $sms->text('091234567', 'Text Message')->send();
 
-        $storeLog = new ReflectionMethod(TestDriver::class, 'storeLog');
-        $storeLog->invoke($sms);
-
-        $serializeContent = new ReflectionMethod(TestDriver::class, 'serializeContent'); // This is not this test's concern.
+        $this->callProtectedMethod($sms, 'storeLog');
 
         $this->assertDatabaseHas(SmsLog::class, [
             'type' => Type::Text,
             'to' => json_encode(['091234567']),
-            'content' => json_encode($serializeContent->invoke($sms)),
+            'content' => json_encode($this->callProtectedMethod($sms, 'serializeContent')),  // This is not this test's concern.
         ]);
     }
 
@@ -357,27 +343,22 @@ final class DriverTest extends TestCase
         $sms = $this->sms();
         $sms->pattern('091234567', 'pattern_code', ['key' => 'value'])->send();
 
-        $storeLog = new ReflectionMethod(TestDriver::class, 'storeLog');
-        $storeLog->invoke($sms);
-
-        $serializeContent = new ReflectionMethod(TestDriver::class, 'serializeContent'); // This is not this test's concern.
+        $this->callProtectedMethod($sms, 'storeLog');
 
         $this->assertDatabaseHas(SmsLog::class, [
             'type' => Type::Pattern,
             'to' => json_encode(['091234567']),
-            'content' => json_encode($serializeContent->invoke($sms)),
+            'content' => json_encode($this->callProtectedMethod($sms, 'serializeContent')),  // This is not this test's concern.
         ]);
     }
 
     #[Test]
     public function it_logs_all_types_with_correct_data_if_sending_was_successful(): void
     {
-        $storeLog = new ReflectionMethod(TestDriver::class, 'storeLog');
-
-        $this->getAllSmsTypes(from: '1234', successful: true)->each(function (TestDriver $sms) use ($storeLog) {
+        $this->getAllSmsTypes(from: '1234', successful: true)->each(function (TestDriver $sms) {
             $sms->send();
 
-            $storeLog->invoke($sms);
+            $this->callProtectedMethod($sms, 'storeLog');
         });
 
         $logsCount = SmsLog::query()
@@ -392,12 +373,10 @@ final class DriverTest extends TestCase
     #[Test]
     public function it_logs_all_types_with_correct_data_if_sending_failed(): void
     {
-        $storeLog = new ReflectionMethod(TestDriver::class, 'storeLog');
-
-        $this->getAllSmsTypes(from: '1234', successful: false)->each(function (TestDriver $sms) use ($storeLog) {
+        $this->getAllSmsTypes(from: '1234', successful: false)->each(function (TestDriver $sms) {
             $sms->send();
 
-            $storeLog->invoke($sms);
+            $this->callProtectedMethod($sms, 'storeLog');
         });
 
         $logsCount = SmsLog::query()
@@ -412,12 +391,10 @@ final class DriverTest extends TestCase
     #[Test]
     public function it_logs_all_types_with_correct_data_with_user_defined_sender(): void
     {
-        $storeLog = new ReflectionMethod(TestDriver::class, 'storeLog');
-
-        $this->getAllSmsTypes(from: '1234')->each(function (TestDriver $sms) use ($storeLog) {
+        $this->getAllSmsTypes(from: '1234')->each(function (TestDriver $sms) {
             $sms->from('4567')->send();
 
-            $storeLog->invoke($sms);
+            $this->callProtectedMethod($sms, 'storeLog');
         });
 
         $logsCount = SmsLog::query()
