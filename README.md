@@ -286,7 +286,38 @@ final class MyNotification extends Notification
 
 ## Testing
 
-<!-- Test description and fake() method -->
+This package provides fluent methods to fake and test SMS sending:
+
+```php
+use AliYavari\IranSms\Facades\Sms;
+
+// Fake the default provider to return successful responses
+Sms::fake();
+
+// Fake specific providers to return successful responses
+// Note: Use `default` as the provider key to target the default provider
+Sms::fake([/* provider keys */]);
+
+// Equivalent to the above (explicit success)
+Sms::fake([...], Sms::successfulRequest());
+
+// Fake providers to return failed responses (optional custom error message)
+Sms::fake([...], Sms::failedRequest(string $errorMessage = 'Error Message'));
+
+// Fake providers to throw a ConnectionException
+Sms::fake([...], Sms::failedConnection());
+
+// Define different behaviors per provider
+Sms::fake([
+    'provider_one' => Sms::failedConnection(),
+    'provider_two' => Sms::failedRequest(),
+    'provider_three' => Sms::failedConnection(),
+]);
+```
+
+**Note:** Defining both _global behavior_ and _per-provider behaviors_ together is not allowed in a single call. Use one strategy per `fake()` call.
+
+**Note:** If you define multiple behaviors for the same provider, the last one will override the previous definitions.
 
 ## Contributing
 

@@ -71,6 +71,9 @@ final class FakeDriver extends Driver
         return $this->response->errorMessage();
     }
 
+    /**
+     * Throw a connection exception if defined by the user.
+     */
     private function fakeHttpExceptionIfRequired(): void
     {
         if ($this->response->shouldThrow()) {
