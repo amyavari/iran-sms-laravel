@@ -11,7 +11,7 @@ use ReflectionMethod;
 
 abstract class TestCase extends Orchestra
 {
-    final public function getEnvironmentSetUp($app)
+    protected function getEnvironmentSetUp($app)
     {
         config()->set('database.default', 'testing');
 

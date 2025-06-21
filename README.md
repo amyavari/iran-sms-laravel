@@ -19,7 +19,7 @@ To view the Persian documentation, please refer to [README_FA.md](./README_FA.md
 ## Requirements
 
 - PHP version `8.2.0` or higher
-- Laravel `10.*`, `11.*`, or `12.*`
+- Laravel `11.*`, or `12.*`
 
 ## List of Available SMS Providers
 
