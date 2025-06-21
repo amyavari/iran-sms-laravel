@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace AliYavari\IranSms\Tests\Unit;
 
-use AliYavari\IranSms\Facades\Sms;
 use AliYavari\IranSms\SmsManager;
+use AliYavari\IranSms\Tests\Fixtures\TestDriver;
 use AliYavari\IranSms\Tests\TestCase;
 use Illuminate\Support\Facades\Config;
 use PHPUnit\Framework\Attributes\Test;
@@ -29,9 +29,16 @@ final class SmsManagerTest extends TestCase
     }
 
     #[Test]
-    public function sms_facade_returns_instance_of_sms_manager_class(): void
+    public function it_sets_custom_instance_as_driver_instance(): void
     {
-        $this->assertInstanceOf(SmsManager::class, Sms::getFacadeRoot());
+        $testDriver = new TestDriver('123456', true);
+
+        $this->smsManager()->setDriver('test_driver', $testDriver);
+
+        $retrievedDriver = $this->smsManager()->driver('test_driver');
+
+        $this->assertInstanceOf(TestDriver::class, $retrievedDriver);
+        $this->assertSame('123456', $this->callProtectedMethod($retrievedDriver, 'getDefaultSender'));
     }
 
     // -----------------
