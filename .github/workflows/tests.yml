@@ -15,11 +15,9 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         php: [8.2, 8.3, 8.4]
-        laravel: [10.*, 11.*, 12.*]
-        dependency-version: [prefer-lowest, prefer-stable]
+        laravel: [11.*, 12.*]
+        dependency-version: [prefer-stable]
         include:
-          - laravel: 10.*
-            testbench: 8.*
           - laravel: 11.*
             testbench: 9.*
           - laravel: 12.*
@@ -35,7 +33,7 @@ jobs:
         uses: shivammathur/setup-php@2.32.0
         with:
           php-version: ${{ matrix.php }}
-          extensions: dom, mbstring, zip, fileinfo
+          extensions: dom, mbstring, zip, fileinfo, pdo_sqlite
           coverage: none
 
       - name: Get Composer cache directory
@@ -53,12 +51,15 @@ jobs:
       - name: Install Laravel version
         run: |
           composer remove illuminate/contracts --no-interaction --no-update
-          composer remove --dev orchestra/testbench larastan/larastan brianium/paratest phpunit/phpunit --no-interaction --no-update
+          composer remove --dev orchestra/testbench larastan/larastan phpunit/phpunit --no-interaction --no-update
           composer require "illuminate/contracts:${{ matrix.laravel }}" --no-interaction --no-update
           composer require --dev "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
 
       - name: Install Composer dependencies
         run: composer update --${{ matrix.dependency-version }} --no-interaction --prefer-dist
+
+      - name: migrate databases
+        run: php ./vendor/bin/testbench migrate:fresh
 
       - name: Run unit test
         run: php ./vendor/bin/phpunit --do-not-cache-result

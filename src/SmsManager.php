@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace AliYavari\IranSms;
 
-use AliYavari\IranSms\Drivers\FakeDriver;
+use AliYavari\IranSms\Abstracts\Driver;
+use AliYavari\IranSms\Contracts\Sms;
 use Illuminate\Support\Manager;
+use InvalidArgumentException;
 
 final class SmsManager extends Manager
 {
@@ -14,8 +16,23 @@ final class SmsManager extends Manager
         return $this->config->get('iran-sms.default');
     }
 
-    public function createFakeDriver(): FakeDriver
+    /**
+     * Get an SMS instance to send by specific SMS provider
+     *
+     * @throws InvalidArgumentException
+     */
+    public function provider(?string $provider = null): Sms
     {
-        return $this->container->make(FakeDriver::class);
+        return $this->driver($provider);
+    }
+
+    /**
+     * Set custom driver instance for the given driver key
+     */
+    public function setDriver(string $key, Driver $driver): self
+    {
+        $this->drivers[$key] = $driver;
+
+        return $this;
     }
 }

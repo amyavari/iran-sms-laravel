@@ -19,11 +19,11 @@ To view the Persian documentation, please refer to [README_FA.md](./README_FA.md
 ## Requirements
 
 - PHP version `8.2.0` or higher
-- Laravel `10.*`, `11.*`, or `12.*`
+- Laravel `11.*`, or `12.*`
 
 ## List of Available SMS Providers
 
-| Provider Name (EN) | Provider Name (FA) | Provider Website   | Driver Name  | Version    |
+| Provider Name (EN) | Provider Name (FA) | Provider Website   | Provider Key | Version    |
 | ------------------ | ------------------ | ------------------ | ------------ | ---------- |
 | Trez               | رایگان اس‌ام‌اس    | [smspanel.trez.ir] | `trez`       | Unreleased |
 | Kavenegar          | کاوه نگار          | [kavenegar.com]    | `kavenegar`  | Unreleased |
@@ -77,13 +77,13 @@ php artisan migrate
 
 ## Configuration
 
-### Single Driver Setup
+### Single Provider Setup
 
-To configure a single SMS driver, add the following to your `.env` file:
+To configure a single SMS provider, add the following to your `.env` file:
 
 ```env
-# Default driver
-SMS_PROVIDER=<default_driver_name>
+# Default provider
+SMS_PROVIDER=<default_provider>
 
 # If provider uses username and password
 SMS_USERNAME=<username>
@@ -96,11 +96,13 @@ SMS_TOKEN=<api_token>
 SMS_FROM=<default_sender_number>
 ```
 
-### Multiple Driver Setup
+**Note:** For the `SMS_PROVIDER`, refer to the `Provider Key` column in the [List of Available SMS Providers](#list-of-available-sms-providers).
 
-After publishing the config file (see [Publish Vendor Files](#publish-vendor-files)), you can customize the environment variable names for each driver you want to use. Then, define those variables in your `.env` file.
+### Multiple Provider Setup
 
-For example, to configure the `trez` driver:
+After publishing the config file (see [Publish Vendor Files](#publish-vendor-files)), you can customize the environment variable names for each provider you want to use. Then, define those variables in your `.env` file.
+
+For example, to configure the `trez` provider:
 
 ```php
 'providers' => [
@@ -112,7 +114,7 @@ For example, to configure the `trez` driver:
         'from'     => env('SMS_TREZ_FROM', ''),     // Previously: env('SMS_FROM', '')
     ],
 
-    // Repeat this structure for any other drivers you want to configure
+    // Repeat this structure for any other providers you want to configure
 ],
 ```
 
@@ -124,12 +126,12 @@ SMS_TREZ_PASSWORD=<your_password>
 SMS_TREZ_TOKEN=<your_token>
 SMS_TREZ_FROM=<your_sender_number>
 
-# Repeat for other drivers you defined
+# Repeat for other providers you defined
 ```
 
 ## Usage
 
-**Note:** This package supports fluent method chaining like `Sms::driver()->otp()->log()->send();`, but for simplicity, this manual demonstrates usage with separate instances.
+**Note:** This package supports fluent method chaining like `Sms::provider()->otp()->log()->send();`, but for simplicity, this manual demonstrates usage with separate instances.
 
 ### Creating an SMS Instance
 
@@ -138,24 +140,24 @@ You can create an SMS instance using the facade provided by the package:
 ```php
 use AliYavari\IranSms\Facades\Sms;
 
-// Using the default driver
+// Using the default provider
 $sms = Sms::otp(string $phone, string $message);
 $sms = Sms::text(string|array $phones, string $message);
 $sms = Sms::pattern(string|array $phones, string $patternCode, array $variables);
 
-// Using a specific driver
-$sms = Sms::driver(string $driver)->otp(...);
-$sms = Sms::driver(string $driver)->text(...);
-$sms = Sms::driver(string $driver)->pattern(...);
+// Using a specific provider
+$sms = Sms::provider(string $provider)->otp(...);
+$sms = Sms::provider(string $provider)->text(...);
+$sms = Sms::provider(string $provider)->pattern(...);
 ```
 
-**Note:** For the `$driver` name, refer to the `Driver Name` column in the [List of Available SMS Providers](#list-of-available-sms-providers).
+**Note:** For the `$provider` name, refer to the `Provider Key` column in the [List of Available SMS Providers](#list-of-available-sms-providers).
 
 ### Automatic Logging
 
 You can chain log configurations on your SMS instance before sending.
 
-To help keep your code clean and logging consistent—especially when managing SMS sending from a central location (e.g., a queue job or service class)—this package provides convenient methods to configure logging behavior based on the SMS type and sending status.
+To help keep your code clean and logging consistent, especially when managing SMS sending from a central location, this package provides convenient methods to configure logging behavior based on the SMS type and sending status.
 
 **Note:** Before using any logging features, make sure to create the necessary tables. (See [Publish Vendor Files](#publish-vendor-files).)
 
@@ -182,7 +184,7 @@ $sms->logFailed();     // Log only if the message failed to send
 You can chain the logging methods to define custom logic fluently:
 
 ```php
-// Log all message types except OTPs, only if they are sent successfully
+// Example: Log all message types except OTPs, only if they are sent successfully
 $sms->log()->logOtp(false)->logSuccessful();
 ```
 
@@ -193,6 +195,8 @@ To send the SMS:
 ```php
 $sms->send();
 ```
+
+**Note:** This method throws an exception if a client or server error occurs. See the `throw` method in [HTTP Client].
 
 ### Checking Sending Status
 
@@ -213,6 +217,8 @@ $sms->error();      // string|null
 To send an SMS instance using [queues], you can [create an SMS instance](#creating-an-sms-instance) and dispatch it to a job where you call the `send()` method. You can use the `AliYavari\IranSms\Contracts\Sms` interface as a constructor type-hint.
 
 **Note:** It's recommended to configure log options here to keep your code clean and consistent.
+
+Example:
 
 ```php
 namespace App\Jobs;
@@ -242,16 +248,17 @@ final class SendSms implements ShouldQueue
 
 ### Notifications
 
-To send SMS using [notifications], define a `toSms` method in your notification class and return an instance of `AliYavari\IranSms\Contracts\Sms`. You should also include `AliYavari\IranSms\Channels\SmsChannel` in the `via` method.
+To send SMS using [notifications], define a `toSms` method in your notification class and return an SMS instance. Also, include `AliYavari\IranSms\Channels\SmsChannel` in the `via` method.
 
-**Note:** The `toSms` method must return an instance of the `Sms` contract. The channel will handle sending it.
+**Note:** The `toSms` method must return an SMS instance with your log setup (if desired). The channel will handle sending it.
+
+Example:
 
 ```php
 namespace App\Notifications;
 
 use AliYavari\IranSms\Channels\SmsChannel;
-use AliYavari\IranSms\Contracts\Sms;
-use AliYavari\IranSms\Facades\Sms as SmsFacade;
+use AliYavari\IranSms\Facades\Sms;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 
@@ -270,17 +277,47 @@ final class MyNotification extends Notification
     /**
      * Get the voice representation of the notification.
      */
-    public function toSms(object $notifiable): Sms
+    public function toSms(object $notifiable)
     {
-        return SmsFacade::text($notifiable->phone, 'Hi')->logFailed();
-
+        return Sms::text($notifiable->phone, 'Hi')->logFailed();
     }
 }
 ```
 
 ## Testing
 
-<!-- Test description and fake() method -->
+This package provides fluent methods to fake and test SMS sending:
+
+```php
+use AliYavari\IranSms\Facades\Sms;
+
+// Fake the default provider to return successful responses
+Sms::fake();
+
+// Fake specific providers to return successful responses
+// Note: Use `default` as the provider key to target the default provider
+Sms::fake([/* provider keys */]);
+
+// Equivalent to the above (explicit success)
+Sms::fake([...], Sms::successfulRequest());
+
+// Fake providers to return failed responses (optional custom error message)
+Sms::fake([...], Sms::failedRequest(string $errorMessage = 'Error Message'));
+
+// Fake providers to throw a ConnectionException
+Sms::fake([...], Sms::failedConnection());
+
+// Define different behaviors per provider
+Sms::fake([
+    'provider_one' => Sms::failedConnection(),
+    'provider_two' => Sms::failedRequest(),
+    'provider_three' => Sms::failedConnection(),
+]);
+```
+
+**Note:** Defining both _global behavior_ and _per-provider behaviors_ together is not allowed in a single call. Use one strategy per `fake()` call.
+
+**Note:** If you define multiple behaviors for the same provider, the last one will override the previous definitions.
 
 ## Contributing
 
@@ -297,5 +334,6 @@ Thank you for considering contributing to the Iran SMS Laravel! The contribution
 [smsonline.ir]: https://smsonline.ir/
 [magfa.com]: https://magfa.com/
 [avanak.ir]: https://www.avanak.ir/
+[HTTP Client]: https://laravel.com/docs/12.x/http-client#throwing-exceptions
 [queues]: https://laravel.com/docs/12.x/queues
 [notifications]: https://laravel.com/docs/12.x/notifications

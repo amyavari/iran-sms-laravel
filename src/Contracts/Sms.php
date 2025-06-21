@@ -29,7 +29,7 @@ interface Sms
     /**
      * Set the sender number for the SMS
      */
-    public function from(string $form): static;
+    public function from(string $from): static;
 
     /**
      * Send the SMS

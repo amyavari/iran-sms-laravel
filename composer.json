@@ -29,8 +29,7 @@
         "larastan/larastan": "^3.4",
         "mockery/mockery": "^1.6",
         "rector/rector": "^2.0",
-        "nunomaduro/mock-final-classes": "^1.2",
-        "brianium/paratest": "^7.8"
+        "nunomaduro/mock-final-classes": "^1.2"
     },
     "autoload": {
         "psr-4": {
@@ -45,11 +44,11 @@
     "scripts": {
         "lint": "pint -v",
         "refactor": "rector process --ansi",
-        "test:coverage": "XDEBUG_MODE=coverage paratest",
+        "test:coverage": "XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-text",
         "test:lint": "pint --test -v",
         "test:refactor": "rector process --dry-run --ansi",
         "test:types": "phpstan analyse --configuration=phpstan.neon.dist --ansi --memory-limit=1G",
-        "test:unit": "paratest",
+        "test:unit": "vendor/bin/phpunit",
         "test": [
             "@test:coverage",
             "@test:lint",
