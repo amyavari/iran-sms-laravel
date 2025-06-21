@@ -20,7 +20,7 @@
     "require": {
         "php": "^8.2",
         "spatie/laravel-package-tools": "^1.92",
-        "illuminate/contracts": "^10.0||^11.0||^12.0"
+        "illuminate/contracts": "^11.0||^12.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^11.5",
@@ -44,11 +44,11 @@
     "scripts": {
         "lint": "pint -v",
         "refactor": "rector process --ansi",
-        "test:coverage": "XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-text",
+        "test:coverage": "XDEBUG_MODE=coverage phpunit --coverage-text",
         "test:lint": "pint --test -v",
         "test:refactor": "rector process --dry-run --ansi",
         "test:types": "phpstan analyse --configuration=phpstan.neon.dist --ansi --memory-limit=1G",
-        "test:unit": "vendor/bin/phpunit",
+        "test:unit": "phpunit",
         "test": [
             "@test:coverage",
             "@test:lint",
