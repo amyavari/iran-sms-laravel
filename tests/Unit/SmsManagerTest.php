@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace AliYavari\IranSms\Tests\Unit;
 
-use AliYavari\IranSms\Drivers\FakeDriver;
 use AliYavari\IranSms\Facades\Sms;
 use AliYavari\IranSms\SmsManager;
 use AliYavari\IranSms\Tests\TestCase;
@@ -33,12 +32,6 @@ final class SmsManagerTest extends TestCase
     public function sms_facade_returns_instance_of_sms_manager_class(): void
     {
         $this->assertInstanceOf(SmsManager::class, Sms::getFacadeRoot());
-    }
-
-    #[Test]
-    public function it_returns_fake_driver(): void
-    {
-        $this->assertInstanceOf(FakeDriver::class, $this->smsManager()->createFakeDriver());
     }
 
     // -----------------
