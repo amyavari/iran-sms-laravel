@@ -11,23 +11,14 @@ use AliYavari\IranSms\Exceptions\SmsNotSentYetException;
 use AliYavari\IranSms\Models\SmsLog;
 use AliYavari\IranSms\Tests\Fixtures\TestDriver;
 use AliYavari\IranSms\Tests\TestCase;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Schema;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
 
 final class DriverTest extends TestCase
 {
-    use DatabaseTransactions;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->migrateTables();
-    }
+    use RefreshDatabase;
 
     #[Test]
     public function it_returns_default_sender_number_if_user_did_not_set_it(): void
@@ -621,25 +612,6 @@ final class DriverTest extends TestCase
     private function sms(string $from = '123', bool $successful = true): TestDriver
     {
         return new TestDriver($from, $successful);
-    }
-
-    private function migrateTables(): void
-    {
-        // TODO: get the schema from stub file.
-
-        if (! Schema::hasTable('sms_logs')) {
-            Schema::create('sms_logs', function (Blueprint $table) {
-                $table->id();
-                $table->string('type', 10);
-                $table->string('driver', 20);
-                $table->string('from', 20);
-                $table->json('to');
-                $table->json('content');
-                $table->boolean('is_successful');
-                $table->string('error')->nullable();
-                $table->timestamps();
-            });
-        }
     }
 
     private function getAllSmsTypes(string $from = '123', bool $successful = true): Collection
