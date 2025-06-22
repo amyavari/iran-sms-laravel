@@ -3,6 +3,7 @@
 <img src="https://banners.beyondco.de/Iran%20SMS%20Laravel.png?theme=dark&packageManager=composer+require&packageName=amyavari%2Firan-sms-laravel&pattern=architect&style=style_1&description=Send+SMS+through+Iranian+SMS+providers+with+ease&md=1&showWatermark=1&fontSize=100px&images=https%3A%2F%2Flaravel.com%2Fimg%2Flogomark.min.svg">
 
 ![PHP Version](https://img.shields.io/packagist/php-v/amyavari/iran-sms-laravel)
+![Laravel Version](https://img.shields.io/packagist/dependency-v/amyavari/iran-sms-laravel/illuminate%2Fcontracts?label=Laravel)
 ![Packagist Version](https://img.shields.io/packagist/v/amyavari/iran-sms-laravel?label=version)
 ![Packagist Downloads](https://img.shields.io/packagist/dt/amyavari/iran-sms-laravel)
 ![Packagist License](https://img.shields.io/packagist/l/amyavari/iran-sms-laravel)
