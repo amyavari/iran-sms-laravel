@@ -2,10 +2,16 @@ name: Formats
 
 on:
   push:
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
     branches:
       - main
       - ci/test
   pull_request:
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
 
 jobs:
   formats:
@@ -15,10 +21,9 @@ jobs:
       fail-fast: true
       matrix:
         os: [ubuntu-latest]
-        php: [8.2, 8.3, 8.4]
-        dependency-version: [prefer-lowest, prefer-stable]
+        php: ["8.2", "8.3", "8.4"]
 
-    name: Formats P${{ matrix.php }} - ${{ matrix.os }} - ${{ matrix.dependency-version }}
+    name: PHP${{ matrix.php }} - ${{ matrix.os }}
 
     steps:
       - name: Checkout
@@ -41,10 +46,10 @@ jobs:
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: dependencies-php-${{ matrix.php }}-os-${{ matrix.os }}-version-${{ matrix.dependency-version }}-composer-${{ hashFiles('composer.json') }}
-          restore-keys: dependencies-php-${{ matrix.php }}-os-${{ matrix.os }}-version-${{ matrix.dependency-version }}-composer-
+          restore-keys: dependencies-php-${{ matrix.php }}-os-${{ matrix.os }}-version-
 
       - name: Install Composer dependencies
-        run: composer update --${{ matrix.dependency-version }} --no-interaction --prefer-dist
+        run: composer update --no-interaction --prefer-dist
 
       - name: Coding Style Checks
         run: composer test:lint
