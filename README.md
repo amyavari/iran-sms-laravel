@@ -349,7 +349,7 @@ Sms::fake([
 
 ## Contributing
 
-Thank you for considering contributing to the Iran SMS Laravel! The contribution guide can be found in the [CONTRIBUTING.md](CONTRIBUTING.md)
+Thank you for considering contributing to the Iran SMS Laravel! The contribution guide can be found in the [CONTRIBUTING.md](CONTRIBUTING.md). This file provides a step-by-step guide to easily add a new driver (SMS provider) to the package.
 
 ## License
 
