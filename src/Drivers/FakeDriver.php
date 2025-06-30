@@ -72,6 +72,14 @@ final class FakeDriver extends Driver
     }
 
     /**
+     * {@inheritdoc}
+     */
+    protected function getErrorCode(): string|int
+    {
+        return $this->response->errorCode();
+    }
+
+    /**
      * Throw a connection exception if defined by the user.
      */
     private function fakeHttpExceptionIfRequired(): void

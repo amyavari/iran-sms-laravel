@@ -8,9 +8,7 @@ use AliYavari\IranSms\Abstracts\Driver;
 
 final class TestDriver extends Driver
 {
-    public string $whatIsCalled = ''; // To test
-
-    public array $receivedArguments; // To test
+    public array $dataToAssert; // To test
 
     public function __construct(
         private readonly string $from,
@@ -19,15 +17,13 @@ final class TestDriver extends Driver
 
     protected function getDefaultSender(): string
     {
-        $this->whatIsCalled = 'getDefaultSender';
-
         return $this->from;
     }
 
     protected function sendOtp(string $phone, string $message, string $from): static
     {
-        $this->whatIsCalled = 'sendOtp';
-        $this->receivedArguments = [
+        $this->dataToAssert = [
+            'type' => 'otp',
             'phone' => $phone,
             'message' => $message,
             'from' => $from,
@@ -38,8 +34,8 @@ final class TestDriver extends Driver
 
     protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
     {
-        $this->whatIsCalled = 'sendPattern';
-        $this->receivedArguments = [
+        $this->dataToAssert = [
+            'type' => 'pattern',
             'phones' => $phones,
             'code' => $patternCode,
             'variables' => $variables,
@@ -51,8 +47,8 @@ final class TestDriver extends Driver
 
     protected function sendText(array $phones, string $message, string $from): static
     {
-        $this->whatIsCalled = 'sendText';
-        $this->receivedArguments = [
+        $this->dataToAssert = [
+            'type' => 'text',
             'phones' => $phones,
             'message' => $message,
             'from' => $from,
@@ -63,15 +59,16 @@ final class TestDriver extends Driver
 
     protected function isSuccessful(): bool
     {
-        $this->whatIsCalled = 'isSuccessful';
-
         return $this->successful;
     }
 
     protected function getErrorMessage(): string
     {
-        $this->whatIsCalled = 'getErrorMessage';
-
         return 'Test error message';
+    }
+
+    protected function getErrorCode(): string|int
+    {
+        return 40;
     }
 }

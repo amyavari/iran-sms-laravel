@@ -12,6 +12,7 @@ final readonly class MockResponse
     private function __construct(
         private bool $isSuccessful,
         private string $errorMessage,
+        private string|int $errorCode,
         private bool $shouldThrow,
     ) {}
 
@@ -20,15 +21,15 @@ final readonly class MockResponse
      */
     public static function successful(): self
     {
-        return new self(isSuccessful: true, errorMessage: '', shouldThrow: false);
+        return new self(isSuccessful: true, errorMessage: '', errorCode: '', shouldThrow: false);
     }
 
     /**
      * Get a mock configuration for failed SMS sending in tests.
      */
-    public static function failed(string $errorMessage): self
+    public static function failed(string $errorMessage, string|int $errorCode): self
     {
-        return new self(isSuccessful: false, errorMessage: $errorMessage, shouldThrow: false);
+        return new self(isSuccessful: false, errorMessage: $errorMessage, errorCode: $errorCode, shouldThrow: false);
     }
 
     /**
@@ -36,7 +37,7 @@ final readonly class MockResponse
      */
     public static function throw(): self
     {
-        return new self(isSuccessful: false, errorMessage: '', shouldThrow: true);
+        return new self(isSuccessful: false, errorMessage: '', errorCode: '', shouldThrow: true);
     }
 
     /**
@@ -61,5 +62,13 @@ final readonly class MockResponse
     public function errorMessage(): string
     {
         return $this->errorMessage;
+    }
+
+    /**
+     * User-defined error code for failed SMS sending.
+     */
+    public function errorCode(): string|int
+    {
+        return $this->errorCode;
     }
 }
