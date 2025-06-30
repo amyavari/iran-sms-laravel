@@ -7,6 +7,8 @@ namespace AliYavari\IranSms\Exceptions;
 use LogicException;
 
 /**
- * Throw exception if user didn't set the content of SMS before sending it.
+ * @internal
+ *
+ * Exception thrown when attempting to send an SMS without setting its content.
  */
 final class SmsContentNotDefinedException extends LogicException {}

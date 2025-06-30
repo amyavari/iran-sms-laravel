@@ -11,7 +11,20 @@ use ReflectionMethod;
 
 abstract class TestCase extends Orchestra
 {
-    protected function getEnvironmentSetUp($app)
+    /**
+     * Invoke a protected or private method on the given object using reflection.
+     */
+    protected function callProtectedMethod(object $object, string $method, array $args = []): mixed
+    {
+        $reflectionMethod = new ReflectionMethod($object, $method);
+
+        return $reflectionMethod->invoke($object, ...$args);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function defineEnvironment($app)
     {
         config()->set('database.default', 'testing');
 
@@ -22,17 +35,13 @@ abstract class TestCase extends Orchestra
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function getPackageProviders($app)
     {
         return [
             IranSmsServiceProvider::class,
         ];
-    }
-
-    protected function callProtectedMethod(object $object, string $method, array $args = []): mixed
-    {
-        $reflectionMethod = new ReflectionMethod($object, $method);
-
-        return $reflectionMethod->invoke($object, ...$args);
     }
 }

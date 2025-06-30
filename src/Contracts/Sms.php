@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace AliYavari\IranSms\Contracts;
 
+/**
+ * Public API for interacting with the amyavari/iran-sms-laravel package
+ */
 interface Sms
 {
     /**
@@ -15,7 +18,7 @@ interface Sms
      * Create Pattern SMS instance
      *
      * @param  string|list<string>  $phones
-     * @param  array<string, mixed>  $variables
+     * @param  array<mixed>  $variables
      */
     public function pattern(string|array $phones, string $patternCode, array $variables): static;
 

@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Type $type
  * @property-read string $driver
  * @property-read string $from
- * @property-read list<string> $phones
+ * @property-read list<string> $to
  * @property-read array<string, mixed> $content
  * @property-read bool $is_successful
  * @property-read ?string $error

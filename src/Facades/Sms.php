@@ -13,12 +13,12 @@ use InvalidArgumentException;
 use UnexpectedValueException;
 
 /**
- * @method static \AliYavari\IranSms\Contracts\Sms driver(string $driver = null)
- * @method static \AliYavari\IranSms\Contracts\Sms provider(string $provider = null)
- * @method static \AliYavari\IranSms\Contracts\Sms otp(string $phone, string $message)
- * @method static \AliYavari\IranSms\Contracts\Sms pattern(string|list<string> $phones, string $patternCode, array<string, mixed> $variables)
- * @method static \AliYavari\IranSms\Contracts\Sms text(string|list<string> $phones, string $message)
- * @method static \AliYavari\IranSms\Contracts\Sms from(string $from)
+ * @method static \AliYavari\IranSms\Contracts\Sms driver(string $driver = null) Get SMS instance for sending by specified driver
+ * @method static \AliYavari\IranSms\Contracts\Sms provider(string $provider = null) Get SMS instance for sending by specified provider
+ * @method static \AliYavari\IranSms\Contracts\Sms otp(string $phone, string $message) Create OTP SMS instance.
+ * @method static \AliYavari\IranSms\Contracts\Sms pattern(string|list<string> $phones, string $patternCode, array<mixed> $variables) Create Pattern SMS instance
+ * @method static \AliYavari\IranSms\Contracts\Sms text(string|list<string> $phones, string $message) Create regular text SMS instance
+ * @method static \AliYavari\IranSms\Contracts\Sms from(string $from) Set the sender number for the SMS
  */
 final class Sms extends Facade
 {
@@ -47,7 +47,7 @@ final class Sms extends Facade
     }
 
     /**
-     * Fake SMS sending in tests.
+     * Fakes SMS sending for testing purposes.
      *
      * @param  array<string, MockResponse>|list<string>  $providers
      */
@@ -71,7 +71,7 @@ final class Sms extends Facade
     }
 
     /**
-     * Get the registered name of the component.
+     * {@inheritdoc}
      */
     protected static function getFacadeAccessor(): string
     {
@@ -79,7 +79,7 @@ final class Sms extends Facade
     }
 
     /**
-     * Validate the inputs for configuring SMS faking.
+     * Validates the inputs used to configure SMS faking.
      *
      * @param  array<string, mixed>|list<mixed>  $drivers
      *
@@ -104,7 +104,7 @@ final class Sms extends Facade
     }
 
     /**
-     * Ensures drivers are mapped to their MockResponse in format of provider => MockResponse
+     * Ensures drivers are mapped to their MockResponse in format of [driver => MockResponse]
      *
      * @param  array<string, MockResponse>|list<string>  $drivers
      * @return array<string, MockResponse>

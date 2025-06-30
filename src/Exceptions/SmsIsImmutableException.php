@@ -7,6 +7,8 @@ namespace AliYavari\IranSms\Exceptions;
 use LogicException;
 
 /**
- * Throw exception if user wants to modify SMS content on the SMS instance.
+ * @internal
+ *
+ * Exception thrown when attempting to modify the content of an SMS instance.
  */
 final class SmsIsImmutableException extends LogicException {}

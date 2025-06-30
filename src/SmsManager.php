@@ -9,6 +9,9 @@ use AliYavari\IranSms\Contracts\Sms;
 use Illuminate\Support\Manager;
 use InvalidArgumentException;
 
+/**
+ * @internal Behind the SMS facade
+ */
 final class SmsManager extends Manager
 {
     public function getDefaultDriver(): string

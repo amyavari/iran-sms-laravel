@@ -8,10 +8,15 @@ use AliYavari\IranSms\Contracts\Sms;
 use Illuminate\Notifications\Notification;
 use UnexpectedValueException;
 
+/**
+ * Notification channel for sending SMS via Laravel Notifications.
+ *
+ * @see https://github.com/amyavari/iran-sms-laravel?tab=readme-ov-file#notifications
+ */
 final class SmsChannel
 {
     /**
-     * Send the given notification.
+     * Send the given SMS notification.
      */
     public function send(object $notifiable, Notification $notification): void
     {
