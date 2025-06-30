@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AliYavari\IranSms;
 
 use AliYavari\IranSms\Commands\PruneLogsCommand;
+use AliYavari\IranSms\Drivers\SmsIrDriver;
 use Illuminate\Foundation\Application;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
@@ -33,6 +34,9 @@ final class IranSmsServiceProvider extends PackageServiceProvider
     {
         $this->app->singleton(SmsManager::class, fn (Application $app) => new SmsManager($app));
 
-        // Bind drivers here.
+        $this->app->bind(
+            SmsIrDriver::class,
+            fn () => new SmsIrDriver(...config()->array('iran-sms.providers.sms_ir'))
+        );
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AliYavari\IranSms\Tests\Unit;
 
+use AliYavari\IranSms\Drivers\SmsIrDriver;
 use AliYavari\IranSms\SmsManager;
 use AliYavari\IranSms\Tests\Fixtures\ConcreteTestDriver;
 use AliYavari\IranSms\Tests\TestCase;
@@ -39,6 +40,14 @@ final class SmsManagerTest extends TestCase
 
         $this->assertInstanceOf(ConcreteTestDriver::class, $retrievedDriver);
         $this->assertSame('123456', $this->callProtectedMethod($retrievedDriver, 'getDefaultSender'));
+    }
+
+    #[Test]
+    public function it_returns_sms_ir_instance(): void
+    {
+        $sms = $this->smsManager()->provider('sms_ir');
+
+        $this->assertInstanceOf(SmsIrDriver::class, $sms);
     }
 
     // -----------------

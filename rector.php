@@ -8,6 +8,7 @@ use Rector\CodingStyle\Rector\Use_\SeparateMultiUseImportsRector;
 use Rector\Config\RectorConfig;
 use Rector\Php83\Rector\ClassMethod\AddOverrideAttributeToOverriddenMethodsRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertEmptyNullableObjectToAssertInstanceofRector;
+use Rector\Privatization\Rector\ClassMethod\PrivatizeFinalClassMethodRector;
 use Rector\Strict\Rector\BooleanNot\BooleanInBooleanNotRuleFixerRector;
 use Rector\TypeDeclaration\Rector\ArrowFunction\AddArrowFunctionReturnTypeRector;
 use Rector\TypeDeclaration\Rector\ClassMethod\AddMethodCallBasedStrictParamTypeRector;
@@ -51,4 +52,5 @@ return RectorConfig::configure()
         AssertEmptyNullableObjectToAssertInstanceofRector::class,
         IssetOnPropertyObjectToPropertyExistsRector::class,
         AddMethodCallBasedStrictParamTypeRector::class => [__DIR__.'/tests'],
+        PrivatizeFinalClassMethodRector::class => [__DIR__.'/src/SmsManager.php'],
     ]);

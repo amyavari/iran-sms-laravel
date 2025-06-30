@@ -27,12 +27,10 @@ return [
     */
     'providers' => [
 
-        'one' => [
-            'username' => env('SMS_USERNAME', ''),
-            'password' => env('SMS_PASSWORD', ''),
+        // https://sms.ir/
+        'sms_ir' => [
             'token' => env('SMS_TOKEN', ''),
             'from' => env('SMS_FROM', ''),
         ],
-
     ],
 ];

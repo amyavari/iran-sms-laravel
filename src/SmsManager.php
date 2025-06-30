@@ -6,6 +6,7 @@ namespace AliYavari\IranSms;
 
 use AliYavari\IranSms\Abstracts\Driver;
 use AliYavari\IranSms\Contracts\Sms;
+use AliYavari\IranSms\Drivers\SmsIrDriver;
 use Illuminate\Support\Manager;
 use InvalidArgumentException;
 
@@ -37,5 +38,10 @@ final class SmsManager extends Manager
         $this->drivers[$key] = $driver;
 
         return $this;
+    }
+
+    protected function createSmsIrDriver(): SmsIrDriver
+    {
+        return $this->container->make(SmsIrDriver::class);
     }
 }

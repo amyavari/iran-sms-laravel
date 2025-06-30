@@ -117,6 +117,19 @@ trait HasLog
     }
 
     /**
+     * Get driver name from class name
+     */
+    protected function getDriverName(): string
+    {
+        $class = new ReflectionClass(static::class);
+
+        return Str::of($class->getShortName())
+            ->before('Driver')
+            ->snake()
+            ->toString();
+    }
+
+    /**
      * Handle log based on the user setup
      */
     private function handleLog(): void
@@ -164,19 +177,6 @@ trait HasLog
         return is_string($this->content)
         ? ['message' => $this->content]
         : ['code' => $this->patternCode, 'variables' => $this->content];
-    }
-
-    /**
-     * Get driver name from class name
-     */
-    private function getDriverName(): string
-    {
-        $class = new ReflectionClass(static::class);
-
-        return Str::of($class->getShortName())
-            ->before('Driver')
-            ->snake()
-            ->toString();
     }
 
     /**

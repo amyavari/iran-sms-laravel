@@ -6,11 +6,19 @@ namespace AliYavari\IranSms\Tests;
 
 use AliYavari\IranSms\IranSmsServiceProvider;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 use Orchestra\Testbench\TestCase as Orchestra;
 use ReflectionMethod;
 
 abstract class TestCase extends Orchestra
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Http::preventingStrayRequests();
+    }
+
     /**
      * Invoke a protected or private method on the given object using reflection.
      */
