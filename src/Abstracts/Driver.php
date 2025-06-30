@@ -104,6 +104,11 @@ abstract class Driver implements Sms
     abstract protected function getErrorMessage(): string;
 
     /**
+     * Get the error code if SMS sending failed
+     */
+    abstract protected function getErrorCode(): string|int;
+
+    /**
      * {@inheritdoc}
      *
      * @throws SmsIsImmutableException
@@ -294,7 +299,7 @@ abstract class Driver implements Sms
             return null;
         }
 
-        return $this->getErrorMessage();
+        return sprintf('Code %s - %s', $this->getErrorCode(), $this->getErrorMessage());
     }
 
     /**

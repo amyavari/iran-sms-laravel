@@ -219,7 +219,7 @@ final class DriverTest extends TestCase
         $sms = $this->sms(successful: false);
         $sms->otp('091234567', 'OTP Message')->send();
 
-        $this->assertSame('Test error message', $sms->error());
+        $this->assertSame('Code 40 - Test error message', $sms->error());
     }
 
     #[Test]
@@ -359,7 +359,7 @@ final class DriverTest extends TestCase
         $logsCount = SmsLog::query()
             ->where('from', '1234')
             ->where('is_successful', false)
-            ->where('error', 'Test error message')
+            ->where('error', 'Code 40 - Test error message')
             ->count();
 
         $this->assertSame(3, $logsCount);

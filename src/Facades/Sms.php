@@ -34,9 +34,9 @@ final class Sms extends Facade
     /**
      * Get a mock configuration for failed SMS sending in tests.
      */
-    public static function failedRequest(string $errorMessage = 'Error Message'): MockResponse
+    public static function failedRequest(string $errorMessage = 'Error Message', string|int $errorCode = 0): MockResponse
     {
-        return MockResponse::failed($errorMessage);
+        return MockResponse::failed($errorMessage, $errorCode);
     }
 
     /**

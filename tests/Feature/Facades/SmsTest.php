@@ -33,9 +33,9 @@ final class SmsTest extends TestCase
     #[Test]
     public function it_returns_mocked_response_with_failed_condition(): void
     {
-        $mockedResponse = Sms::failedRequest('Custom error Message');
+        $mockedResponse = Sms::failedRequest('Custom error Message', 40);
 
-        $this->assertEquals(MockResponse::failed('Custom error Message'), $mockedResponse);
+        $this->assertEquals(MockResponse::failed('Custom error Message', 40), $mockedResponse);
     }
 
     #[Test]
@@ -98,7 +98,7 @@ final class SmsTest extends TestCase
     {
         $sampleDrivers = ['default', 'test_driver', 'test'];
 
-        Sms::fake($sampleDrivers, Sms::failedRequest('Custom error message'));
+        Sms::fake($sampleDrivers, Sms::failedRequest('Custom error message', 40));
 
         collect($sampleDrivers)
             ->map(fn (string $driver) => $driver === 'default' ? null : $driver)
@@ -107,7 +107,7 @@ final class SmsTest extends TestCase
 
                 $this->assertInstanceOf(FakeDriver::class, $sms);
                 $this->assertFalse($sms->successful());
-                $this->assertSame('Custom error message', $sms->error());
+                $this->assertSame('Code 40 - Custom error message', $sms->error());
             });
     }
 
@@ -139,7 +139,7 @@ final class SmsTest extends TestCase
     public function it_fakes_each_provider_with_user_specific_configuration(): void
     {
         Sms::fake([
-            'default' => Sms::failedRequest('Custom error message'),
+            'default' => Sms::failedRequest(),
             'test_driver' => Sms::successfulRequest(),
             'test' => Sms::failedConnection(),
         ]);

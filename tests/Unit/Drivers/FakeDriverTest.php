@@ -26,12 +26,13 @@ final class FakeDriverTest extends TestCase
     #[Test]
     public function it_returns_failed_statues_and_error(): void
     {
-        $driver = $this->driver(MockResponse::failed('Our Custom Error'));
+        $driver = $this->driver(MockResponse::failed('Our Custom Error', 40));
 
         $this->sendAllSmsTypes($driver); // Should be without any error
 
         $this->assertFalse($this->callProtectedMethod($driver, 'isSuccessful'));
         $this->assertSame('Our Custom Error', $this->callProtectedMethod($driver, 'getErrorMessage'));
+        $this->assertSame(40, $this->callProtectedMethod($driver, 'getErrorCode'));
     }
 
     #[Test]

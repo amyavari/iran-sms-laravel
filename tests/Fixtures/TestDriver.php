@@ -66,4 +66,9 @@ final class TestDriver extends Driver
     {
         return 'Test error message';
     }
+
+    protected function getErrorCode(): string|int
+    {
+        return 40;
+    }
 }
