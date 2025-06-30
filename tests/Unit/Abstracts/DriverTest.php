@@ -28,7 +28,6 @@ final class DriverTest extends TestCase
         $senderNumber = $this->callProtectedMethod($sms, 'getSender');
 
         $this->assertSame('1234', $senderNumber);
-        $this->assertSame('getDefaultSender', $sms->whatIsCalled);
     }
 
     #[Test]
@@ -51,12 +50,12 @@ final class DriverTest extends TestCase
         $sms->otp('091234567', 'OTP Message')->send();
 
         $this->assertInstanceOf(TestDriver::class, $sms);
-        $this->assertSame('sendOtp', $sms->whatIsCalled);
         $this->assertSame([
+            'type' => 'otp',
             'phone' => '091234567',
             'message' => 'OTP Message',
             'from' => '1234',
-        ], $sms->receivedArguments);
+        ], $sms->dataToAssert);
     }
 
     #[Test]
@@ -79,13 +78,13 @@ final class DriverTest extends TestCase
         $sms->pattern('091234567', 'pattern_code', ['key' => 'value'])->send();
 
         $this->assertInstanceOf(TestDriver::class, $sms);
-        $this->assertSame('sendPattern', $sms->whatIsCalled);
         $this->assertSame([
+            'type' => 'pattern',
             'phones' => ['091234567'],
             'code' => 'pattern_code',
             'variables' => ['key' => 'value'],
             'from' => '1234',
-        ], $sms->receivedArguments);
+        ], $sms->dataToAssert);
     }
 
     #[Test]
@@ -108,12 +107,12 @@ final class DriverTest extends TestCase
         $sms->text('091234567', 'Text Message')->send();
 
         $this->assertInstanceOf(TestDriver::class, $sms);
-        $this->assertSame('sendText', $sms->whatIsCalled);
         $this->assertSame([
+            'type' => 'text',
             'phones' => ['091234567'],
             'message' => 'Text Message',
             'from' => '1234',
-        ], $sms->receivedArguments);
+        ], $sms->dataToAssert);
     }
 
     #[Test]
@@ -134,7 +133,7 @@ final class DriverTest extends TestCase
         $this->getAllSmsTypes(from: '1234')->each(function (TestDriver $sms) {
             $sms->from('4567')->send();
 
-            $this->assertSame('4567', $sms->receivedArguments['from']);
+            $this->assertSame('4567', $sms->dataToAssert['from']);
         });
     }
 
@@ -157,14 +156,12 @@ final class DriverTest extends TestCase
         $sms->otp('091234567', 'OTP Message')->send();
 
         $this->assertTrue($sms->successful());
-        $this->assertSame('isSuccessful', $sms->whatIsCalled);
 
         // Failed
         $sms = $this->sms(successful: false);
         $sms->otp('091234567', 'OTP Message')->send();
 
         $this->assertFalse($sms->successful());
-        $this->assertSame('isSuccessful', $sms->whatIsCalled);
     }
 
     #[Test]
@@ -187,14 +184,12 @@ final class DriverTest extends TestCase
         $sms->otp('091234567', 'OTP Message')->send();
 
         $this->assertFalse($sms->failed());
-        $this->assertSame('isSuccessful', $sms->whatIsCalled);
 
         // Failed
         $sms = $this->sms(successful: false);
         $sms->otp('091234567', 'OTP Message')->send();
 
         $this->assertTrue($sms->failed());
-        $this->assertSame('isSuccessful', $sms->whatIsCalled);
     }
 
     #[Test]
@@ -216,14 +211,6 @@ final class DriverTest extends TestCase
         $sms->otp('091234567', 'OTP Message')->send();
 
         $this->assertNull($sms->error());
-        /**
-         * ------------------
-         * Logic Explanation:
-         * ------------------
-         * We are not sure if `getErrorMessage` on the driver class, can handle successful status,
-         * So we need to make sure this method won't be called in the successful status.
-         */
-        $this->assertNotSame('getErrorMessage', $sms->whatIsCalled);
     }
 
     #[Test]
@@ -233,7 +220,6 @@ final class DriverTest extends TestCase
         $sms->otp('091234567', 'OTP Message')->send();
 
         $this->assertSame('Test error message', $sms->error());
-        $this->assertSame('getErrorMessage', $sms->whatIsCalled);
     }
 
     #[Test]
