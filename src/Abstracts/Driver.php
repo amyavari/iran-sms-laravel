@@ -13,6 +13,11 @@ use AliYavari\IranSms\Models\SmsLog;
 use Illuminate\Support\Str;
 use ReflectionClass;
 
+/**
+ * @internal
+ *
+ * Base implementation of the public API and common foundation for all drivers.
+ */
 abstract class Driver implements Sms
 {
     /**
@@ -35,7 +40,7 @@ abstract class Driver implements Sms
     /**
      * Message content or variables for pattern
      *
-     * @var string|array<string, mixed>
+     * @var string|array<mixed>
      */
     private string|array $content;
 
@@ -77,7 +82,7 @@ abstract class Driver implements Sms
      * Send pattern SMS
      *
      * @param  list<string>  $phones
-     * @param  array<string, mixed>  $variables
+     * @param  array<mixed>  $variables
      */
     abstract protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static;
 
@@ -99,6 +104,8 @@ abstract class Driver implements Sms
     abstract protected function getErrorMessage(): string;
 
     /**
+     * {@inheritdoc}
+     *
      * @throws SmsIsImmutableException
      */
     final public function otp(string $phone, string $message): static
@@ -114,6 +121,8 @@ abstract class Driver implements Sms
     }
 
     /**
+     * {@inheritdoc}
+     *
      * @throws SmsIsImmutableException
      */
     final public function pattern(string|array $phones, string $patternCode, array $variables): static
@@ -130,6 +139,8 @@ abstract class Driver implements Sms
     }
 
     /**
+     * {@inheritdoc}
+     *
      * @throws SmsIsImmutableException
      */
     final public function text(string|array $phones, string $message): static
@@ -144,6 +155,9 @@ abstract class Driver implements Sms
         return $this;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     final public function from(string $from): static
     {
         $this->from = $from;
@@ -152,6 +166,8 @@ abstract class Driver implements Sms
     }
 
     /**
+     * {@inheritdoc}
+     *
      * @throws SmsContentNotDefinedException
      */
     final public function send(): static
@@ -173,6 +189,9 @@ abstract class Driver implements Sms
         return $this;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     final public function log(bool $log = true): static
     {
         $this->typesToLog = $log ? Type::cases() : [];
@@ -180,6 +199,9 @@ abstract class Driver implements Sms
         return $this;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     final public function logOtp(bool $log = true): static
     {
         $log ? $this->addTypeToLog(Type::Otp) : $this->removeTypeFromLog(Type::Otp);
@@ -187,6 +209,9 @@ abstract class Driver implements Sms
         return $this;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     final public function logPattern(bool $log = true): static
     {
         $log ? $this->addTypeToLog(Type::Pattern) : $this->removeTypeFromLog(Type::Pattern);
@@ -194,6 +219,9 @@ abstract class Driver implements Sms
         return $this;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     final public function logText(bool $log = true): static
     {
         $log ? $this->addTypeToLog(Type::Text) : $this->removeTypeFromLog(Type::Text);
@@ -201,6 +229,9 @@ abstract class Driver implements Sms
         return $this;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     final public function logSuccessful(): static
     {
         if (! isset($this->typesToLog)) {
@@ -212,6 +243,9 @@ abstract class Driver implements Sms
         return $this;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     final public function logFailed(): static
     {
         if (! isset($this->typesToLog)) {
@@ -224,6 +258,8 @@ abstract class Driver implements Sms
     }
 
     /**
+     * {@inheritdoc}
+     *
      * @throws SmsNotSentYetException
      */
     final public function successful(): bool
@@ -234,6 +270,8 @@ abstract class Driver implements Sms
     }
 
     /**
+     * {@inheritdoc}
+     *
      * @throws SmsNotSentYetException
      */
     final public function failed(): bool
@@ -244,6 +282,8 @@ abstract class Driver implements Sms
     }
 
     /**
+     * {@inheritdoc}
+     *
      * @throws SmsNotSentYetException
      */
     final public function error(): ?string
@@ -341,7 +381,7 @@ abstract class Driver implements Sms
     }
 
     /**
-     * Handle log base on the user setup
+     * Handle log based on the user setup
      */
     private function handleLog(): void
     {
@@ -379,6 +419,6 @@ abstract class Driver implements Sms
     {
         $this->typesToLog ??= [];
 
-        $this->typesToLog = collect($this->typesToLog)->filter(fn (Type $value) => $value !== $type)->all();
+        $this->typesToLog = collect($this->typesToLog)->reject(fn (Type $value) => $value === $type)->all();
     }
 }

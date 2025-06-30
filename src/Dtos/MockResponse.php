@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace AliYavari\IranSms\Dtos;
 
+/**
+ * Represents a mocked response used in tests.
+ */
 final readonly class MockResponse
 {
     private function __construct(

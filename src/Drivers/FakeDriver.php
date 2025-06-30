@@ -8,12 +8,17 @@ use AliYavari\IranSms\Abstracts\Driver;
 use AliYavari\IranSms\Dtos\MockResponse;
 use Illuminate\Support\Facades\Http;
 
+/**
+ * @internal
+ *
+ * Fake SMS driver used to simulate sending behavior during tests.
+ */
 final class FakeDriver extends Driver
 {
     public function __construct(private readonly MockResponse $response) {}
 
     /**
-     * Get the default sender number from config
+     * {@inheritdoc}
      */
     protected function getDefaultSender(): string
     {
@@ -21,7 +26,7 @@ final class FakeDriver extends Driver
     }
 
     /**
-     * Send OTP SMS
+     * {@inheritdoc}
      */
     protected function sendOtp(string $phone, string $message, string $from): static
     {
@@ -31,10 +36,7 @@ final class FakeDriver extends Driver
     }
 
     /**
-     * Send pattern SMS
-     *
-     * @param  list<string>  $phones
-     * @param  array<string, mixed>  $variables
+     * {@inheritdoc}
      */
     protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
     {
@@ -44,9 +46,7 @@ final class FakeDriver extends Driver
     }
 
     /**
-     * Send regular text SMS
-     *
-     * @param  list<string>  $phones
+     * {@inheritdoc}
      */
     protected function sendText(array $phones, string $message, string $from): static
     {
@@ -56,7 +56,7 @@ final class FakeDriver extends Driver
     }
 
     /**
-     * Check if SMS sending was successful
+     * {@inheritdoc}
      */
     protected function isSuccessful(): bool
     {
@@ -64,7 +64,7 @@ final class FakeDriver extends Driver
     }
 
     /**
-     * Get the error message if SMS sending failed
+     * {@inheritdoc}
      */
     protected function getErrorMessage(): string
     {

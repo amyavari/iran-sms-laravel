@@ -7,6 +7,8 @@ namespace AliYavari\IranSms\Exceptions;
 use LogicException;
 
 /**
- * Throw exception if user wants to check the status of SMS before sending it.
+ * @internal
+ *
+ * Exception thrown when attempting to check the SMS sending status before the message has been sent.
  */
 final class SmsNotSentYetException extends LogicException {}

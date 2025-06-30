@@ -9,6 +9,9 @@ use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
+/**
+ * @internal
+ */
 final class IranSmsServiceProvider extends PackageServiceProvider
 {
     public function configurePackage(Package $package): void

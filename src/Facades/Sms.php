@@ -8,17 +8,18 @@ use AliYavari\IranSms\Drivers\FakeDriver;
 use AliYavari\IranSms\Dtos\MockResponse;
 use AliYavari\IranSms\SmsManager;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Facade;
 use InvalidArgumentException;
 use UnexpectedValueException;
 
 /**
- * @method static \AliYavari\IranSms\Contracts\Sms driver(string $driver = null)
- * @method static \AliYavari\IranSms\Contracts\Sms provider(string $provider = null)
- * @method static \AliYavari\IranSms\Contracts\Sms otp(string $phone, string $message)
- * @method static \AliYavari\IranSms\Contracts\Sms pattern(string|list<string> $phones, string $patternCode, array<string, mixed> $variables)
- * @method static \AliYavari\IranSms\Contracts\Sms text(string|list<string> $phones, string $message)
- * @method static \AliYavari\IranSms\Contracts\Sms from(string $from)
+ * @method static \AliYavari\IranSms\Contracts\Sms driver(string $driver = null) Get SMS instance for sending by specified driver
+ * @method static \AliYavari\IranSms\Contracts\Sms provider(string $provider = null) Get SMS instance for sending by specified provider
+ * @method static \AliYavari\IranSms\Contracts\Sms otp(string $phone, string $message) Create OTP SMS instance.
+ * @method static \AliYavari\IranSms\Contracts\Sms pattern(string|list<string> $phones, string $patternCode, array<mixed> $variables) Create Pattern SMS instance
+ * @method static \AliYavari\IranSms\Contracts\Sms text(string|list<string> $phones, string $message) Create regular text SMS instance
+ * @method static \AliYavari\IranSms\Contracts\Sms from(string $from) Set the sender number for the SMS
  */
 final class Sms extends Facade
 {
@@ -47,7 +48,7 @@ final class Sms extends Facade
     }
 
     /**
-     * Fake SMS sending in tests.
+     * Fakes SMS sending for testing purposes.
      *
      * @param  array<string, MockResponse>|list<string>  $providers
      */
@@ -55,23 +56,15 @@ final class Sms extends Facade
     {
         self::validateFakeSetupInputs($providers, $response);
 
-        $driverResponse = self::ensureDriverResponseMap($providers, $response);
-
-        collect($driverResponse)
-            ->mapWithKeys(function (MockResponse $response, string $driver) {
-                $driver = $driver === 'default' ? static::getFacadeRoot()->getDefaultDriver() : $driver;
-
-                return [$driver => $response];
-            })
-            ->each(function (MockResponse $response, string $driver) {
-                $fakeDriver = new FakeDriver($response);
-
-                static::getFacadeRoot()->setDriver($driver, $fakeDriver);
-            });
+        self::ensureDriverResponseMapping($providers, $response)
+            ->pipeThrough([
+                fn (Collection $driverResponseMap) => self::resolveDefaultDriverName($driverResponseMap),
+                fn (Collection $driverResponseMap) => self::registerFakeDrivers($driverResponseMap),
+            ]);
     }
 
     /**
-     * Get the registered name of the component.
+     * {@inheritdoc}
      */
     protected static function getFacadeAccessor(): string
     {
@@ -79,7 +72,7 @@ final class Sms extends Facade
     }
 
     /**
-     * Validate the inputs for configuring SMS faking.
+     * Validates the inputs used to configure SMS faking.
      *
      * @param  array<string, mixed>|list<mixed>  $drivers
      *
@@ -104,12 +97,12 @@ final class Sms extends Facade
     }
 
     /**
-     * Ensures drivers are mapped to their MockResponse in format of provider => MockResponse
+     * Ensures drivers are mapped to their MockResponse in format of [driver => MockResponse]
      *
      * @param  array<string, MockResponse>|list<string>  $drivers
-     * @return array<string, MockResponse>
+     * @return Collection<string, MockResponse>
      */
-    private static function ensureDriverResponseMap(array $drivers, ?MockResponse $response): array
+    private static function ensureDriverResponseMapping(array $drivers, ?MockResponse $response): Collection
     {
         if ($drivers === []) {
             $drivers = ['default'];
@@ -118,9 +111,38 @@ final class Sms extends Facade
         if (Arr::isList($drivers)) {
             $response ??= self::successfulRequest();
 
-            return Arr::mapWithKeys($drivers, fn (string $value) => [$value => $response]);
+            $drivers = Arr::mapWithKeys($drivers, fn (string $value) => [$value => $response]);
         }
 
-        return $drivers;
+        return collect($drivers);
+    }
+
+    /**
+     * Replace 'default' key with actual default driver name.
+     *
+     * @param  Collection<string, MockResponse>  $driverResponseMap
+     * @return Collection<string, MockResponse>
+     */
+    private static function resolveDefaultDriverName(Collection $driverResponseMap): Collection
+    {
+        return $driverResponseMap->mapWithKeys(function (MockResponse $response, string $driver) {
+            $driver = $driver === 'default' ? static::getFacadeRoot()->getDefaultDriver() : $driver;
+
+            return [$driver => $response];
+        });
+    }
+
+    /**
+     * Create a fake driver for each driver and register it with the corresponding mocked response.
+     *
+     * @param  Collection<string, MockResponse>  $driverResponseMap
+     */
+    private static function registerFakeDrivers(Collection $driverResponseMap): void
+    {
+        $driverResponseMap->each(function (MockResponse $response, string $driver) {
+            $fakeDriver = new FakeDriver($response);
+
+            static::getFacadeRoot()->setDriver($driver, $fakeDriver);
+        });
     }
 }
