@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AliYavari\IranSms;
 
+use AliYavari\IranSms\Commands\PruneLogsCommand;
 use Illuminate\Foundation\Application;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
@@ -19,6 +20,7 @@ final class IranSmsServiceProvider extends PackageServiceProvider
         $package->name('iran-sms')
             ->hasConfigFile()
             ->hasMigration('create_sms_logs_table')
+            ->hasCommand(PruneLogsCommand::class)
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
                     ->publishConfigFile()
