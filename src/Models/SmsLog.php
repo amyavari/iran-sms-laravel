@@ -8,6 +8,8 @@ use AliYavari\IranSms\Enums\Type;
 use Illuminate\Database\Eloquent\Model;
 
 /**
+ * @internal
+ *
  * @property-read int $id
  * @property-read Type $type
  * @property-read string $driver
