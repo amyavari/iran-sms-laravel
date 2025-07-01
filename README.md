@@ -189,6 +189,18 @@ You can chain the logging methods to define custom logic fluently:
 $sms->log()->logOtp(false)->logSuccessful();
 ```
 
+#### Prune Old Logs
+
+To help keep your log table clean, this package provides an Artisan command to prune old log records. You can schedule this command using [Laravel's task scheduler]
+
+Example: Delete logs created before 30 days ago
+
+```php
+use Illuminate\Support\Facades\Schedule;
+
+Schedule::command('iran-sms:prune-logs --days=30')->daily();
+```
+
 ### Sending SMS
 
 To send the SMS:
@@ -276,7 +288,7 @@ final class MyNotification extends Notification
     }
 
     /**
-     * Get the voice representation of the notification.
+     * Get the SMS representation of the notification.
      */
     public function toSms(object $notifiable)
     {
@@ -292,23 +304,38 @@ This package provides fluent methods to fake and test SMS sending:
 ```php
 use AliYavari\IranSms\Facades\Sms;
 
-// Fake the default provider to return successful responses
+/**
+ * Fake the default provider to return successful response
+ */
 Sms::fake();
 
-// Fake specific providers to return successful responses
-// Note: Use `default` as the provider key to target the default provider
+/**
+ * Fake specific providers to return successful responses
+ *
+ * Note: Use `default` as the provider key to target the default provider
+ */
 Sms::fake([/* provider keys */]);
 
-// Equivalent to the above (explicit success)
+/**
+ * Equivalent to the above (explicit success definition)
+ */
 Sms::fake([...], Sms::successfulRequest());
 
-// Fake providers to return failed responses (optional custom error message)
-Sms::fake([...], Sms::failedRequest(string $errorMessage = 'Error Message'));
+/**
+ * Fake providers to return failed responses
+ *
+ * Optional: custom error message and error code
+ */
+Sms::fake([...], Sms::failedRequest(string $errorMessage = 'Error Message', string|int $errorCode = 0));
 
-// Fake providers to throw a ConnectionException
+/**
+ * Fake providers to throw a ConnectionException
+ */
 Sms::fake([...], Sms::failedConnection());
 
-// Define different behaviors per provider
+/**
+ * Define different behaviors per provider
+ */
 Sms::fake([
     'provider_one' => Sms::failedConnection(),
     'provider_two' => Sms::failedRequest(),
@@ -338,3 +365,4 @@ Thank you for considering contributing to the Iran SMS Laravel! The contribution
 [HTTP Client]: https://laravel.com/docs/12.x/http-client#throwing-exceptions
 [queues]: https://laravel.com/docs/12.x/queues
 [notifications]: https://laravel.com/docs/12.x/notifications
+[Laravel's task scheduler]: https://laravel.com/docs/12.x/scheduling#scheduling-artisan-commands
