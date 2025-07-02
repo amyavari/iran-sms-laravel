@@ -6,7 +6,13 @@ namespace AliYavari\IranSms\Tests\Fixtures;
 
 use AliYavari\IranSms\Abstracts\Driver;
 
-final class TestDriver extends Driver
+/**
+ * Test fixture class for the `Driver` abstract class.
+ *
+ * This class implements the required methods expected by
+ * the `Driver` abstract class for isolated testing purposes.
+ */
+final class ConcreteTestDriver extends Driver
 {
     public array $dataToAssert; // To test
 
