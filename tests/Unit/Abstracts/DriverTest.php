@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace AliYavari\IranSms\Tests\Unit\Abstracts;
 
-use AliYavari\IranSms\Enums\Type;
 use AliYavari\IranSms\Exceptions\SmsContentNotDefinedException;
 use AliYavari\IranSms\Exceptions\SmsIsImmutableException;
 use AliYavari\IranSms\Exceptions\SmsNotSentYetException;
 use AliYavari\IranSms\Models\SmsLog;
-use AliYavari\IranSms\Tests\Fixtures\TestDriver;
+use AliYavari\IranSms\Tests\Fixtures\ConcreteTestDriver;
 use AliYavari\IranSms\Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
-use Mockery;
 use PHPUnit\Framework\Attributes\Test;
 
 final class DriverTest extends TestCase
@@ -38,7 +36,7 @@ final class DriverTest extends TestCase
 
         $senderNumber = $this->callProtectedMethod($sms, 'getSender');
 
-        $this->assertInstanceOf(TestDriver::class, $returnedSms);
+        $this->assertInstanceOf(ConcreteTestDriver::class, $returnedSms);
         $this->assertSame('123456789', $senderNumber);
     }
 
@@ -49,7 +47,7 @@ final class DriverTest extends TestCase
 
         $sms->otp('091234567', 'OTP Message')->send();
 
-        $this->assertInstanceOf(TestDriver::class, $sms);
+        $this->assertInstanceOf(ConcreteTestDriver::class, $sms);
         $this->assertSame([
             'type' => 'otp',
             'phone' => '091234567',
@@ -77,7 +75,7 @@ final class DriverTest extends TestCase
 
         $sms->pattern('091234567', 'pattern_code', ['key' => 'value'])->send();
 
-        $this->assertInstanceOf(TestDriver::class, $sms);
+        $this->assertInstanceOf(ConcreteTestDriver::class, $sms);
         $this->assertSame([
             'type' => 'pattern',
             'phones' => ['091234567'],
@@ -106,7 +104,7 @@ final class DriverTest extends TestCase
 
         $sms->text('091234567', 'Text Message')->send();
 
-        $this->assertInstanceOf(TestDriver::class, $sms);
+        $this->assertInstanceOf(ConcreteTestDriver::class, $sms);
         $this->assertSame([
             'type' => 'text',
             'phones' => ['091234567'],
@@ -130,7 +128,7 @@ final class DriverTest extends TestCase
     #[Test]
     public function it_creates_and_sends_sms_with_user_defined_sender_successfully(): void
     {
-        $this->getAllSmsTypes(from: '1234')->each(function (TestDriver $sms) {
+        $this->getAllSmsTypes(from: '1234')->each(function (ConcreteTestDriver $sms) {
             $sms->from('4567')->send();
 
             $this->assertSame('4567', $sms->dataToAssert['from']);
@@ -235,372 +233,31 @@ final class DriverTest extends TestCase
     }
 
     #[Test]
-    public function it_serialize_string_message_successfully(): void
+    public function it_calls_handle_log_after_sending_sms(): void
     {
-        // Otp
-        $sms = $this->sms();
-        $sms->otp('091234567', 'OTP Message');
-
-        $content = $this->callProtectedMethod($sms, 'serializeContent');
-
-        $this->assertSame(['message' => 'OTP Message'], $content);
-
-        // text
-        $sms = $this->sms();
-        $sms->text('091234567', 'Text Message');
-
-        $content = $this->callProtectedMethod($sms, 'serializeContent');
-
-        $this->assertSame(['message' => 'Text Message'], $content);
-    }
-
-    #[Test]
-    public function it_serialize_pattern_message_successfully(): void
-    {
-        $sms = $this->sms();
-
-        $sms->pattern('091234567', 'pattern_code', ['key' => 'value']);
-
-        $content = $this->callProtectedMethod($sms, 'serializeContent');
-
-        $this->assertSame([
-            'code' => 'pattern_code',
-            'variables' => ['key' => 'value'],
-        ], $content);
-    }
-
-    #[Test]
-    public function it_returns_driver_name(): void
-    {
-        $sms = Mockery::namedMock('\Class\Namespace\CustomNameDriver', TestDriver::class);
-
-        $driverName = $this->callProtectedMethod($sms, 'getDriverName');
-        /**
-         * ------------------
-         * Logic Explanation:
-         * ------------------
-         * Uses name convention of driver's class: *\CustomNameDriver => `custom name`
-         */
-        $this->assertSame('custom_name', $driverName);
-    }
-
-    #[Test]
-    public function it_logs_otp_message_successfully(): void
-    {
-        $sms = $this->sms();
-        $sms->otp('091234567', 'OTP Message')->send();
-
-        $this->callProtectedMethod($sms, 'storeLog');
-
-        $this->assertDatabaseHas(SmsLog::class, [
-            'type' => Type::Otp,
-            'to' => json_encode(['091234567']),
-            'content' => json_encode($this->callProtectedMethod($sms, 'serializeContent')),  // This is not this test's concern.
-        ]);
-    }
-
-    #[Test]
-    public function it_logs_text_message_successfully(): void
-    {
-        $sms = $this->sms();
-        $sms->text('091234567', 'Text Message')->send();
-
-        $this->callProtectedMethod($sms, 'storeLog');
-
-        $this->assertDatabaseHas(SmsLog::class, [
-            'type' => Type::Text,
-            'to' => json_encode(['091234567']),
-            'content' => json_encode($this->callProtectedMethod($sms, 'serializeContent')),  // This is not this test's concern.
-        ]);
-    }
-
-    #[Test]
-    public function it_logs_pattern_message_successfully(): void
-    {
-        $sms = $this->sms();
-        $sms->pattern('091234567', 'pattern_code', ['key' => 'value'])->send();
-
-        $this->callProtectedMethod($sms, 'storeLog');
-
-        $this->assertDatabaseHas(SmsLog::class, [
-            'type' => Type::Pattern,
-            'to' => json_encode(['091234567']),
-            'content' => json_encode($this->callProtectedMethod($sms, 'serializeContent')),  // This is not this test's concern.
-        ]);
-    }
-
-    #[Test]
-    public function it_logs_all_types_with_correct_data_if_sending_was_successful(): void
-    {
-        $this->getAllSmsTypes(from: '1234', successful: true)->each(function (TestDriver $sms) {
-            $sms->send();
-
-            $this->callProtectedMethod($sms, 'storeLog');
-        });
-
-        $logsCount = SmsLog::query()
-            ->where('from', '1234')
-            ->where('is_successful', true)
-            ->whereNull('error')
-            ->count();
-
-        $this->assertSame(3, $logsCount);
-    }
-
-    #[Test]
-    public function it_logs_all_types_with_correct_data_if_sending_failed(): void
-    {
-        $this->getAllSmsTypes(from: '1234', successful: false)->each(function (TestDriver $sms) {
-            $sms->send();
-
-            $this->callProtectedMethod($sms, 'storeLog');
-        });
-
-        $logsCount = SmsLog::query()
-            ->where('from', '1234')
-            ->where('is_successful', false)
-            ->where('error', 'Code 40 - Test error message')
-            ->count();
-
-        $this->assertSame(3, $logsCount);
-    }
-
-    #[Test]
-    public function it_logs_all_types_with_correct_data_with_user_defined_sender(): void
-    {
-        $this->getAllSmsTypes(from: '1234')->each(function (TestDriver $sms) {
-            $sms->from('4567')->send();
-
-            $this->callProtectedMethod($sms, 'storeLog');
-        });
-
-        $logsCount = SmsLog::query()
-            ->where('from', '4567')
-            ->count();
-
-        $this->assertSame(3, $logsCount);
-    }
-
-    #[Test]
-    public function it_does_not_log_anything_if_user_did_not_set_log_config(): void
-    {
-        $this->getAllSmsTypes()->each(function (TestDriver $sms) {
-            $sms->send();
-        });
-
-        $this->assertDatabaseEmpty(SmsLog::class);
-    }
-
-    #[Test]
-    public function it_does_not_log_anything_if_user_sets_log_to_false_for_all_types(): void
-    {
-        $this->getAllSmsTypes()->each(function (TestDriver $sms) {
-            $sms->log(false)->send();
-        });
-
-        $this->assertDatabaseEmpty(SmsLog::class);
-    }
-
-    #[Test]
-    public function it_logs_everything_if_user_sets_log_all(): void
-    {
-        $this->getAllSmsTypes()->each(function (TestDriver $sms) {
-            $sms->log(true)->send();
+        $this->getAllSmsTypes(successful: true)->each(function (ConcreteTestDriver $sms) {
+            $sms->logSuccessful()->send(); // Must be logged
         });
 
         $this->assertDatabaseCount(SmsLog::class, 3);
-    }
 
-    #[Test]
-    public function it_logs_only_otp_messages_if_user_sets_log_to_only_otp(): void
-    {
-        $this->getAllSmsTypes()->each(function (TestDriver $sms) {
-            $sms->logOtp(true)->send();
-        });
-
-        $this->getAllSmsTypes()->each(function (TestDriver $sms) {
-            $sms->log(false)->logOtp(true)->send();
-        });
-
-        $otpLogs = SmsLog::query()->where('type', Type::Otp)->count();
-
-        $this->assertSame(2, $otpLogs);
-        $this->assertDatabaseCount(SmsLog::class, 2);
-    }
-
-    #[Test]
-    public function it_does_not_log_otp_message_if_user_sets_it_not_to_log_otp(): void
-    {
-        $sms = $this->sms();
-        $sms->log(true)->logOtp(false)->otp('091234567', 'OTP Message')->send();
-
-        $this->assertDatabaseEmpty(SmsLog::class);
-    }
-
-    #[Test]
-    public function it_logs_only_text_messages_if_user_sets_log_to_only_text(): void
-    {
-        $this->getAllSmsTypes()->each(function (TestDriver $sms) {
-            $sms->logText(true)->send();
-        });
-
-        $this->getAllSmsTypes()->each(function (TestDriver $sms) {
-            $sms->log(false)->logText(true)->send();
-        });
-
-        $textLogs = SmsLog::query()->where('type', Type::Text)->count();
-
-        $this->assertSame(2, $textLogs);
-        $this->assertDatabaseCount(SmsLog::class, 2);
-    }
-
-    #[Test]
-    public function it_does_not_log_text_message_if_user_sets_it_not_to_log_text(): void
-    {
-        $sms = $this->sms();
-        $sms->log(true)->logText(false)->text('091234567', 'Text Message')->send();
-
-        $this->assertDatabaseEmpty(SmsLog::class);
-    }
-
-    #[Test]
-    public function it_logs_only_pattern_messages_if_user_sets_log_to_only_pattern(): void
-    {
-        $this->getAllSmsTypes()->each(function (TestDriver $sms) {
-            $sms->logPattern(true)->send();
-        });
-
-        $this->getAllSmsTypes()->each(function (TestDriver $sms) {
-            $sms->log(false)->logPattern(true)->send();
-        });
-
-        $patternLogs = SmsLog::query()->where('type', Type::Pattern)->count();
-
-        $this->assertSame(2, $patternLogs);
-        $this->assertDatabaseCount(SmsLog::class, 2);
-    }
-
-    #[Test]
-    public function it_does_not_log_pattern_message_if_user_sets_it_not_to_log_pattern(): void
-    {
-        $sms = $this->sms();
-        $sms->log(true)->logPattern(false)->pattern('091234567', 'pattern_code', ['key' => 'value'])->send();
-
-        $this->assertDatabaseEmpty(SmsLog::class);
-    }
-
-    #[Test]
-    public function it_only_logs_successful_messages_if_user_sets_it_to_log_successful(): void
-    {
-        // Must be logged
-        $this->getAllSmsTypes(successful: true)->each(function (TestDriver $sms) {
-            $sms->log(true)->logSuccessful()->send();
-        });
-
-        // Won't log
-        $this->getAllSmsTypes(successful: false)->each(function (TestDriver $sms) {
-            $sms->log(true)->logSuccessful()->send();
-        });
-
-        $successfulLogs = SmsLog::query()->where('is_successful', true)->count();
-
-        $this->assertSame(3, $successfulLogs);
-        $this->assertDatabaseCount(SmsLog::class, 3);
-    }
-
-    #[Test]
-    public function it_calls_log_if_user_did_not_call_type_logs_before_only_successful_log(): void
-    {
-        $this->getAllSmsTypes(successful: true)->each(function (TestDriver $sms) {
-            $sms->logSuccessful()->send();
+        $this->getAllSmsTypes(successful: true)->each(function (ConcreteTestDriver $sms) {
+            $sms->logFailed()->send(); // Must not be logged
         });
 
         $this->assertDatabaseCount(SmsLog::class, 3);
-    }
-
-    #[Test]
-    public function it_will_not_call_log_if_user_called_type_logs_before_only_successful_log(): void
-    {
-        $this->getAllSmsTypes(successful: true)->each(function (TestDriver $sms) {
-            $sms->log(false)->logSuccessful()->send();
-        });
-
-        $this->getAllSmsTypes(successful: true)->each(function (TestDriver $sms) {
-            $sms->logOtp(false)->logSuccessful()->send();
-        });
-
-        $this->getAllSmsTypes(successful: true)->each(function (TestDriver $sms) {
-            $sms->logPattern(false)->logSuccessful()->send();
-        });
-
-        $this->getAllSmsTypes(successful: true)->each(function (TestDriver $sms) {
-            $sms->logText(false)->logSuccessful()->send();
-        });
-
-        $this->assertDatabaseEmpty(SmsLog::class);
-    }
-
-    #[Test]
-    public function it_only_logs_failed_messages_if_user_sets_it_to_log_failed(): void
-    {
-        // Must be logged
-        $this->getAllSmsTypes(successful: false)->each(function (TestDriver $sms) {
-            $sms->log(true)->logFailed()->send();
-        });
-
-        // Won't log
-        $this->getAllSmsTypes(successful: true)->each(function (TestDriver $sms) {
-            $sms->log(true)->logFailed()->send();
-        });
-
-        $failedLogs = SmsLog::query()->where('is_successful', false)->count();
-
-        $this->assertSame(3, $failedLogs);
-        $this->assertDatabaseCount(SmsLog::class, 3);
-    }
-
-    #[Test]
-    public function it_calls_log_if_user_did_not_call_type_logs_before_only_failed_log(): void
-    {
-        $this->getAllSmsTypes(successful: false)->each(function (TestDriver $sms) {
-            $sms->logFailed()->send();
-        });
-
-        $this->assertDatabaseCount(SmsLog::class, 3);
-    }
-
-    #[Test]
-    public function it_will_not_call_log_if_user_called_type_logs_before_only_failed_log(): void
-    {
-        $this->getAllSmsTypes(successful: false)->each(function (TestDriver $sms) {
-            $sms->log(false)->logSuccessful()->send();
-        });
-
-        $this->getAllSmsTypes(successful: false)->each(function (TestDriver $sms) {
-            $sms->logOtp(false)->logSuccessful()->send();
-        });
-
-        $this->getAllSmsTypes(successful: false)->each(function (TestDriver $sms) {
-            $sms->logPattern(false)->logSuccessful()->send();
-        });
-
-        $this->getAllSmsTypes(successful: false)->each(function (TestDriver $sms) {
-            $sms->logText(false)->logSuccessful()->send();
-        });
-
-        $this->assertDatabaseEmpty(SmsLog::class);
     }
 
     // -----------------
     // Helper Methods
     // -----------------
 
-    private function sms(string $from = '123', bool $successful = true): TestDriver
+    private function sms($from = '123', $successful = true): ConcreteTestDriver
     {
-        return new TestDriver($from, $successful);
+        return new ConcreteTestDriver($from, $successful);
     }
 
-    private function getAllSmsTypes(string $from = '123', bool $successful = true): Collection
+    private function getAllSmsTypes($from = '123', $successful = true): Collection
     {
         return collect([
             $this->sms($from, $successful)->text('091234567', 'Text Message'),

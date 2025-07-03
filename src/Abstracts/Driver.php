@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace AliYavari\IranSms\Abstracts;
 
+use AliYavari\IranSms\Concerns\HasLog;
 use AliYavari\IranSms\Contracts\Sms;
 use AliYavari\IranSms\Enums\Type;
 use AliYavari\IranSms\Exceptions\SmsContentNotDefinedException;
 use AliYavari\IranSms\Exceptions\SmsIsImmutableException;
 use AliYavari\IranSms\Exceptions\SmsNotSentYetException;
-use AliYavari\IranSms\Models\SmsLog;
-use Illuminate\Support\Str;
-use ReflectionClass;
 
 /**
  * @internal
@@ -20,6 +18,8 @@ use ReflectionClass;
  */
 abstract class Driver implements Sms
 {
+    use HasLog;
+
     /**
      * Sms Type
      */
@@ -53,20 +53,6 @@ abstract class Driver implements Sms
      * Whether SMS is sent
      */
     private bool $isSent = false;
-
-    /**
-     * Which types must be logged
-     *
-     * @var list<Type>
-     */
-    private array $typesToLog;
-
-    /**
-     * Which statuses must be logged
-     *
-     * @var list<string>
-     */
-    private array $statusesToLog = ['successful', 'failed'];
 
     /**
      * Get the default sender number from config
@@ -189,75 +175,7 @@ abstract class Driver implements Sms
 
         $this->isSent = true;
 
-        $this->handleLog();
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    final public function log(bool $log = true): static
-    {
-        $this->typesToLog = $log ? Type::cases() : [];
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    final public function logOtp(bool $log = true): static
-    {
-        $log ? $this->addTypeToLog(Type::Otp) : $this->removeTypeFromLog(Type::Otp);
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    final public function logPattern(bool $log = true): static
-    {
-        $log ? $this->addTypeToLog(Type::Pattern) : $this->removeTypeFromLog(Type::Pattern);
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    final public function logText(bool $log = true): static
-    {
-        $log ? $this->addTypeToLog(Type::Text) : $this->removeTypeFromLog(Type::Text);
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    final public function logSuccessful(): static
-    {
-        if (! isset($this->typesToLog)) {
-            $this->log(true);
-        }
-
-        $this->statusesToLog = ['successful'];
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    final public function logFailed(): static
-    {
-        if (! isset($this->typesToLog)) {
-            $this->log(true);
-        }
-
-        $this->statusesToLog = ['failed'];
+        $this->handleLog(); // `HasLog` trait
 
         return $this;
     }
@@ -342,88 +260,5 @@ abstract class Driver implements Sms
         if (! $this->isSent) {
             throw new SmsNotSentYetException('To check SMS status, you first must send it with "send".');
         }
-    }
-
-    /**
-     * Serialize content of SMS to save in the Database
-     *
-     * @return array<string, mixed>
-     */
-    private function serializeContent(): array
-    {
-        return is_string($this->content)
-        ? ['message' => $this->content]
-        : ['code' => $this->patternCode, 'variables' => $this->content];
-    }
-
-    /**
-     * Get driver name from class name
-     */
-    private function getDriverName(): string
-    {
-        $class = new ReflectionClass(static::class);
-
-        return Str::of($class->getShortName())
-            ->before('Driver')
-            ->snake()
-            ->toString();
-    }
-
-    /**
-     * Store SMS log
-     */
-    private function storeLog(): void
-    {
-        SmsLog::query()->create([
-            'type' => $this->type,
-            'driver' => $this->getDriverName(),
-            'from' => $this->getSender(),
-            'to' => $this->ensureIsArray($this->phones),
-            'content' => $this->serializeContent(),
-            'is_successful' => $this->successful(),
-            'error' => $this->error(),
-        ]);
-    }
-
-    /**
-     * Handle log based on the user setup
-     */
-    private function handleLog(): void
-    {
-        if (! isset($this->typesToLog) || $this->typesToLog === []) {
-            return;
-        }
-
-        if (! in_array($this->type, $this->typesToLog, strict: true)) {
-            return;
-        }
-
-        $statusText = $this->successful() ? 'successful' : 'failed';
-
-        if (! in_array($statusText, $this->statusesToLog, strict: true)) {
-            return;
-        }
-
-        $this->storeLog();
-    }
-
-    /**
-     * Add SMS type to be logged
-     */
-    private function addTypeToLog(Type $type): void
-    {
-        $this->typesToLog ??= [];
-
-        $this->typesToLog = collect($this->typesToLog)->push($type)->unique()->all();
-    }
-
-    /**
-     * Remove SMS type from being logged
-     */
-    private function removeTypeFromLog(Type $type): void
-    {
-        $this->typesToLog ??= [];
-
-        $this->typesToLog = collect($this->typesToLog)->reject(fn (Type $value) => $value === $type)->all();
     }
 }
