@@ -32,5 +32,12 @@ return [
             'token' => env('SMS_TOKEN', ''),
             'from' => env('SMS_FROM', ''),
         ],
+
+        // https://melipayamak.com/
+        'meli_payamak' => [
+            'username' => env('SMS_USERNAME', ''),
+            'password' => env('SMS_PASSWORD', ''),
+            'from' => env('SMS_FROM', ''),
+        ],
     ],
 ];
