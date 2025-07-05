@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AliYavari\IranSms;
 
 use AliYavari\IranSms\Commands\PruneLogsCommand;
+use AliYavari\IranSms\Drivers\FarazSmsDriver;
 use AliYavari\IranSms\Drivers\KavenegarDriver;
 use AliYavari\IranSms\Drivers\MeliPayamakDriver;
 use AliYavari\IranSms\Drivers\PayamResanDriver;
@@ -55,6 +56,11 @@ final class IranSmsServiceProvider extends PackageServiceProvider
         $this->app->bind(
             KavenegarDriver::class,
             fn () => new KavenegarDriver(...config()->array('iran-sms.providers.kavenegar'))
+        );
+
+        $this->app->bind(
+            FarazSmsDriver::class,
+            fn () => new FarazSmsDriver(...config()->array('iran-sms.providers.faraz_sms'))
         );
     }
 }
