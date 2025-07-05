@@ -45,5 +45,11 @@ return [
             'token' => env('SMS_TOKEN', ''),
             'from' => env('SMS_FROM', ''),
         ],
+
+        // https://kavenegar.com/
+        'kavenegar' => [
+            'token' => env('SMS_TOKEN', ''),
+            'from' => env('SMS_FROM', ''),
+        ],
     ],
 ];
