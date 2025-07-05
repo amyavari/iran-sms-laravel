@@ -27,12 +27,43 @@ return [
     */
     'providers' => [
 
-        'one' => [
-            'username' => env('SMS_USERNAME', ''),
-            'password' => env('SMS_PASSWORD', ''),
+        // https://sms.ir/
+        'sms_ir' => [
             'token' => env('SMS_TOKEN', ''),
             'from' => env('SMS_FROM', ''),
         ],
 
+        // https://melipayamak.com/
+        'meli_payamak' => [
+            'username' => env('SMS_USERNAME', ''),
+            'password' => env('SMS_PASSWORD', ''),
+            'from' => env('SMS_FROM', ''),
+        ],
+
+        // https://payam-resan.com/
+        'payam_resan' => [
+            'token' => env('SMS_TOKEN', ''),
+            'from' => env('SMS_FROM', ''),
+        ],
+
+        // https://kavenegar.com/
+        'kavenegar' => [
+            'token' => env('SMS_TOKEN', ''),
+            'from' => env('SMS_FROM', ''),
+        ],
+
+        // https://farazsms.com/
+        'faraz_sms' => [
+            'token' => env('SMS_TOKEN', ''),
+            'from' => env('SMS_FROM', ''),
+        ],
+
+        // https://raygansms.com/
+        'raygan_sms' => [
+            'token' => env('SMS_TOKEN', ''),
+            'username' => env('SMS_USERNAME', ''),
+            'password' => env('SMS_PASSWORD', ''),
+            'from' => env('SMS_FROM', ''),
+        ],
     ],
 ];

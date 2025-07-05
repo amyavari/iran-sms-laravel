@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace AliYavari\IranSms\Tests\Unit;
 
+use AliYavari\IranSms\Drivers\FarazSmsDriver;
+use AliYavari\IranSms\Drivers\KavenegarDriver;
+use AliYavari\IranSms\Drivers\MeliPayamakDriver;
+use AliYavari\IranSms\Drivers\PayamResanDriver;
+use AliYavari\IranSms\Drivers\RayganSmsDriver;
+use AliYavari\IranSms\Drivers\SmsIrDriver;
 use AliYavari\IranSms\SmsManager;
 use AliYavari\IranSms\Tests\Fixtures\ConcreteTestDriver;
 use AliYavari\IranSms\Tests\TestCase;
@@ -39,6 +45,54 @@ final class SmsManagerTest extends TestCase
 
         $this->assertInstanceOf(ConcreteTestDriver::class, $retrievedDriver);
         $this->assertSame('123456', $this->callProtectedMethod($retrievedDriver, 'getDefaultSender'));
+    }
+
+    #[Test]
+    public function it_returns_sms_ir_instance(): void
+    {
+        $sms = $this->smsManager()->provider('sms_ir');
+
+        $this->assertInstanceOf(SmsIrDriver::class, $sms);
+    }
+
+    #[Test]
+    public function it_returns_meli_payamak_instance(): void
+    {
+        $sms = $this->smsManager()->provider('meli_payamak');
+
+        $this->assertInstanceOf(MeliPayamakDriver::class, $sms);
+    }
+
+    #[Test]
+    public function it_returns_payam_resan_instance(): void
+    {
+        $sms = $this->smsManager()->provider('payam_resan');
+
+        $this->assertInstanceOf(PayamResanDriver::class, $sms);
+    }
+
+    #[Test]
+    public function it_returns_kavenegar_instance(): void
+    {
+        $sms = $this->smsManager()->provider('kavenegar');
+
+        $this->assertInstanceOf(KavenegarDriver::class, $sms);
+    }
+
+    #[Test]
+    public function it_returns_faraz_sms_instance(): void
+    {
+        $sms = $this->smsManager()->provider('faraz_sms');
+
+        $this->assertInstanceOf(FarazSmsDriver::class, $sms);
+    }
+
+    #[Test]
+    public function it_returns_raygan_sms_instance(): void
+    {
+        $sms = $this->smsManager()->provider('raygan_sms');
+
+        $this->assertInstanceOf(RayganSmsDriver::class, $sms);
     }
 
     // -----------------

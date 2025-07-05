@@ -5,6 +5,12 @@ declare(strict_types=1);
 namespace AliYavari\IranSms;
 
 use AliYavari\IranSms\Commands\PruneLogsCommand;
+use AliYavari\IranSms\Drivers\FarazSmsDriver;
+use AliYavari\IranSms\Drivers\KavenegarDriver;
+use AliYavari\IranSms\Drivers\MeliPayamakDriver;
+use AliYavari\IranSms\Drivers\PayamResanDriver;
+use AliYavari\IranSms\Drivers\RayganSmsDriver;
+use AliYavari\IranSms\Drivers\SmsIrDriver;
 use Illuminate\Foundation\Application;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
@@ -33,6 +39,34 @@ final class IranSmsServiceProvider extends PackageServiceProvider
     {
         $this->app->singleton(SmsManager::class, fn (Application $app) => new SmsManager($app));
 
-        // Bind drivers here.
+        $this->app->bind(
+            SmsIrDriver::class,
+            fn () => new SmsIrDriver(...config()->array('iran-sms.providers.sms_ir'))
+        );
+
+        $this->app->bind(
+            MeliPayamakDriver::class,
+            fn () => new MeliPayamakDriver(...config()->array('iran-sms.providers.meli_payamak'))
+        );
+
+        $this->app->bind(
+            PayamResanDriver::class,
+            fn () => new PayamResanDriver(...config()->array('iran-sms.providers.payam_resan'))
+        );
+
+        $this->app->bind(
+            KavenegarDriver::class,
+            fn () => new KavenegarDriver(...config()->array('iran-sms.providers.kavenegar'))
+        );
+
+        $this->app->bind(
+            FarazSmsDriver::class,
+            fn () => new FarazSmsDriver(...config()->array('iran-sms.providers.faraz_sms'))
+        );
+
+        $this->app->bind(
+            RayganSmsDriver::class,
+            fn () => new RayganSmsDriver(...config()->array('iran-sms.providers.raygan_sms'))
+        );
     }
 }

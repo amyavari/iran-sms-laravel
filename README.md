@@ -11,9 +11,9 @@
 
 A simple and convenient way to send SMS through Iranian SMS providers.
 
-To view the Persian documentation, please refer to [README_FA.md](./README_FA.md).
+To view the Persian documentation, please refer to [README_FA.md](./docs/README_FA.md).
 
-برای مشاهده راهنمای فارسی، لطفاً به فایل [README_FA.md](./README_FA.md) مراجعه کنید.
+برای مشاهده راهنمای فارسی، لطفاً به فایل [README_FA.md](./docs/README_FA.md) مراجعه کنید.
 
 **WARNING: This package is under development. DON'T use it yet.**
 
@@ -24,13 +24,17 @@ To view the Persian documentation, please refer to [README_FA.md](./README_FA.md
 
 ## List of Available SMS Providers
 
-| Provider Name (EN) | Provider Name (FA) | Provider Website   | Provider Key | Version    |
-| ------------------ | ------------------ | ------------------ | ------------ | ---------- |
-| Trez               | رایگان اس‌ام‌اس    | [smspanel.trez.ir] | `trez`       | Unreleased |
-| Kavenegar          | کاوه نگار          | [kavenegar.com]    | `kavenegar`  | Unreleased |
-| SMS Online         | اس‌ام‌اس آنلاین    | [smsonline.ir]     | `sms_online` | Unreleased |
-| Magfa              | مگفا               | [magfa.com]        | `magfa`      | Unreleased |
-| Avanak             | آوانک              | [avanak.ir]        | `avanak`     | Unreleased |
+| Provider Name (EN) | Provider Name (FA) | Provider Website  | Provider Key   | Version    |
+| ------------------ | ------------------ | ----------------- | -------------- | ---------- |
+| SMS.ir             | اس ام اس دات آی آر | [sms.ir]          | `sms_ir`       | Unreleased |
+| Meli Payamak       | ملی پیامک          | [melipayamak.com] | `meli_payamak` | Unreleased |
+| Payam Resan        | پیام رسان          | [payam-resan.com] | `payam_resan`  | Unreleased |
+| Kavenegar          | کاوه نگار          | [kavenegar.com]   | `kavenegar`    | Unreleased |
+| Faraz SMS          | فراز اس ام اس      | [farazsms.com]    | `faraz_sms`    | Unreleased |
+| Raygan SMS         | رایگان اس ام اس    | [raygansms.com]   | `raygan_sms`   | Unreleased |
+
+> [!CAUTION]
+> Providers have different rules for sending SMS messages. Please check [providers_note_en.md](./docs/providers_note_en.md).
 
 ## Installation
 
@@ -349,7 +353,7 @@ Sms::fake([
 
 ## Contributing
 
-Thank you for considering contributing to the Iran SMS Laravel! The contribution guide can be found in the [CONTRIBUTING.md](CONTRIBUTING.md)
+Thank you for considering contributing to the Iran SMS Laravel! The contribution guide can be found in the [CONTRIBUTING.md](CONTRIBUTING.md). This file provides a step-by-step guide to easily add a new driver (SMS provider) to the package.
 
 ## License
 
@@ -357,11 +361,12 @@ Thank you for considering contributing to the Iran SMS Laravel! The contribution
 
 <!-- Links -->
 
-[smspanel.trez.ir]: http://smspanel.trez.ir/
+[sms.ir]: https://sms.ir/
+[melipayamak.com]: https://www.melipayamak.com/
+[payam-resan.com]: https://payam-resan.com/
 [kavenegar.com]: https://kavenegar.com/
-[smsonline.ir]: https://smsonline.ir/
-[magfa.com]: https://magfa.com/
-[avanak.ir]: https://www.avanak.ir/
+[farazsms.com]: https://farazsms.com/
+[raygansms.com]: https://raygansms.com/
 [HTTP Client]: https://laravel.com/docs/12.x/http-client#throwing-exceptions
 [queues]: https://laravel.com/docs/12.x/queues
 [notifications]: https://laravel.com/docs/12.x/notifications
