@@ -58,9 +58,7 @@ final class MeliPayamakDriver extends Driver
      */
     protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
     {
-        if (count($phones) !== 1) {
-            throw UnsupportedMultiplePhonesException::make($this->getDriverName(), method: 'pattern');
-        }
+        $this->validatePatternPhones($phones);
 
         $data = [
             'to' => $phones[0],
@@ -146,7 +144,7 @@ final class MeliPayamakDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $credentional = [
+        $credentials = [
             'username' => $this->username,
             'password' => $this->password,
         ];
@@ -154,12 +152,11 @@ final class MeliPayamakDriver extends Driver
         $response = Http::baseUrl($this->baseUrl)
             ->asForm()
             ->acceptJson()
-            ->post($endpoint, array_merge($credentional, $data))
+            ->post($endpoint, array_merge($credentials, $data))
             ->throw();
 
-        $responseBody = $response->json();
+        $this->apiStatusCode = (string) $response->json('Value');
 
-        $this->apiStatusCode = (string) $responseBody['Value'];
     }
 
     /**
@@ -184,5 +181,18 @@ final class MeliPayamakDriver extends Driver
     private function toApiPhones(array $phones): string
     {
         return implode(',', $phones);
+    }
+
+    /**
+     * @param  array<string>  $phones
+     *
+     * @throws UnsupportedMultiplePhonesException
+     */
+    private function validatePatternPhones(array $phones): void
+    {
+        if (count($phones) !== 1) {
+            throw UnsupportedMultiplePhonesException::make($this->getDriverName(), method: 'pattern');
+        }
+
     }
 }

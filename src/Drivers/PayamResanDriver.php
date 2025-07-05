@@ -59,21 +59,9 @@ final class PayamResanDriver extends Driver
      */
     protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
     {
-        if (count($phones) !== 1) {
-            throw UnsupportedMultiplePhonesException::make($this->getDriverName(), method: 'pattern');
-        }
+        $this->validatePatternPhones($phones);
 
-        if (count($variables) !== 3) {
-            throw new InvalidPatternStructureException(
-                sprintf('Provider "%s" only accepts pattern data with exactly 3 items.', $this->getDriverName())
-            );
-        }
-
-        if (Arr::isList($variables)) {
-            throw new InvalidPatternStructureException(
-                sprintf('Provider "%s" only accepts pattern data as key-value pairs.', $this->getDriverName())
-            );
-        }
+        $this->validatePatternVariables($variables);
 
         $data = array_merge([
             'Destination' => $phones[0],
@@ -141,8 +129,39 @@ final class PayamResanDriver extends Driver
             ->get($endpoint, array_merge($credentials, $data))
             ->throw();
 
-        $responseBody = $response->json();
+        $this->smsId = (int) $response->json('id');
+    }
 
-        $this->smsId = (int) $responseBody['id'];
+    /**
+     * @param  array<string>  $phones
+     *
+     * @throws UnsupportedMultiplePhonesException
+     */
+    private function validatePatternPhones(array $phones): void
+    {
+        if (count($phones) !== 1) {
+            throw UnsupportedMultiplePhonesException::make($this->getDriverName(), method: 'pattern');
+        }
+
+    }
+
+    /**
+     * @param  array<mixed>  $variables
+     *
+     * @throws InvalidPatternStructureException
+     */
+    private function validatePatternVariables(array $variables): void
+    {
+        if (count($variables) !== 3) {
+            throw new InvalidPatternStructureException(
+                sprintf('Provider "%s" only accepts pattern data with exactly 3 items.', $this->getDriverName())
+            );
+        }
+
+        if (Arr::isList($variables)) {
+            throw new InvalidPatternStructureException(
+                sprintf('Provider "%s" only accepts pattern data as key-value pairs.', $this->getDriverName())
+            );
+        }
     }
 }

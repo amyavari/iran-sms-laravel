@@ -47,19 +47,19 @@ final class MeliPayamakDriverTest extends TestCase
     public function it_sets_and_returns_the_response_status_correctly(): void
     {
         Http::fake([
-            'https://rest.payamak-panel.com/api/SendSMS/success_end_point' => Http::response(['Value' => '123456789012345']), // More than 15 digits is successful status
-            'https://rest.payamak-panel.com/api/SendSMS/fail_end_point' => Http::response(['Value' => '10']), // Other numbers are failed status
+            'https://rest.payamak-panel.com/api/SendSMS/success-end-point' => Http::response(['Value' => '123456789012345']), // More than 15 digits is successful status
+            'https://rest.payamak-panel.com/api/SendSMS/fail-end-point' => Http::response(['Value' => '10']), // Other numbers are failed status
         ]);
 
         $smsDriver = $this->driver();
 
         // Successful response
-        $this->callProtectedMethod($smsDriver, 'execute', ['success_end_point', ['key' => 'value']]);
+        $this->callProtectedMethod($smsDriver, 'execute', ['success-end-point', ['key' => 'value']]);
 
         $this->assertTrue($this->callProtectedMethod($smsDriver, 'isSuccessful'));
 
         // failed response
-        $this->callProtectedMethod($smsDriver, 'execute', ['fail_end_point', ['key' => 'value']]);
+        $this->callProtectedMethod($smsDriver, 'execute', ['fail-end-point', ['key' => 'value']]);
 
         $this->assertFalse($this->callProtectedMethod($smsDriver, 'isSuccessful'));
         $this->assertSame('کاربر موردنظر فعال نمی‌باشد', $this->callProtectedMethod($smsDriver, 'getErrorMessage'));
