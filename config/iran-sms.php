@@ -57,5 +57,13 @@ return [
             'token' => env('SMS_TOKEN', ''),
             'from' => env('SMS_FROM', ''),
         ],
+
+        // https://raygansms.com/
+        'raygan_sms' => [
+            'token' => env('SMS_TOKEN', ''),
+            'username' => env('SMS_USERNAME', ''),
+            'password' => env('SMS_PASSWORD', ''),
+            'from' => env('SMS_FROM', ''),
+        ],
     ],
 ];

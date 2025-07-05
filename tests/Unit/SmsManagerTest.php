@@ -8,6 +8,7 @@ use AliYavari\IranSms\Drivers\FarazSmsDriver;
 use AliYavari\IranSms\Drivers\KavenegarDriver;
 use AliYavari\IranSms\Drivers\MeliPayamakDriver;
 use AliYavari\IranSms\Drivers\PayamResanDriver;
+use AliYavari\IranSms\Drivers\RayganSmsDriver;
 use AliYavari\IranSms\Drivers\SmsIrDriver;
 use AliYavari\IranSms\SmsManager;
 use AliYavari\IranSms\Tests\Fixtures\ConcreteTestDriver;
@@ -84,6 +85,14 @@ final class SmsManagerTest extends TestCase
         $sms = $this->smsManager()->provider('faraz_sms');
 
         $this->assertInstanceOf(FarazSmsDriver::class, $sms);
+    }
+
+    #[Test]
+    public function it_returns_raygan_sms_instance(): void
+    {
+        $sms = $this->smsManager()->provider('raygan_sms');
+
+        $this->assertInstanceOf(RayganSmsDriver::class, $sms);
     }
 
     // -----------------

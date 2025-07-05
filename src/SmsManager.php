@@ -10,6 +10,7 @@ use AliYavari\IranSms\Drivers\FarazSmsDriver;
 use AliYavari\IranSms\Drivers\KavenegarDriver;
 use AliYavari\IranSms\Drivers\MeliPayamakDriver;
 use AliYavari\IranSms\Drivers\PayamResanDriver;
+use AliYavari\IranSms\Drivers\RayganSmsDriver;
 use AliYavari\IranSms\Drivers\SmsIrDriver;
 use Illuminate\Support\Manager;
 use InvalidArgumentException;
@@ -67,5 +68,10 @@ final class SmsManager extends Manager
     protected function createFarazSmsDriver(): FarazSmsDriver
     {
         return $this->container->make(FarazSmsDriver::class);
+    }
+
+    protected function createRayganSmsDriver(): RayganSmsDriver
+    {
+        return $this->container->make(RayganSmsDriver::class);
     }
 }
