@@ -16,7 +16,7 @@ abstract class TestCase extends Orchestra
     {
         parent::setUp();
 
-        Http::preventingStrayRequests();
+        Http::preventStrayRequests();
     }
 
     /**
