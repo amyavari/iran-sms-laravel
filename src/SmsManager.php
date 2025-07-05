@@ -7,6 +7,7 @@ namespace AliYavari\IranSms;
 use AliYavari\IranSms\Abstracts\Driver;
 use AliYavari\IranSms\Contracts\Sms;
 use AliYavari\IranSms\Drivers\MeliPayamakDriver;
+use AliYavari\IranSms\Drivers\PayamResanDriver;
 use AliYavari\IranSms\Drivers\SmsIrDriver;
 use Illuminate\Support\Manager;
 use InvalidArgumentException;
@@ -49,5 +50,10 @@ final class SmsManager extends Manager
     protected function createMeliPayamakDriver(): MeliPayamakDriver
     {
         return $this->container->make(MeliPayamakDriver::class);
+    }
+
+    protected function createPayamResanDriver(): PayamResanDriver
+    {
+        return $this->container->make(PayamResanDriver::class);
     }
 }

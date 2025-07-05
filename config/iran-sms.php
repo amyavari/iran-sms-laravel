@@ -39,5 +39,11 @@ return [
             'password' => env('SMS_PASSWORD', ''),
             'from' => env('SMS_FROM', ''),
         ],
+
+        // https://payam-resan.com/
+        'payam_resan' => [
+            'token' => env('SMS_TOKEN', ''),
+            'from' => env('SMS_FROM', ''),
+        ],
     ],
 ];

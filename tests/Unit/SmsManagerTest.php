@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AliYavari\IranSms\Tests\Unit;
 
 use AliYavari\IranSms\Drivers\MeliPayamakDriver;
+use AliYavari\IranSms\Drivers\PayamResanDriver;
 use AliYavari\IranSms\Drivers\SmsIrDriver;
 use AliYavari\IranSms\SmsManager;
 use AliYavari\IranSms\Tests\Fixtures\ConcreteTestDriver;
@@ -57,6 +58,14 @@ final class SmsManagerTest extends TestCase
         $sms = $this->smsManager()->provider('meli_payamak');
 
         $this->assertInstanceOf(MeliPayamakDriver::class, $sms);
+    }
+
+    #[Test]
+    public function it_returns_payam_resan_instance(): void
+    {
+        $sms = $this->smsManager()->provider('payam_resan');
+
+        $this->assertInstanceOf(PayamResanDriver::class, $sms);
     }
 
     // -----------------

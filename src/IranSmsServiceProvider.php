@@ -6,6 +6,7 @@ namespace AliYavari\IranSms;
 
 use AliYavari\IranSms\Commands\PruneLogsCommand;
 use AliYavari\IranSms\Drivers\MeliPayamakDriver;
+use AliYavari\IranSms\Drivers\PayamResanDriver;
 use AliYavari\IranSms\Drivers\SmsIrDriver;
 use Illuminate\Foundation\Application;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
@@ -43,6 +44,11 @@ final class IranSmsServiceProvider extends PackageServiceProvider
         $this->app->bind(
             MeliPayamakDriver::class,
             fn () => new MeliPayamakDriver(...config()->array('iran-sms.providers.meli_payamak'))
+        );
+
+        $this->app->bind(
+            PayamResanDriver::class,
+            fn () => new PayamResanDriver(...config()->array('iran-sms.providers.payam_resan'))
         );
     }
 }
