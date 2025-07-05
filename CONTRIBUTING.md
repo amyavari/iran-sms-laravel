@@ -131,6 +131,11 @@ final class YourNameDriver extends Driver
     {
         // Return a human-readable error message from the provider
     }
+
+    protected function getErrorCode(): string
+    {
+        // Return raw error code from the provider
+    }
 }
 
 ```
