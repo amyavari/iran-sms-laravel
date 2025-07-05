@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace AliYavari\IranSms\Drivers;
 
 use AliYavari\IranSms\Abstracts\Driver;
+use AliYavari\IranSms\Exceptions\InvalidPatternStructureException;
 use AliYavari\IranSms\Exceptions\UnsupportedMethodException;
 use AliYavari\IranSms\Exceptions\UnsupportedMultiplePhonesException;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 
 /**
@@ -58,6 +60,12 @@ final class SmsIrDriver extends Driver
     {
         if (count($phones) !== 1) {
             throw UnsupportedMultiplePhonesException::make($this->getDriverName(), method: 'pattern');
+        }
+
+        if (Arr::isList($variables)) {
+            throw new InvalidPatternStructureException(
+                sprintf('Provider "%s" only accepts pattern data as key-value pairs.', $this->getDriverName())
+            );
         }
 
         $data = [

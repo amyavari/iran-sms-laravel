@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AliYavari\IranSms\Tests\Unit\Drivers;
 
 use AliYavari\IranSms\Drivers\SmsIrDriver;
+use AliYavari\IranSms\Exceptions\InvalidPatternStructureException;
 use AliYavari\IranSms\Exceptions\UnsupportedMethodException;
 use AliYavari\IranSms\Exceptions\UnsupportedMultiplePhonesException;
 use AliYavari\IranSms\Tests\TestCase;
@@ -119,6 +120,15 @@ final class SmsIrDriverTest extends TestCase
         $this->expectExceptionMessage('Provider "sms_ir" only supports sending to one phone number at a time for "pattern" message.');
 
         $this->callProtectedMethod($this->driver(), 'sendPattern', [['0913', '0914'], 'pattern_code', [], '4567']);
+    }
+
+    #[Test]
+    public function it_throws_exception_if_we_pass_non_key_value_pairs_to_send_with_pattern(): void
+    {
+        $this->expectException(InvalidPatternStructureException::class);
+        $this->expectExceptionMessage('Provider "sms_ir" only accepts pattern data as key-value pairs.');
+
+        $this->callProtectedMethod($this->driver(), 'sendPattern', [['0913'], 'pattern_code', ['value_1', 'value_2'], '4567']);
     }
 
     #[Test]
