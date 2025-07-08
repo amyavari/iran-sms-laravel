@@ -33,6 +33,6 @@
 ## Raygan SMS
 
 - This provider supports a dedicated web service for sending OTP messages.
-- For patterns, you need an access token; for other types, you need a username and password.
+- For patterns, you need an access token and a username and password; for other types, you need only a username and password.
 - Pattern variables must be passed as key-value pairs.
 - You can send one pattern to multiple phone numbers in a single API call.
