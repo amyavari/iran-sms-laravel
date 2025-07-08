@@ -38,6 +38,9 @@ final class KavenegarDriverTest extends TestCase
         $this->callProtectedMethod($smsDriver, 'execute', ['end-point', ['key' => 'value']]);
 
         Http::assertSent(fn (Request $request) => Str::of($request->url())->startsWith('https://api.kavenegar.com/v1/')
+            && $request->hasHeader('charset', 'utf-8')
+            && $request->hasHeader('Accept', 'application/json')
+            && $request->hasHeader('Content-Type', 'application/x-www-form-urlencoded')
             && Str::of($request->url())->contains('/sms_token')
             && Str::of($request->url())->endsWith('/end-point.json')
             && $request['key'] === 'value');
@@ -85,10 +88,10 @@ final class KavenegarDriverTest extends TestCase
 
         $this->callProtectedMethod($this->driver(), 'sendText', [['0913', '0914'], 'Text message', '4567']);
 
-        Http::assertSent(fn (Request $request) => Str::of($request->url())->endsWith('/sms/sendarray.json')
-            && $request['sender'] === ['4567', '4567']
-            && $request['message'] === ['Text message', 'Text message']
-            && $request['receptor'] === ['0913', '0914']);
+        Http::assertSent(fn (Request $request) => Str::of($request->url())->endsWith('/sms/send.json')
+            && $request['sender'] === '4567'
+            && $request['message'] === 'Text message'
+            && $request['receptor'] === '0913,0914');
     }
 
     #[Test]

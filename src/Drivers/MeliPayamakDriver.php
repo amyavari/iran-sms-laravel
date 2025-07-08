@@ -176,7 +176,7 @@ final class MeliPayamakDriver extends Driver
      *
      * @param  list<string>  $phones
      *
-     * @example - ['0913' => '0914'] becomes "0913,0914"
+     * @example - ['0913', '0914'] becomes "0913,0914"
      */
     private function toApiPhones(array $phones): string
     {

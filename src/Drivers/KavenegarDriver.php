@@ -78,15 +78,13 @@ final class KavenegarDriver extends Driver
      */
     protected function sendText(array $phones, string $message, string $from): static
     {
-        $phonesCount = count($phones);
-
         $data = [
-            'sender' => $this->repeatValue($from, $phonesCount),
-            'message' => $this->repeatValue($message, $phonesCount),
-            'receptor' => $phones,
+            'sender' => $from,
+            'message' => $message,
+            'receptor' => $this->toApiPhones($phones),
         ];
 
-        $this->execute('sms/sendarray', $data);
+        $this->execute('sms/send', $data);
 
         return $this;
     }
@@ -156,6 +154,9 @@ final class KavenegarDriver extends Driver
         $credentials = '/'.$this->token;
 
         $response = Http::baseUrl($this->baseUrl.$credentials)
+            ->withHeader('charset', 'utf-8')
+            ->asForm()
+            ->acceptJson()
             ->post($endpoint.'.json', $data)
             ->throw();
 
@@ -163,13 +164,15 @@ final class KavenegarDriver extends Driver
     }
 
     /**
-     * Creates an array filled with repeated occurrences of the same value
+     * Transforms phones into the API's expected phone structure.
      *
-     * @return list<string>
+     * @param  list<string>  $phones
+     *
+     * @example - ['0913', '0914'] becomes "0913,0914"
      */
-    private function repeatValue(string $value, int $count): array
+    private function toApiPhones(array $phones): string
     {
-        return array_fill(0, $count, $value);
+        return implode(',', $phones);
     }
 
     /**

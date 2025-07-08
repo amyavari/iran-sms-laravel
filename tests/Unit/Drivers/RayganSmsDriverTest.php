@@ -81,7 +81,10 @@ final class RayganSmsDriverTest extends TestCase
 
         $this->callProtectedMethod($smsDriver, 'sendPattern', [['0913', '0914'], 'pattern_code', ['token1' => 'value_1', 'token2' => 'value_2'], '4567']);
 
+        $expectedAuth = 'Basic '.base64_encode('sms_username:sms_password');
+
         Http::assertSent(fn (Request $request) => $request->url() === 'https://smspanel.trez.ir/api/smsApiWithPattern/SendMessage'
+            && $request->hasHeader('Authorization', $expectedAuth)
             && $request['AccessHash'] === 'sms_token'
             && $request['PhoneNumber'] === '4567'
             && $request['PatternId'] === 'pattern_code'
