@@ -100,7 +100,8 @@ final class RayganSmsDriver extends Driver
             'SendDateInTimeStamp' => now()->timestamp,
         ], $variables);
 
-        $response = Http::post($this->patternUrl, $data)
+        $response = Http::withBasicAuth($this->username, $this->password)
+            ->post($this->patternUrl, $data)
             ->throw();
 
         $this->parsePostResponse($response->json());
