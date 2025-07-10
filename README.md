@@ -41,6 +41,7 @@ To view the Persian documentation, please refer to [README_FA.md](./docs/README_
 - [Configuration](#configuration)
 - [Usage](#usage)
   - [Creating an SMS Instance](#creating-an-sms-instance)
+  - [Changing the Sender Number at Runtime](#changing-the-sender-number-at-runtime)
   - [Automatic Logging](#automatic-logging)
   - [Sending SMS](#sending-sms)
 - [Working with Queues and Notifications](#working-with-queues-and-notifications)
@@ -168,6 +169,14 @@ $sms = Sms::provider(string $provider)->pattern(...);
 ```
 
 **Note:** For the `$provider` name, refer to the `Provider Key` column in the [List of Available SMS Providers](#list-of-available-sms-providers).
+
+### Changing the Sender Number at Runtime
+
+To send an SMS from a number other than the default `SMS_FROM`, use the `from()` method when building your message:
+
+```php
+$sms->from(string $from);
+```
 
 ### Automatic Logging
 
