@@ -6,6 +6,7 @@ namespace AliYavari\IranSms;
 
 use AliYavari\IranSms\Abstracts\Driver;
 use AliYavari\IranSms\Contracts\Sms;
+use AliYavari\IranSms\Drivers\AmootSmsDriver;
 use AliYavari\IranSms\Drivers\FarazSmsDriver;
 use AliYavari\IranSms\Drivers\KavenegarDriver;
 use AliYavari\IranSms\Drivers\MeliPayamakDriver;
@@ -79,5 +80,10 @@ final class SmsManager extends Manager
     protected function createWebOneDriver(): WebOneDriver
     {
         return $this->container->make(WebOneDriver::class);
+    }
+
+    protected function createAmootSmsDriver(): AmootSmsDriver
+    {
+        return $this->container->make(AmootSmsDriver::class);
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AliYavari\IranSms\Tests\Unit;
 
+use AliYavari\IranSms\Drivers\AmootSmsDriver;
 use AliYavari\IranSms\Drivers\FarazSmsDriver;
 use AliYavari\IranSms\Drivers\KavenegarDriver;
 use AliYavari\IranSms\Drivers\MeliPayamakDriver;
@@ -102,6 +103,14 @@ final class SmsManagerTest extends TestCase
         $sms = $this->smsManager()->provider('web_one');
 
         $this->assertInstanceOf(WebOneDriver::class, $sms);
+    }
+
+    #[Test]
+    public function it_returns_amoot_sms_instance(): void
+    {
+        $sms = $this->smsManager()->provider('amoot_sms');
+
+        $this->assertInstanceOf(AmootSmsDriver::class, $sms);
     }
 
     // -----------------

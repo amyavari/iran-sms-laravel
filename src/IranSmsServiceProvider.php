@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AliYavari\IranSms;
 
 use AliYavari\IranSms\Commands\PruneLogsCommand;
+use AliYavari\IranSms\Drivers\AmootSmsDriver;
 use AliYavari\IranSms\Drivers\FarazSmsDriver;
 use AliYavari\IranSms\Drivers\KavenegarDriver;
 use AliYavari\IranSms\Drivers\MeliPayamakDriver;
@@ -73,6 +74,11 @@ final class IranSmsServiceProvider extends PackageServiceProvider
         $this->app->bind(
             WebOneDriver::class,
             fn () => new WebOneDriver(...config()->array('iran-sms.providers.web_one'))
+        );
+
+        $this->app->bind(
+            AmootSmsDriver::class,
+            fn () => new AmootSmsDriver(...config()->array('iran-sms.providers.amoot_sms'))
         );
     }
 }
