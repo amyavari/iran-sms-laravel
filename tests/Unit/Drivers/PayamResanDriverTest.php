@@ -14,6 +14,7 @@ use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Illuminate\Support\Uri;
 use PHPUnit\Framework\Attributes\Test;
 
 final class PayamResanDriverTest extends TestCase
@@ -37,10 +38,14 @@ final class PayamResanDriverTest extends TestCase
 
         $this->callProtectedMethod($smsDriver, 'execute', ['end-point', ['key' => 'value']]);
 
-        Http::assertSent(fn (Request $request) => $request->hasHeader('Accept', 'application/json')
-            && Str::of($request->url())->startsWith('https://api.sms-webservice.com/api/V3/end-point')
-            && Str::of($request->url())->contains('ApiKey=sms_token')
-            && Str::of($request->url())->contains('key=value'));
+        Http::assertSent(function (Request $request) {
+            $uri = Uri::of($request->url());
+
+            return $request->hasHeader('Accept', 'application/json')
+                && Str::of($request->url())->startsWith('https://api.sms-webservice.com/api/V3/end-point')
+                && $uri->query()->get('ApiKey') === 'sms_token'
+                && $uri->query()->get('key') === 'value';
+        });
     }
 
     #[Test]
@@ -79,10 +84,14 @@ final class PayamResanDriverTest extends TestCase
 
         $this->callProtectedMethod($this->driver(), 'sendText', [['0913', '0914'], 'Text message', '4567']);
 
-        Http::assertSent(fn (Request $request) => Str::of($request->url())->startsWith('https://api.sms-webservice.com/api/V3/Send')
-            && Str::of($request->url())->contains('Text=Text%20message')
-            && Str::of($request->url())->contains('Sender=4567')
-            && Str::of($request->url())->contains('Recipients%5B0%5D=0913&Recipients%5B1%5D=0914'));
+        Http::assertSent(function (Request $request) {
+            $uri = Uri::of($request->url());
+
+            return Str::of($request->url())->startsWith('https://api.sms-webservice.com/api/V3/Send')
+                && $uri->query()->get('Text') === 'Text message'
+                && $uri->query()->get('Sender') === '4567'
+                && $uri->query()->get('Recipients') === ['0913', '0914'];
+        });
     }
 
     #[Test]
@@ -92,12 +101,16 @@ final class PayamResanDriverTest extends TestCase
 
         $this->callProtectedMethod($this->driver(), 'sendPattern', [['0913'], 'pattern_code', ['p1' => 'value_1', 'p2' => 'value_2', 'p3' => 'value_3'], '4567']);
 
-        Http::assertSent(fn (Request $request) => Str::of($request->url())->startsWith('https://api.sms-webservice.com/api/V3/SendTokenSingle')
-            && Str::of($request->url())->contains('Destination=0913')
-            && Str::of($request->url())->contains('TemplateKey=pattern_code')
-            && Str::of($request->url())->contains('p1=value_1')
-            && Str::of($request->url())->contains('p2=value_2')
-            && Str::of($request->url())->contains('p3=value_3'));
+        Http::assertSent(function (Request $request) {
+            $uri = Uri::of($request->url());
+
+            return Str::of($request->url())->startsWith('https://api.sms-webservice.com/api/V3/SendTokenSingle')
+                && $uri->query()->get('Destination') === '0913'
+                && $uri->query()->get('TemplateKey') === 'pattern_code'
+                && $uri->query()->get('p1') === 'value_1'
+                && $uri->query()->get('p2') === 'value_2'
+                && $uri->query()->get('p3') === 'value_3';
+        });
     }
 
     #[Test]

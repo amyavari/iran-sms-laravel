@@ -14,6 +14,7 @@ use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Illuminate\Support\Uri;
 use PHPUnit\Framework\Attributes\Test;
 
 final class AmootSmsDriverTest extends TestCase
@@ -38,9 +39,13 @@ final class AmootSmsDriverTest extends TestCase
 
         $this->callProtectedMethod($smsDriver, 'execute', ['end-point', ['key' => 'value']]);
 
-        Http::assertSent(fn (Request $request) => Str::of($request->url())->startsWith('https://portal.amootsms.com/rest/end-point')
-            && Str::of($request->url())->contains('Token=sms_token')
-            && Str::of($request->url())->contains('key=value'));
+        Http::assertSent(function (Request $request) {
+            $uri = Uri::of($request->url());
+
+            return Str::of($request->url())->startsWith('https://portal.amootsms.com/rest/end-point')
+                && $uri->query()->get('Token') === 'sms_token'
+                && $uri->query()->get('key') === 'value';
+        });
     }
 
     #[Test]
@@ -94,11 +99,15 @@ final class AmootSmsDriverTest extends TestCase
 
         $this->callProtectedMethod($this->driver(), 'sendText', [['0913', '0914'], 'Text message', '4567']);
 
-        Http::assertSent(fn (Request $request) => Str::of($request->url())->startsWith('https://portal.amootsms.com/rest/SendSimple')
-            && Str::of($request->url())->contains('SendDateTime=2025-07-16T12%3A00%3A00%2B03%3A30')
-            && Str::of($request->url())->contains('SMSMessageText=Text%20message')
-            && Str::of($request->url())->contains('LineNumber=4567')
-            && Str::of($request->url())->contains('Mobiles=0913%2C0914'));
+        Http::assertSent(function (Request $request) {
+            $uri = Uri::of($request->url());
+
+            return Str::of($request->url())->startsWith('https://portal.amootsms.com/rest/SendSimple')
+                && $uri->query()->get('SendDateTime') === '2025-07-16T12:00:00+03:30'
+                && $uri->query()->get('SMSMessageText') === 'Text message'
+                && $uri->query()->get('LineNumber') === '4567'
+                && $uri->query()->get('Mobiles') === '0913,0914';
+        });
     }
 
     #[Test]
@@ -108,10 +117,14 @@ final class AmootSmsDriverTest extends TestCase
 
         $this->callProtectedMethod($this->driver(), 'sendPattern', [['0913'], 'pattern_code', ['p1' => 'value_1', 'p2' => 'value_2', 'p3' => 'value_3'], '4567']);
 
-        Http::assertSent(fn (Request $request) => Str::of($request->url())->startsWith('https://portal.amootsms.com/rest/SendWithPattern')
-            && Str::of($request->url())->contains('Mobile=0913')
-            && Str::of($request->url())->contains('PatternCodeID=pattern_code')
-            && Str::of($request->url())->contains('PatternValues=value_1%2Cvalue_2%2Cvalue_3'));
+        Http::assertSent(function (Request $request) {
+            $uri = Uri::of($request->url());
+
+            return Str::of($request->url())->startsWith('https://portal.amootsms.com/rest/SendWithPattern')
+                && $uri->query()->get('PatternValues') === 'value_1,value_2,value_3'
+                && $uri->query()->get('PatternCodeID') === 'pattern_code'
+                && $uri->query()->get('Mobile') === '0913';
+        });
     }
 
     #[Test]
