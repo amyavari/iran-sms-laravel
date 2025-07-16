@@ -11,6 +11,7 @@ use AliYavari\IranSms\Drivers\MeliPayamakDriver;
 use AliYavari\IranSms\Drivers\PayamResanDriver;
 use AliYavari\IranSms\Drivers\RayganSmsDriver;
 use AliYavari\IranSms\Drivers\SmsIrDriver;
+use AliYavari\IranSms\Drivers\WebOneDriver;
 use Illuminate\Foundation\Application;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
@@ -67,6 +68,11 @@ final class IranSmsServiceProvider extends PackageServiceProvider
         $this->app->bind(
             RayganSmsDriver::class,
             fn () => new RayganSmsDriver(...config()->array('iran-sms.providers.raygan_sms'))
+        );
+
+        $this->app->bind(
+            WebOneDriver::class,
+            fn () => new WebOneDriver(...config()->array('iran-sms.providers.web_one'))
         );
     }
 }

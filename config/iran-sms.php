@@ -65,5 +65,11 @@ return [
             'password' => env('SMS_PASSWORD', ''),
             'from' => env('SMS_FROM', ''),
         ],
+
+        // https://webone-sms.ir/
+        'web_one' => [
+            'token' => env('SMS_TOKEN', ''),
+            'from' => env('SMS_FROM', ''),
+        ],
     ],
 ];
