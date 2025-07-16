@@ -21,7 +21,7 @@ final class WebOneDriver extends Driver
     private string $baseUrl = 'https://api.payamakapi.ir/api/v1';
 
     /**
-     * The sent status returned in the API response body (e.g., `Succeeded` field).
+     * The sent status returned in the API response body (e.g., `succeeded` field).
      */
     private bool $apiStatus;
 
@@ -148,7 +148,7 @@ final class WebOneDriver extends Driver
             ->throw()
             ->json();
 
-        $this->apiStatus = (bool) $response['Succeeded'];
+        $this->apiStatus = (bool) $response['succeeded'];
         $this->apiStatusCode = (int) $response['resultCode'];
     }
 }

@@ -27,7 +27,7 @@ final class WebOneDriverTest extends TestCase
     public function it_execute_request_correctly(): void
     {
         Http::fake([
-            'https://api.payamakapi.ir/api/v1/end-point' => Http::response(['Succeeded' => true, 'resultCode' => 0]),
+            'https://api.payamakapi.ir/api/v1/end-point' => Http::response(['succeeded' => true, 'resultCode' => 0]),
         ]);
 
         $smsDriver = $this->driver();
@@ -44,7 +44,7 @@ final class WebOneDriverTest extends TestCase
     public function it_sets_and_returns_the_successful_response_status_correctly(): void
     {
         Http::fake([
-            'https://api.payamakapi.ir/api/v1/end-point' => Http::response(['Succeeded' => true, 'resultCode' => 0]),
+            'https://api.payamakapi.ir/api/v1/end-point' => Http::response(['succeeded' => true, 'resultCode' => 0]),
         ]);
 
         $smsDriver = $this->driver();
@@ -58,7 +58,7 @@ final class WebOneDriverTest extends TestCase
     public function it_sets_and_returns_the_failed_response_status_correctly(): void
     {
         Http::fake([
-            'https://api.payamakapi.ir/api/v1/end-point' => Http::response(['Succeeded' => false, 'resultCode' => 1]),
+            'https://api.payamakapi.ir/api/v1/end-point' => Http::response(['succeeded' => false, 'resultCode' => 1]),
         ]);
 
         $smsDriver = $this->driver();
@@ -85,7 +85,7 @@ final class WebOneDriverTest extends TestCase
     #[Test]
     public function it_sends_text_message_successfully(): void
     {
-        Http::fake(['*' => Http::response(['Succeeded' => false, 'resultCode' => 1])]);
+        Http::fake(['*' => Http::response(['succeeded' => false, 'resultCode' => 1])]);
 
         $this->callProtectedMethod($this->driver(), 'sendText', [['0913', '0914'], 'Text message', '4567']);
 
@@ -98,7 +98,7 @@ final class WebOneDriverTest extends TestCase
     #[Test]
     public function it_sends_otp_message_successfully(): void
     {
-        Http::fake(['*' => Http::response(['Succeeded' => false, 'resultCode' => 1])]);
+        Http::fake(['*' => Http::response(['succeeded' => false, 'resultCode' => 1])]);
 
         $this->callProtectedMethod($this->driver(), 'sendOtp', ['0913', 'Otp message', '4567']);
 
