@@ -13,6 +13,7 @@ use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Illuminate\Support\Uri;
 use PHPUnit\Framework\Attributes\Test;
 
 final class RayganSmsDriverTest extends TestCase
@@ -137,13 +138,17 @@ final class RayganSmsDriverTest extends TestCase
 
         $smsDriver = $this->driver();
 
-        $this->callProtectedMethod($smsDriver, 'sendOtp', ['013', 'Otp message', '4567']);
+        $this->callProtectedMethod($smsDriver, 'sendOtp', ['0913', 'Otp message', '4567']);
 
-        Http::assertSent(fn (Request $request) => Str::of($request->url())->startsWith('https://raygansms.com/SendMessageWithCode.ashx')
-            && Str::of($request->url())->contains('Username=sms_username')
-            && Str::of($request->url())->contains('Password=sms_password')
-            && Str::of($request->url())->contains('Mobile=013')
-            && Str::of($request->url())->contains('Message=Otp%20message'));
+        Http::assertSent(function (Request $request) {
+            $uri = Uri::of($request->url());
+
+            return Str::of($request->url())->startsWith('https://raygansms.com/SendMessageWithCode.ashx')
+                && $uri->query()->get('Username') === 'sms_username'
+                && $uri->query()->get('Password') === 'sms_password'
+                && $uri->query()->get('Mobile') === '0913'
+                && $uri->query()->get('Message') === 'Otp message';
+        });
 
         $this->assertTrue($this->callProtectedMethod($smsDriver, 'isSuccessful'));
     }

@@ -36,3 +36,14 @@
 - For patterns, you need an access token and a username and password; for other types, you need only a username and password.
 - Pattern variables must be passed as key-value pairs.
 - You can send one pattern to multiple phone numbers in a single API call.
+
+## Web One SMS
+
+- This provider supports a dedicated web service for sending OTP messages.
+- This provider does not offer a dedicated API for sending pattern messages. Use the simple text method instead.
+
+## Amoot SMS
+
+- This provider does not offer a dedicated API for sending OTP messages. Use the pattern-based method instead.
+- This provider doesn't support sending pattern to multiple phones at once.
+- Pattern variables must be passed in **order only** — key-value pairs are not accepted. The package will discard the keys and send the values in the order they were provided.
