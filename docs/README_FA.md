@@ -5,20 +5,20 @@
 ## پیش‌نیازها
 
 - نسخه PHP `8.2.0` یا بالاتر
-- نسخه Laravel `^11.32` یا `^12.0.1`
+- نسخه Laravel `^11.35.1` یا `^12.0.1`
 
 ## فهرست ارائه‌دهندگان پیامک
 
-| نسخه       | کلید ارائه‌دهنده | وب‌سایت ارائه‌دهنده | نام فارسی ارائه‌دهنده | نام انگلیسی ارائه‌دهنده |
-| ---------- | ---------------- | ------------------- | --------------------- | ----------------------- |
-| v1.0.0     | `sms_ir`         | [sms.ir]            | اس ام اس دات آی آر    | SMS.ir                  |
-| v1.0.0     | `meli_payamak`   | [melipayamak.com]   | ملی پیامک             | Meli Payamak            |
-| v1.0.0     | `payam_resan`    | [payam-resan.com]   | پیام رسان             | Payam Resan             |
-| v1.0.0     | `kavenegar`      | [kavenegar.com]     | کاوه نگار             | Kavenegar               |
-| v1.0.0     | `faraz_sms`      | [farazsms.com]      | فراز اس ام اس         | Faraz SMS               |
-| v1.0.0     | `raygan_sms`     | [raygansms.com]     | رایگان اس ام اس       | Raygan SMS              |
-| منتشر نشده | `web_one`        | [webone-sms.com]    | وب وان                | Web One SMS             |
-| منتشر نشده | `amoot_sms`      | [amootsms.com]      | پیامک آموت            | Amoot SMS               |
+| نسخه  | کلید ارائه‌دهنده | وب‌سایت ارائه‌دهنده | نام فارسی ارائه‌دهنده | نام انگلیسی ارائه‌دهنده |
+| ----- | ---------------- | ------------------- | --------------------- | ----------------------- |
+| 1.0.0 | `sms_ir`         | [sms.ir]            | اس ام اس دات آی آر    | SMS.ir                  |
+| 1.0.0 | `meli_payamak`   | [melipayamak.com]   | ملی پیامک             | Meli Payamak            |
+| 1.0.0 | `payam_resan`    | [payam-resan.com]   | پیام رسان             | Payam Resan             |
+| 1.0.0 | `kavenegar`      | [kavenegar.com]     | کاوه نگار             | Kavenegar               |
+| 1.0.0 | `faraz_sms`      | [farazsms.com]      | فراز اس ام اس         | Faraz SMS               |
+| 1.0.0 | `raygan_sms`     | [raygansms.com]     | رایگان اس ام اس       | Raygan SMS              |
+| 1.1.0 | `web_one`        | [webone-sms.com]    | وب وان                | Web One SMS             |
+| 1.1.0 | `amoot_sms`      | [amootsms.com]      | پیامک آموت            | Amoot SMS               |
 
 > [!CAUTION]
 > هر ارائه‌دهنده قوانین خاص خود را برای ارسال پیامک دارد. لطفاً فایل [providers_note_fa.md](./providers_note_fa.md) را بررسی کنید.
@@ -339,7 +339,7 @@ Sms::fake([...], Sms::failedConnection());
  * تعریف رفتار متفاوت برای هر ارائه‌دهنده. (رفتار اختصاصی)
  */
 Sms::fake([
-    'provider_one' => Sms::failedConnection(),
+    'provider_one' => Sms::successfulRequest(),
     'provider_two' => Sms::failedRequest(),
     'provider_three' => Sms::failedConnection(),
 ]);
@@ -356,6 +356,7 @@ Sms::fake([
 [farazsms.com]: https://farazsms.com/
 [raygansms.com]: https://raygansms.com/
 [webone-sms.com]: https://webone-sms.com/
+[amootsms.com]: https://www.amootsms.com/
 [HTTP Client]: https://laravel.com/docs/12.x/http-client#throwing-exceptions
 [queues]: https://laravel.com/docs/12.x/queues
 [notifications]: https://laravel.com/docs/12.x/notifications
