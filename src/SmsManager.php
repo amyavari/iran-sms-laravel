@@ -7,6 +7,7 @@ namespace AliYavari\IranSms;
 use AliYavari\IranSms\Abstracts\Driver;
 use AliYavari\IranSms\Contracts\Sms;
 use AliYavari\IranSms\Drivers\AmootSmsDriver;
+use AliYavari\IranSms\Drivers\FakeDriver;
 use AliYavari\IranSms\Drivers\FarazSmsDriver;
 use AliYavari\IranSms\Drivers\KavenegarDriver;
 use AliYavari\IranSms\Drivers\MeliPayamakDriver;
@@ -16,6 +17,7 @@ use AliYavari\IranSms\Drivers\SmsIrDriver;
 use AliYavari\IranSms\Drivers\WebOneDriver;
 use Illuminate\Support\Manager;
 use InvalidArgumentException;
+use Override;
 
 /**
  * @internal Behind the SMS facade
@@ -25,6 +27,24 @@ final class SmsManager extends Manager
     public function getDefaultDriver(): string
     {
         return $this->config->get('iran-sms.default');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    #[Override]
+    public function driver($driver = null)
+    {
+        $driver ??= $this->getDefaultDriver();
+
+        /**
+         * Make sure we get a new SMS instance each time by removing it from the manager cache.
+         */
+        if ($this->mustBeFresh($driver)) {
+            unset($this->drivers[$driver]);
+        }
+
+        return parent::driver($driver);
     }
 
     /**
@@ -85,5 +105,11 @@ final class SmsManager extends Manager
     protected function createAmootSmsDriver(): AmootSmsDriver
     {
         return $this->container->make(AmootSmsDriver::class);
+    }
+
+    private function mustBeFresh(string $driver): bool
+    {
+        return isset($this->drivers[$driver])
+            && ! $this->drivers[$driver] instanceof FakeDriver;
     }
 }
