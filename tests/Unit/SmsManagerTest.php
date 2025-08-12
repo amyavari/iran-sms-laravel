@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AliYavari\IranSms\Tests\Unit;
 
 use AliYavari\IranSms\Drivers\AmootSmsDriver;
+use AliYavari\IranSms\Drivers\FakeDriver;
 use AliYavari\IranSms\Drivers\FarazSmsDriver;
 use AliYavari\IranSms\Drivers\KavenegarDriver;
 use AliYavari\IranSms\Drivers\MeliPayamakDriver;
@@ -37,16 +38,26 @@ final class SmsManagerTest extends TestCase
     }
 
     #[Test]
-    public function it_sets_custom_instance_as_driver_instance(): void
+    public function it_sets_custom_fake_driver_instance_as_driver_instance(): void
     {
-        $testDriver = new ConcreteTestDriver('123456', true);
+        $testDriver = $this->mock(FakeDriver::class);
 
         $this->smsManager()->setDriver('test_driver', $testDriver);
 
         $retrievedDriver = $this->smsManager()->driver('test_driver');
 
-        $this->assertInstanceOf(ConcreteTestDriver::class, $retrievedDriver);
-        $this->assertSame('123456', $this->callProtectedMethod($retrievedDriver, 'getDefaultSender'));
+        $this->assertSame($testDriver, $retrievedDriver);
+    }
+
+    #[Test]
+    public function it_always_returns_new_instance_of_sms_driver_class_for_immutability(): void
+    {
+        $this->smsManager()->extend('test_driver', fn () => new ConcreteTestDriver('123456', true));
+
+        $instanceOne = $this->smsManager()->driver('test_driver');
+        $instanceTwo = $this->smsManager()->driver('test_driver');
+
+        $this->assertNotSame($instanceOne, $instanceTwo);
     }
 
     #[Test]
