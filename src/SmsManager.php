@@ -17,7 +17,6 @@ use AliYavari\IranSms\Drivers\SmsIrDriver;
 use AliYavari\IranSms\Drivers\WebOneDriver;
 use Illuminate\Support\Manager;
 use InvalidArgumentException;
-use Override;
 
 /**
  * @internal Behind the SMS facade
@@ -31,8 +30,9 @@ final class SmsManager extends Manager
 
     /**
      * {@inheritdoc}
+     *
+     * @override
      */
-    #[Override]
     public function driver($driver = null)
     {
         $driver ??= $this->getDefaultDriver();
