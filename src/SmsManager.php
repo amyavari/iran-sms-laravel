@@ -8,6 +8,7 @@ use AliYavari\IranSms\Abstracts\Driver;
 use AliYavari\IranSms\Contracts\Sms;
 use AliYavari\IranSms\Drivers\AmootSmsDriver;
 use AliYavari\IranSms\Drivers\FakeDriver;
+use AliYavari\IranSms\Drivers\FaraPayamakDriver;
 use AliYavari\IranSms\Drivers\FarazSmsDriver;
 use AliYavari\IranSms\Drivers\KavenegarDriver;
 use AliYavari\IranSms\Drivers\MeliPayamakDriver;
@@ -105,6 +106,11 @@ final class SmsManager extends Manager
     protected function createAmootSmsDriver(): AmootSmsDriver
     {
         return $this->container->make(AmootSmsDriver::class);
+    }
+
+    protected function createFaraPayamakDriver(): FaraPayamakDriver
+    {
+        return $this->container->make(FaraPayamakDriver::class);
     }
 
     private function mustBeFresh(string $driver): bool

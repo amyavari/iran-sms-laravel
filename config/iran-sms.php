@@ -77,5 +77,12 @@ return [
             'token' => env('SMS_TOKEN', ''),
             'from' => env('SMS_FROM', ''),
         ],
+
+        // https://farapayamak.ir/
+        'fara_payamak' => [
+            'username' => env('SMS_USERNAME', ''),
+            'password' => env('SMS_PASSWORD', ''),
+            'from' => env('SMS_FROM', ''),
+        ],
     ],
 ];
