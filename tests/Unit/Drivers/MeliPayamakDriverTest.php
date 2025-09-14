@@ -88,7 +88,7 @@ final class MeliPayamakDriverTest extends TestCase
         Http::assertSent(fn (Request $request) => $request->url() === 'https://rest.payamak-panel.com/api/SendSMS/SendSMS'
             && $request->data()['from'] === '4567'
             && $request->data()['to'] === '0913,0914'
-            && $request['text'] === 'Text message');
+            && $request->data()['text'] === 'Text message');
     }
 
     #[Test]
@@ -100,7 +100,8 @@ final class MeliPayamakDriverTest extends TestCase
 
         Http::assertSent(fn (Request $request) => $request->url() === 'https://rest.payamak-panel.com/api/SendSMS/BaseServiceNumber'
             && $request->data()['to'] === '0913'
-            && $request['text'] === 'value_1;value_2');
+            && $request->data()['bodyId'] === 'pattern_code'
+            && $request->data()['text'] === 'value_1;value_2');
     }
 
     #[Test]
