@@ -9,16 +9,18 @@
 
 ## فهرست ارائه‌دهندگان پیامک
 
-| نسخه  | کلید ارائه‌دهنده | وب‌سایت ارائه‌دهنده | نام فارسی ارائه‌دهنده | نام انگلیسی ارائه‌دهنده |
-| ----- | ---------------- | ------------------- | --------------------- | ----------------------- |
-| 1.0.0 | `sms_ir`         | [sms.ir]            | اس ام اس دات آی آر    | SMS.ir                  |
-| 1.0.0 | `meli_payamak`   | [melipayamak.com]   | ملی پیامک             | Meli Payamak            |
-| 1.0.0 | `payam_resan`    | [payam-resan.com]   | پیام رسان             | Payam Resan             |
-| 1.0.0 | `kavenegar`      | [kavenegar.com]     | کاوه نگار             | Kavenegar               |
-| 1.0.0 | `faraz_sms`      | [farazsms.com]      | فراز اس ام اس         | Faraz SMS               |
-| 1.0.0 | `raygan_sms`     | [raygansms.com]     | رایگان اس ام اس       | Raygan SMS              |
-| 1.1.0 | `web_one`        | [webone-sms.com]    | وب وان                | Web One SMS             |
-| 1.1.0 | `amoot_sms`      | [amootsms.com]      | پیامک آموت            | Amoot SMS               |
+| نسخه       | کلید ارائه‌دهنده | وب‌سایت ارائه‌دهنده | نام فارسی ارائه‌دهنده | نام انگلیسی ارائه‌دهنده |
+| ---------- | ---------------- | ------------------- | --------------------- | ----------------------- |
+| 1.0.0      | `sms_ir`         | [sms.ir]            | اس ام اس دات آی آر    | SMS.ir                  |
+| 1.0.0      | `meli_payamak`   | [melipayamak.com]   | ملی پیامک             | Meli Payamak            |
+| 1.0.0      | `payam_resan`    | [payam-resan.com]   | پیام رسان             | Payam Resan             |
+| 1.0.0      | `kavenegar`      | [kavenegar.com]     | کاوه نگار             | Kavenegar               |
+| 1.0.0      | `faraz_sms`      | [farazsms.com]      | فراز اس ام اس         | Faraz SMS               |
+| 1.0.0      | `raygan_sms`     | [raygansms.com]     | رایگان اس ام اس       | Raygan SMS              |
+| 1.1.0      | `web_one`        | [webone-sms.com]    | وب وان                | Web One SMS             |
+| 1.1.0      | `amoot_sms`      | [amootsms.com]      | پیامک آموت            | Amoot SMS               |
+| منتشر نشده | `fara_payamak`   | [farapayamak.ir]    | فراپیامک              | Fara Payamak            |
+| منتشر نشده | `ghasedak`       | [ghasedak.me]       | قاصدک                 | Ghasedak                |
 
 > [!CAUTION]
 > هر ارائه‌دهنده قوانین خاص خود را برای ارسال پیامک دارد. لطفاً فایل [providers_note_fa.md](./providers_note_fa.md) را بررسی کنید.
@@ -357,6 +359,8 @@ Sms::fake([
 [raygansms.com]: https://raygansms.com/
 [webone-sms.com]: https://webone-sms.com/
 [amootsms.com]: https://www.amootsms.com/
+[farapayamak.ir]: https://farapayamak.ir/
+[ghasedak.me]: https://ghasedak.me/
 [HTTP Client]: https://laravel.com/docs/12.x/http-client#throwing-exceptions
 [queues]: https://laravel.com/docs/12.x/queues
 [notifications]: https://laravel.com/docs/12.x/notifications
