@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace AliYavari\IranSms\Tests\Unit\Drivers;
 
-use AliYavari\IranSms\Drivers\MeliPayamakDriver;
+use AliYavari\IranSms\Drivers\FaraPayamakDriver;
 use AliYavari\IranSms\Exceptions\UnsupportedMethodException;
 use AliYavari\IranSms\Exceptions\UnsupportedMultiplePhonesException;
 use AliYavari\IranSms\Tests\TestCase;
@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use PHPUnit\Framework\Attributes\Test;
 
-final class MeliPayamakDriverTest extends TestCase
+final class FaraPayamakDriverTest extends TestCase
 {
     #[Test]
     public function it_returns_sender_number_from_config(): void
@@ -108,7 +108,7 @@ final class MeliPayamakDriverTest extends TestCase
     public function it_throws_exception_if_we_pass_multiple_phone_numbers_to_send_with_pattern(): void
     {
         $this->expectException(UnsupportedMultiplePhonesException::class);
-        $this->expectExceptionMessage('Provider "meli_payamak" only supports sending to one phone number at a time for "pattern" message.');
+        $this->expectExceptionMessage('Provider "fara_payamak" only supports sending to one phone number at a time for "pattern" message.');
 
         $this->callProtectedMethod($this->driver(), 'sendPattern', [['0913', '0914'], 'pattern_code', [], '4567']);
     }
@@ -117,7 +117,7 @@ final class MeliPayamakDriverTest extends TestCase
     public function it_throws_an_exception_for_sending_otp(): void
     {
         $this->expectException(UnsupportedMethodException::class);
-        $this->expectExceptionMessage('Provider "meli_payamak" does not support sending "otp" message, please use "pattern" method instead.');
+        $this->expectExceptionMessage('Provider "fara_payamak" does not support sending "otp" message, please use "pattern" method instead.');
 
         $this->callProtectedMethod($this->driver(), 'sendOtp', ['013', 'Otp message', '4567']);
     }
@@ -126,12 +126,12 @@ final class MeliPayamakDriverTest extends TestCase
     // Helper Methods
     // -----------------
 
-    private function driver(): MeliPayamakDriver
+    private function driver(): FaraPayamakDriver
     {
-        Config::set('iran-sms.providers.meli_payamak.username', 'sms_username');
-        Config::set('iran-sms.providers.meli_payamak.password', 'sms_password');
-        Config::set('iran-sms.providers.meli_payamak.from', '123');
+        Config::set('iran-sms.providers.fara_payamak.username', 'sms_username');
+        Config::set('iran-sms.providers.fara_payamak.password', 'sms_password');
+        Config::set('iran-sms.providers.fara_payamak.from', '123');
 
-        return $this->app->make(MeliPayamakDriver::class);
+        return $this->app->make(FaraPayamakDriver::class);
     }
 }

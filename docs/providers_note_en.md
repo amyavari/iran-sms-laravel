@@ -47,3 +47,14 @@
 - This provider does not offer a dedicated API for sending OTP messages. Use the pattern-based method instead.
 - This provider doesn't support sending pattern to multiple phones at once.
 - Pattern variables must be passed in **order only** — key-value pairs are not accepted. The package will discard the keys and send the values in the order they were provided.
+
+## Fara Payamak
+
+- This provider does not offer a dedicated API for sending OTP messages. Use the pattern-based method instead.
+- This provider doesn't support sending pattern to multiple phones at once.
+- Pattern variables must be passed in **order only** — key-value pairs are not accepted. The package will discard the keys and send the values in the order they were provided.
+
+## Ghasedak
+
+- This provider does not offer a dedicated API for sending OTP messages. Use the pattern-based method instead.
+- Pattern variables must be passed as key-value pairs.
