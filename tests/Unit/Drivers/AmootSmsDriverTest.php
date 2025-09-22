@@ -43,6 +43,7 @@ final class AmootSmsDriverTest extends TestCase
             $uri = Uri::of($request->url());
 
             return Str::of($request->url())->startsWith('https://portal.amootsms.com/rest/end-point')
+                && $request->method() === 'GET'
                 && $uri->query()->get('Token') === 'sms_token'
                 && $uri->query()->get('key') === 'value';
         });

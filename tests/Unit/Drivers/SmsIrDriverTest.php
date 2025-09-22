@@ -39,6 +39,7 @@ final class SmsIrDriverTest extends TestCase
         Http::assertSent(fn (Request $request) => $request->hasHeader('x-api-key', 'sms_token')
             && $request->hasHeader('Accept', 'application/json')
             && $request->url() === 'https://api.sms.ir/v1/send/end-point'
+            && $request->method() === 'POST'
             && $request['key'] === 'value');
     }
 

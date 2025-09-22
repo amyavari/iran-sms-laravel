@@ -38,6 +38,7 @@ final class LimoSmsDriverTest extends TestCase
         Http::assertSent(fn (Request $request) => $request->hasHeader('ApiKey', 'sms_token')
             && $request->hasHeader('Content-Type', 'application/json')
             && $request->url() === 'https://api.limosms.com/api/end-point'
+            && $request->method() === 'POST'
             && $request['key'] === 'value');
     }
 

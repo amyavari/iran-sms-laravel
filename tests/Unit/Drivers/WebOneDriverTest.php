@@ -37,6 +37,7 @@ final class WebOneDriverTest extends TestCase
         Http::assertSent(fn (Request $request) => $request->hasHeader('X-API-KEY', 'sms_token')
             && $request->hasHeader('Content-Type', 'application/json')
             && $request->url() === 'https://api.payamakapi.ir/api/v1/end-point'
+            && $request->method() === 'POST'
             && $request['key'] === 'value');
     }
 

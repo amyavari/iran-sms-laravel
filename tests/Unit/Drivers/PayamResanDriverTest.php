@@ -43,6 +43,7 @@ final class PayamResanDriverTest extends TestCase
 
             return $request->hasHeader('Accept', 'application/json')
                 && Str::of($request->url())->startsWith('https://api.sms-webservice.com/api/V3/end-point')
+                && $request->method() === 'GET'
                 && $uri->query()->get('ApiKey') === 'sms_token'
                 && $uri->query()->get('key') === 'value';
         });

@@ -38,6 +38,7 @@ final class RayganSmsDriverTest extends TestCase
         $expectedAuth = 'Basic '.base64_encode('sms_username:sms_password');
 
         Http::assertSent(fn (Request $request) => $request->url() === 'http://smspanel.trez.ir/api/smsAPI/SendMessage'
+            && $request->method() === 'POST'
             && $request->hasHeader('Authorization', $expectedAuth)
             && $request['PhoneNumber'] === '4567'
             && $request['Message'] === 'Text message'
@@ -85,6 +86,7 @@ final class RayganSmsDriverTest extends TestCase
         $expectedAuth = 'Basic '.base64_encode('sms_username:sms_password');
 
         Http::assertSent(fn (Request $request) => $request->url() === 'https://smspanel.trez.ir/api/smsApiWithPattern/SendMessage'
+            && $request->method() === 'POST'
             && $request->hasHeader('Authorization', $expectedAuth)
             && $request['AccessHash'] === 'sms_token'
             && $request['PhoneNumber'] === '4567'
@@ -144,6 +146,7 @@ final class RayganSmsDriverTest extends TestCase
             $uri = Uri::of($request->url());
 
             return Str::of($request->url())->startsWith('https://raygansms.com/SendMessageWithCode.ashx')
+                && $request->method() === 'GET'
                 && $uri->query()->get('Username') === 'sms_username'
                 && $uri->query()->get('Password') === 'sms_password'
                 && $uri->query()->get('Mobile') === '0913'
