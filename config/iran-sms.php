@@ -90,5 +90,11 @@ return [
             'token' => env('SMS_TOKEN', ''),
             'from' => env('SMS_FROM', ''),
         ],
+
+        // https://limosms.com/
+        'limo_sms' => [
+            'token' => env('SMS_TOKEN', ''),
+            'from' => env('SMS_FROM', ''),
+        ],
     ],
 ];
