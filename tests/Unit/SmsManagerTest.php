@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AliYavari\IranSms\Tests\Unit;
 
 use AliYavari\IranSms\Drivers\AmootSmsDriver;
+use AliYavari\IranSms\Drivers\BehinPayamDriver;
 use AliYavari\IranSms\Drivers\FakeDriver;
 use AliYavari\IranSms\Drivers\FaraPayamakDriver;
 use AliYavari\IranSms\Drivers\FarazSmsDriver;
@@ -149,6 +150,14 @@ final class SmsManagerTest extends TestCase
         $sms = $this->smsManager()->provider('limo_sms');
 
         $this->assertInstanceOf(LimoSmsDriver::class, $sms);
+    }
+
+    #[Test]
+    public function it_returns_behin_payam_instance(): void
+    {
+        $sms = $this->smsManager()->provider('behin_payam');
+
+        $this->assertInstanceOf(BehinPayamDriver::class, $sms);
     }
 
     // -----------------

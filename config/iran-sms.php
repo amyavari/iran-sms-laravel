@@ -96,5 +96,11 @@ return [
             'token' => env('SMS_TOKEN', ''),
             'from' => env('SMS_FROM', ''),
         ],
+
+        // https://behinpayam.com/
+        'behin_payam' => [
+            'token' => env('SMS_TOKEN', ''),
+            'from' => env('SMS_FROM', ''),
+        ],
     ],
 ];
