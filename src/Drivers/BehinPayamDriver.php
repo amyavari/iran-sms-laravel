@@ -7,35 +7,26 @@ namespace AliYavari\IranSms\Drivers;
 use AliYavari\IranSms\Abstracts\Driver;
 use AliYavari\IranSms\Exceptions\InvalidPatternStructureException;
 use AliYavari\IranSms\Exceptions\UnsupportedMethodException;
+use AliYavari\IranSms\Exceptions\UnsupportedMultiplePhonesException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 
 /**
  * @internal
  *
- * See https://github.com/ippanelcom/Edge-Document
+ * See https://doc.sms-webservice.com/
  */
-final class FarazSmsDriver extends Driver
+final class BehinPayamDriver extends Driver
 {
     /**
      * The base URL for the API.
      */
-    private string $baseUrl = 'https://edge.ippanel.com/v1/api/send';
+    private string $baseUrl = 'https://api.sms-webservice.com/api/V3';
 
     /**
-     * The sent status returned in the API response body (e.g., `meta.status` field).
+     * The SMS ID returned in the API response body (e.g., `id` field).
      */
-    private bool $apiStatus;
-
-    /**
-     * The status code returned in the API response body (e.g., `meta.message_code` field).
-     */
-    private string $apiStatusCode;
-
-    /**
-     * The error message returned in the API response body (e.g., `meta.message` field).
-     */
-    private string $apiErrorMessage;
+    private int $smsId;
 
     public function __construct(
         private readonly string $token,
@@ -63,21 +54,21 @@ final class FarazSmsDriver extends Driver
     /**
      * {@inheritdoc}
      *
+     * @throws UnsupportedMultiplePhonesException
      * @throws InvalidPatternStructureException
      */
     protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
     {
+        $this->validatePatternPhones($phones);
+
         $this->validatePatternVariables($variables);
 
-        $data = [
-            'sending_type' => 'pattern',
-            'from_number' => $from,
-            'code' => $patternCode,
-            'recipients' => $phones,
-            'params' => $variables,
-        ];
+        $data = array_merge([
+            'Destination' => $phones[0],
+            'TemplateKey' => $patternCode,
+        ], $variables);
 
-        $this->execute($data);
+        $this->execute('SendTokenSingle', $data);
 
         return $this;
     }
@@ -88,15 +79,12 @@ final class FarazSmsDriver extends Driver
     protected function sendText(array $phones, string $message, string $from): static
     {
         $data = [
-            'sending_type' => 'normal',
-            'from_number' => $from,
-            'message' => $message,
-            'params' => [
-                'recipients' => $phones,
-            ],
+            'Sender' => $from,
+            'Text' => $message,
+            'Recipients' => $phones,
         ];
 
-        $this->execute($data);
+        $this->execute('Send', $data);
 
         return $this;
     }
@@ -106,7 +94,7 @@ final class FarazSmsDriver extends Driver
      */
     protected function isSuccessful(): bool
     {
-        return $this->apiStatus;
+        return true;
     }
 
     /**
@@ -114,15 +102,15 @@ final class FarazSmsDriver extends Driver
      */
     protected function getErrorMessage(): string
     {
-        return $this->apiErrorMessage;
+        return sprintf('شناسه پیام برای پیگیری "%s" می باشد.', $this->smsId);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function getErrorCode(): string
+    protected function getErrorCode(): int
     {
-        return $this->apiStatusCode;
+        return $this->smsId;
     }
 
     /**
@@ -130,21 +118,31 @@ final class FarazSmsDriver extends Driver
      *
      * @param  array<string, mixed>  $data
      */
-    private function execute(array $data): void
+    private function execute(string $endpoint, array $data): void
     {
         $credentials = [
-            'Authorization' => $this->token,
+            'ApiKey' => $this->token,
         ];
 
-        $response = Http::withHeaders($credentials)
-            ->post($this->baseUrl, $data)
+        $response = Http::baseUrl($this->baseUrl)
+            ->acceptJson()
+            ->get($endpoint, array_merge($credentials, $data))
             ->throw();
 
-        $meta = $response->json('meta');
+        $this->smsId = (int) $response->json('id');
+    }
 
-        $this->apiStatus = $meta['status'];
-        $this->apiStatusCode = $meta['message_code'];
-        $this->apiErrorMessage = $meta['message'];
+    /**
+     * @param  array<string>  $phones
+     *
+     * @throws UnsupportedMultiplePhonesException
+     */
+    private function validatePatternPhones(array $phones): void
+    {
+        if (count($phones) !== 1) {
+            throw UnsupportedMultiplePhonesException::make($this->getDriverName(), method: 'pattern');
+        }
+
     }
 
     /**
@@ -154,6 +152,12 @@ final class FarazSmsDriver extends Driver
      */
     private function validatePatternVariables(array $variables): void
     {
+        if (count($variables) !== 3) {
+            throw new InvalidPatternStructureException(
+                sprintf('Provider "%s" only accepts pattern data with exactly 3 items.', $this->getDriverName())
+            );
+        }
+
         if (Arr::isList($variables)) {
             throw new InvalidPatternStructureException(
                 sprintf('Provider "%s" only accepts pattern data as key-value pairs.', $this->getDriverName())

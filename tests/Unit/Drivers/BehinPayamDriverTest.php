@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace AliYavari\IranSms\Tests\Unit\Drivers;
 
-use AliYavari\IranSms\Drivers\PayamResanDriver;
+use AliYavari\IranSms\Drivers\BehinPayamDriver;
 use AliYavari\IranSms\Exceptions\InvalidPatternStructureException;
 use AliYavari\IranSms\Exceptions\UnsupportedMethodException;
 use AliYavari\IranSms\Exceptions\UnsupportedMultiplePhonesException;
@@ -17,7 +17,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Uri;
 use PHPUnit\Framework\Attributes\Test;
 
-final class PayamResanDriverTest extends TestCase
+final class BehinPayamDriverTest extends TestCase
 {
     #[Test]
     public function it_returns_sender_number_from_config(): void
@@ -118,7 +118,7 @@ final class PayamResanDriverTest extends TestCase
     public function it_throws_exception_if_we_pass_multiple_phone_numbers_to_send_with_pattern(): void
     {
         $this->expectException(UnsupportedMultiplePhonesException::class);
-        $this->expectExceptionMessage('Provider "payam_resan" only supports sending to one phone number at a time for "pattern" message.');
+        $this->expectExceptionMessage('Provider "behin_payam" only supports sending to one phone number at a time for "pattern" message.');
 
         $this->callProtectedMethod($this->driver(), 'sendPattern', [['0913', '0914'], 'pattern_code', [], '4567']);
     }
@@ -127,7 +127,7 @@ final class PayamResanDriverTest extends TestCase
     public function it_throws_exception_if_we_pass_less_than_three_parameter_to_send_with_pattern(): void
     {
         $this->expectException(InvalidPatternStructureException::class);
-        $this->expectExceptionMessage('Provider "payam_resan" only accepts pattern data with exactly 3 items.');
+        $this->expectExceptionMessage('Provider "behin_payam" only accepts pattern data with exactly 3 items.');
 
         $this->callProtectedMethod($this->driver(), 'sendPattern', [['0913'], 'pattern_code', ['p1' => 'v1', 'p2' => 'v2'], '4567']);
     }
@@ -136,7 +136,7 @@ final class PayamResanDriverTest extends TestCase
     public function it_throws_exception_if_we_pass_more_than_three_parameter_to_send_with_pattern(): void
     {
         $this->expectException(InvalidPatternStructureException::class);
-        $this->expectExceptionMessage('Provider "payam_resan" only accepts pattern data with exactly 3 items.');
+        $this->expectExceptionMessage('Provider "behin_payam" only accepts pattern data with exactly 3 items.');
 
         $this->callProtectedMethod($this->driver(), 'sendPattern', [['0913'], 'pattern_code', ['p1' => 'v1', 'p2' => 'v2', 'p3' => 'v3', 'p4' => 'v4'], '4567']);
     }
@@ -145,7 +145,7 @@ final class PayamResanDriverTest extends TestCase
     public function it_throws_exception_if_we_pass_non_key_value_pairs_to_send_with_pattern(): void
     {
         $this->expectException(InvalidPatternStructureException::class);
-        $this->expectExceptionMessage('Provider "payam_resan" only accepts pattern data as key-value pairs.');
+        $this->expectExceptionMessage('Provider "behin_payam" only accepts pattern data as key-value pairs.');
 
         $this->callProtectedMethod($this->driver(), 'sendPattern', [['0913'], 'pattern_code', ['value_1', 'value_2', 'value_2'], '4567']);
     }
@@ -154,7 +154,7 @@ final class PayamResanDriverTest extends TestCase
     public function it_throws_an_exception_for_sending_otp(): void
     {
         $this->expectException(UnsupportedMethodException::class);
-        $this->expectExceptionMessage('Provider "payam_resan" does not support sending "otp" message, please use "pattern" method instead.');
+        $this->expectExceptionMessage('Provider "behin_payam" does not support sending "otp" message, please use "pattern" method instead.');
 
         $this->callProtectedMethod($this->driver(), 'sendOtp', ['013', 'Otp message', '4567']);
     }
@@ -163,11 +163,11 @@ final class PayamResanDriverTest extends TestCase
     // Helper Methods
     // -----------------
 
-    private function driver(): PayamResanDriver
+    private function driver(): BehinPayamDriver
     {
-        Config::set('iran-sms.providers.payam_resan.token', 'sms_token');
-        Config::set('iran-sms.providers.payam_resan.from', '123');
+        Config::set('iran-sms.providers.behin_payam.token', 'sms_token');
+        Config::set('iran-sms.providers.behin_payam.from', '123');
 
-        return $this->app->make(PayamResanDriver::class);
+        return $this->app->make(BehinPayamDriver::class);
     }
 }

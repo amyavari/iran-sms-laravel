@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace AliYavari\IranSms\Tests\Unit;
 
 use AliYavari\IranSms\Drivers\AmootSmsDriver;
+use AliYavari\IranSms\Drivers\AsanakDriver;
+use AliYavari\IranSms\Drivers\BehinPayamDriver;
 use AliYavari\IranSms\Drivers\FakeDriver;
 use AliYavari\IranSms\Drivers\FaraPayamakDriver;
 use AliYavari\IranSms\Drivers\FarazSmsDriver;
 use AliYavari\IranSms\Drivers\GhasedakDriver;
 use AliYavari\IranSms\Drivers\KavenegarDriver;
+use AliYavari\IranSms\Drivers\LimoSmsDriver;
 use AliYavari\IranSms\Drivers\MeliPayamakDriver;
 use AliYavari\IranSms\Drivers\PayamResanDriver;
 use AliYavari\IranSms\Drivers\RayganSmsDriver;
@@ -140,6 +143,30 @@ final class SmsManagerTest extends TestCase
         $sms = $this->smsManager()->provider('ghasedak');
 
         $this->assertInstanceOf(GhasedakDriver::class, $sms);
+    }
+
+    #[Test]
+    public function it_returns_limo_sms_instance(): void
+    {
+        $sms = $this->smsManager()->provider('limo_sms');
+
+        $this->assertInstanceOf(LimoSmsDriver::class, $sms);
+    }
+
+    #[Test]
+    public function it_returns_behin_payam_instance(): void
+    {
+        $sms = $this->smsManager()->provider('behin_payam');
+
+        $this->assertInstanceOf(BehinPayamDriver::class, $sms);
+    }
+
+    #[Test]
+    public function it_returns_asanak_instance(): void
+    {
+        $sms = $this->smsManager()->provider('asanak');
+
+        $this->assertInstanceOf(AsanakDriver::class, $sms);
     }
 
     // -----------------

@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - **Fara Payamak** provider.
 - **Ghasedak** provider.
+- **Limo SMS** provider.
+- **Behin Payam** provider.
+- **Asanak** provider.
 
 ## [1.1.1] - 2025-08-12
 

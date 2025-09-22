@@ -6,10 +6,13 @@ namespace AliYavari\IranSms;
 
 use AliYavari\IranSms\Commands\PruneLogsCommand;
 use AliYavari\IranSms\Drivers\AmootSmsDriver;
+use AliYavari\IranSms\Drivers\AsanakDriver;
+use AliYavari\IranSms\Drivers\BehinPayamDriver;
 use AliYavari\IranSms\Drivers\FaraPayamakDriver;
 use AliYavari\IranSms\Drivers\FarazSmsDriver;
 use AliYavari\IranSms\Drivers\GhasedakDriver;
 use AliYavari\IranSms\Drivers\KavenegarDriver;
+use AliYavari\IranSms\Drivers\LimoSmsDriver;
 use AliYavari\IranSms\Drivers\MeliPayamakDriver;
 use AliYavari\IranSms\Drivers\PayamResanDriver;
 use AliYavari\IranSms\Drivers\RayganSmsDriver;
@@ -91,6 +94,21 @@ final class IranSmsServiceProvider extends PackageServiceProvider
         $this->app->bind(
             GhasedakDriver::class,
             fn () => new GhasedakDriver(...config()->array('iran-sms.providers.ghasedak'))
+        );
+
+        $this->app->bind(
+            LimoSmsDriver::class,
+            fn () => new LimoSmsDriver(...config()->array('iran-sms.providers.limo_sms'))
+        );
+
+        $this->app->bind(
+            BehinPayamDriver::class,
+            fn () => new BehinPayamDriver(...config()->array('iran-sms.providers.behin_payam'))
+        );
+
+        $this->app->bind(
+            AsanakDriver::class,
+            fn () => new AsanakDriver(...config()->array('iran-sms.providers.asanak'))
         );
     }
 }

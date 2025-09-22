@@ -38,6 +38,7 @@ final class FarazSmsDriverTest extends TestCase
         Http::assertSent(fn (Request $request) => $request->hasHeader('Authorization', 'sms_token')
             && $request->hasHeader('Content-Type', 'application/json')
             && $request->url() === 'https://edge.ippanel.com/v1/api/send'
+            && $request->method() === 'POST'
             && $request['key'] === 'value');
     }
 

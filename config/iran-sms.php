@@ -90,5 +90,24 @@ return [
             'token' => env('SMS_TOKEN', ''),
             'from' => env('SMS_FROM', ''),
         ],
+
+        // https://limosms.com/
+        'limo_sms' => [
+            'token' => env('SMS_TOKEN', ''),
+            'from' => env('SMS_FROM', ''),
+        ],
+
+        // https://behinpayam.com/
+        'behin_payam' => [
+            'token' => env('SMS_TOKEN', ''),
+            'from' => env('SMS_FROM', ''),
+        ],
+
+        // https://asanak.com/
+        'asanak' => [
+            'username' => env('SMS_USERNAME', ''),
+            'password' => env('SMS_PASSWORD', ''),
+            'from' => env('SMS_FROM', ''),
+        ],
     ],
 ];

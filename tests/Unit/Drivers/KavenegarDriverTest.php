@@ -43,6 +43,7 @@ final class KavenegarDriverTest extends TestCase
             && $request->hasHeader('Content-Type', 'application/x-www-form-urlencoded')
             && Str::of($request->url())->contains('/sms_token')
             && Str::of($request->url())->endsWith('/end-point.json')
+            && $request->method() === 'POST'
             && $request['key'] === 'value');
     }
 

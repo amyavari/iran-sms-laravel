@@ -38,6 +38,7 @@ final class FaraPayamakDriverTest extends TestCase
         Http::assertSent(fn (Request $request) => $request->hasHeader('Content-Type', 'application/x-www-form-urlencoded')
             && $request->hasHeader('Accept', 'application/json')
             && $request->url() === 'https://rest.payamak-panel.com/api/SendSMS/end-point'
+            && $request->method() === 'POST'
             && $request->data()['username'] === 'sms_username'
             && $request->data()['password'] === 'sms_password'
             && $request->data()['key'] === 'value');
