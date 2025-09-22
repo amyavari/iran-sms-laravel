@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Http;
 /**
  * @internal
  *
- * See https://doc.sms-webservice.com/
+ * @see https://doc.sms-webservice.com/
  */
 final class PayamResanDriver extends Driver
 {

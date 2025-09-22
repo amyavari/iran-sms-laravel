@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Http;
 /**
  * @internal
  *
- * See https://farapayamak.ir/content/webservice/
+ * @see https://farapayamak.ir/content/webservice/
  */
 final class FaraPayamakDriver extends Driver
 {

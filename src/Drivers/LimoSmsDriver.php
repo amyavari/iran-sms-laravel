@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Http;
 /**
  * @internal
  *
- * See https://api.limosms.com/
+ * @see https://api.limosms.com/
  */
 final class LimoSmsDriver extends Driver
 {

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Http;
 /**
  * @internal
  *
- * See https://webone-sms.ir/Home/WebServices
+ * @see https://webone-sms.ir/Home/WebServices
  */
 final class WebOneDriver extends Driver
 {

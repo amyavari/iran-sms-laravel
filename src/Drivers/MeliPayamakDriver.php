@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Http;
 /**
  * @internal
  *
- * See https://www.melipayamak.com/api/sendsimplesms2/
- * See https://www.melipayamak.com/api/sendbybasenumber2/
+ * @see https://www.melipayamak.com/api/sendsimplesms2/
+ * @see https://www.melipayamak.com/api/sendbybasenumber2/
  */
 final class MeliPayamakDriver extends Driver
 {

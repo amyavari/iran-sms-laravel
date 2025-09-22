@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Http;
 /**
  * @internal
  *
- * See https://github.com/ippanelcom/Edge-Document
+ * @see https://github.com/ippanelcom/Edge-Document
  */
 final class FarazSmsDriver extends Driver
 {

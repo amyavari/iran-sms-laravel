@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Http;
 /**
  * @internal
  *
- * See https://asanak.com/api-docs
+ * @see https://asanak.com/api-docs
  */
 final class AsanakDriver extends Driver
 {

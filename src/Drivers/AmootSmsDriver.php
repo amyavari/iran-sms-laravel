@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Http;
 /**
  * @internal
  *
- * See https://portal.amootsms.com/Documentation
+ * @see https://portal.amootsms.com/Documentation
  */
 final class AmootSmsDriver extends Driver
 {

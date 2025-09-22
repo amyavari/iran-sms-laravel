@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Http;
 /**
  * @internal
  *
- * See https://ghasedak.me/docs
+ * @see https://ghasedak.me/docs
  */
 final class GhasedakDriver extends Driver
 {

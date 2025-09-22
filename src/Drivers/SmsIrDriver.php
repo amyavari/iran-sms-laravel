@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Http;
 /**
  * @internal
  *
- * See https://sms.ir/rest-api/
+ * @see https://sms.ir/rest-api/
  */
 final class SmsIrDriver extends Driver
 {

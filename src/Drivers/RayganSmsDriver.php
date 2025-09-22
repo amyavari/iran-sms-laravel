@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 /**
  * @internal
  *
- * See https://raygansms.com/webservice/api/home#samplecode
+ * @see https://raygansms.com/webservice/api/home#samplecode
  */
 final class RayganSmsDriver extends Driver
 {

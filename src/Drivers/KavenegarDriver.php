@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Http;
 /**
  * @internal
  *
- * See https://kavenegar.com/rest.html
+ * @see https://kavenegar.com/rest.html
  */
 final class KavenegarDriver extends Driver
 {
