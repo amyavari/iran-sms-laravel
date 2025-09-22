@@ -21,6 +21,9 @@
 | 1.1.0      | `amoot_sms`      | [amootsms.com]      | پیامک آموت            | Amoot SMS               |
 | منتشر نشده | `fara_payamak`   | [farapayamak.ir]    | فراپیامک              | Fara Payamak            |
 | منتشر نشده | `ghasedak`       | [ghasedak.me]       | قاصدک                 | Ghasedak                |
+| منتشر نشده | `limo_sms`       | [limosms.com]       | لیمو اس ام اس         | Limo SMS                |
+| منتشر نشده | `behin_payam`    | [behinpayam.com]    | بهین پیام             | Behin Payam             |
+| منتشر نشده | `asanak`         | [asanak.com]        | آسانک                 | Asanak                  |
 
 > [!CAUTION]
 > هر ارائه‌دهنده قوانین خاص خود را برای ارسال پیامک دارد. لطفاً فایل [providers_note_fa.md](./providers_note_fa.md) را بررسی کنید.
@@ -361,6 +364,9 @@ Sms::fake([
 [amootsms.com]: https://www.amootsms.com/
 [farapayamak.ir]: https://farapayamak.ir/
 [ghasedak.me]: https://ghasedak.me/
+[limosms.com]: https://limosms.com/
+[behinpayam.com]: https://behinpayam.com/
+[asanak.com]: https://asanak.com/
 [HTTP Client]: https://laravel.com/docs/12.x/http-client#throwing-exceptions
 [queues]: https://laravel.com/docs/12.x/queues
 [notifications]: https://laravel.com/docs/12.x/notifications
