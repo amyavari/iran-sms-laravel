@@ -7,7 +7,6 @@ namespace AliYavari\IranSms\Drivers;
 use AliYavari\IranSms\Abstracts\Driver;
 use AliYavari\IranSms\Exceptions\InvalidPatternStructureException;
 use AliYavari\IranSms\Exceptions\UnsupportedMethodException;
-use AliYavari\IranSms\Exceptions\UnsupportedMultiplePhonesException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 
@@ -64,7 +63,7 @@ final class FarazSmsDriver extends Driver
     /**
      * {@inheritdoc}
      *
-     * @throws UnsupportedMultiplePhonesException
+     * @throws InvalidPatternStructureException
      */
     protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
     {

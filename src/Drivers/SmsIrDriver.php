@@ -55,6 +55,7 @@ final class SmsIrDriver extends Driver
      * {@inheritdoc}
      *
      * @throws UnsupportedMultiplePhonesException
+     * @throws InvalidPatternStructureException
      */
     protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
     {
