@@ -18,6 +18,7 @@ use AliYavari\IranSms\Drivers\LimoSmsDriver;
 use AliYavari\IranSms\Drivers\MeliPayamakDriver;
 use AliYavari\IranSms\Drivers\PayamResanDriver;
 use AliYavari\IranSms\Drivers\RayganSmsDriver;
+use AliYavari\IranSms\Drivers\SaharSmsDriver;
 use AliYavari\IranSms\Drivers\SmsIrDriver;
 use AliYavari\IranSms\Drivers\WebOneDriver;
 use Illuminate\Support\Manager;
@@ -135,6 +136,11 @@ final class SmsManager extends Manager
     protected function createAsanakDriver(): AsanakDriver
     {
         return $this->container->make(AsanakDriver::class);
+    }
+
+    protected function createSaharSmsDriver(): SaharSmsDriver
+    {
+        return $this->container->make(SaharSmsDriver::class);
     }
 
     private function mustBeFresh(string $driver): bool

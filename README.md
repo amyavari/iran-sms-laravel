@@ -37,6 +37,7 @@ To view the Persian documentation, please refer to [README_FA.md](./docs/README_
 | Limo SMS           | لیمو اس ام اس      | [limosms.com]     | `limo_sms`     | Unreleased |
 | Behin Payam        | بهین پیام          | [behinpayam.com]  | `behin_payam`  | Unreleased |
 | Asanak             | آسانک              | [asanak.com]      | `asanak`       | Unreleased |
+| Sahar SMS          | سحر اس ام اس       | [saharsms.com]    | `sahar_sms`    | 1.2.0      |
 
 > [!CAUTION]
 > Providers have different rules for sending SMS messages. Please check [providers_note_en.md](./docs/providers_note_en.md).
@@ -401,6 +402,7 @@ Thank you for considering contributing to the Iran SMS Laravel! The contribution
 [limosms.com]: https://limosms.com/
 [behinpayam.com]: https://behinpayam.com/
 [asanak.com]: https://asanak.com/
+[saharsms.com]: https://saharsms.com/
 [HTTP Client]: https://laravel.com/docs/12.x/http-client#throwing-exceptions
 [queues]: https://laravel.com/docs/12.x/queues
 [notifications]: https://laravel.com/docs/12.x/notifications

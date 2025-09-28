@@ -16,6 +16,7 @@ use AliYavari\IranSms\Drivers\LimoSmsDriver;
 use AliYavari\IranSms\Drivers\MeliPayamakDriver;
 use AliYavari\IranSms\Drivers\PayamResanDriver;
 use AliYavari\IranSms\Drivers\RayganSmsDriver;
+use AliYavari\IranSms\Drivers\SaharSmsDriver;
 use AliYavari\IranSms\Drivers\SmsIrDriver;
 use AliYavari\IranSms\Drivers\WebOneDriver;
 use AliYavari\IranSms\SmsManager;
@@ -167,6 +168,14 @@ final class SmsManagerTest extends TestCase
         $sms = $this->smsManager()->provider('asanak');
 
         $this->assertInstanceOf(AsanakDriver::class, $sms);
+    }
+
+    #[Test]
+    public function it_returns_sahar_sms_instance(): void
+    {
+        $sms = $this->smsManager()->provider('sahar_sms');
+
+        $this->assertInstanceOf(SaharSmsDriver::class, $sms);
     }
 
     // -----------------

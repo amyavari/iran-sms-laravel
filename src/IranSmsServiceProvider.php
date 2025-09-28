@@ -16,6 +16,7 @@ use AliYavari\IranSms\Drivers\LimoSmsDriver;
 use AliYavari\IranSms\Drivers\MeliPayamakDriver;
 use AliYavari\IranSms\Drivers\PayamResanDriver;
 use AliYavari\IranSms\Drivers\RayganSmsDriver;
+use AliYavari\IranSms\Drivers\SaharSmsDriver;
 use AliYavari\IranSms\Drivers\SmsIrDriver;
 use AliYavari\IranSms\Drivers\WebOneDriver;
 use Illuminate\Foundation\Application;
@@ -109,6 +110,11 @@ final class IranSmsServiceProvider extends PackageServiceProvider
         $this->app->bind(
             AsanakDriver::class,
             fn () => new AsanakDriver(...config()->array('iran-sms.providers.asanak'))
+        );
+
+        $this->app->bind(
+            SaharSmsDriver::class,
+            fn () => new SaharSmsDriver(...config()->array('iran-sms.providers.sahar_sms'))
         );
     }
 }

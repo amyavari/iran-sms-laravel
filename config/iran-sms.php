@@ -109,5 +109,11 @@ return [
             'password' => env('SMS_PASSWORD', ''),
             'from' => env('SMS_FROM', ''),
         ],
+
+        // https://saharsms.com/
+        'sahar_sms' => [
+            'token' => env('SMS_TOKEN', ''),
+            'from' => env('SMS_FROM', ''),
+        ],
     ],
 ];
