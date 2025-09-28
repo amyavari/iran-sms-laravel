@@ -24,6 +24,7 @@
 | منتشر نشده | `limo_sms`       | [limosms.com]       | لیمو اس ام اس         | Limo SMS                |
 | منتشر نشده | `behin_payam`    | [behinpayam.com]    | بهین پیام             | Behin Payam             |
 | منتشر نشده | `asanak`         | [asanak.com]        | آسانک                 | Asanak                  |
+| 1.2.0      | `sahar_sms`      | [saharsms.com]      | سحر اس ام اس          | Sahar SMS               |
 
 > [!CAUTION]
 > هر ارائه‌دهنده قوانین خاص خود را برای ارسال پیامک دارد. لطفاً فایل [providers_note_fa.md](./providers_note_fa.md) را بررسی کنید.
@@ -367,6 +368,7 @@ Sms::fake([
 [limosms.com]: https://limosms.com/
 [behinpayam.com]: https://behinpayam.com/
 [asanak.com]: https://asanak.com/
+[saharsms.com]: https://saharsms.com/
 [HTTP Client]: https://laravel.com/docs/12.x/http-client#throwing-exceptions
 [queues]: https://laravel.com/docs/12.x/queues
 [notifications]: https://laravel.com/docs/12.x/notifications

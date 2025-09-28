@@ -77,3 +77,11 @@
 - This provider does not offer a dedicated API for sending OTP messages. Use the pattern-based method instead.
 - This provider doesn't support sending pattern to multiple phones at once.
 - Pattern variables must be passed as key-value pairs.
+
+## Sahar SMS
+
+- This provider supports a dedicated web service for sending OTP messages with highest priority delivery.
+- This provider supports pattern-based messages through templates with up to 5 tokens.
+- This provider doesn't support sending pattern to multiple phones at once.
+- Pattern variables must be passed as key-value pairs.
+- Text messages are sent through the OTP endpoint for better delivery reliability.
