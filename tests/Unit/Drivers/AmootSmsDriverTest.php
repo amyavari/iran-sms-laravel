@@ -146,6 +146,24 @@ final class AmootSmsDriverTest extends TestCase
         $this->callProtectedMethod($this->driver(), 'sendOtp', ['013', 'Otp message', '4567']);
     }
 
+    #[Test]
+    public function it_returns_credit_successfully(): void
+    {
+        Http::fake(['*' => Http::response(['Status' => 'Success', 'RemaindCredit' => 1000])]);
+
+        $credit = $this->driver()->credit();
+
+        $this->assertSame(1000, $credit);
+
+        Http::assertSent(function (Request $request) {
+            $uri = Uri::of($request->url());
+
+            return Str::of($request->url())->startsWith('https://portal.amootsms.com/rest/AccountStatus')
+                && $uri->query()->get('Token') === 'sms_token'
+                && $request->method() === 'GET';
+        });
+    }
+
     // -----------------
     // Helper Methods
     // -----------------

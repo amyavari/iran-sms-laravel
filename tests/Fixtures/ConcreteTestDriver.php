@@ -21,6 +21,11 @@ final class ConcreteTestDriver extends Driver
         private readonly bool $successful,
     ) {}
 
+    public function credit(): int
+    {
+        return 0;
+    }
+
     protected function getDefaultSender(): string
     {
         return $this->from;

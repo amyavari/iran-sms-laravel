@@ -45,6 +45,19 @@ final class GhasedakDriver extends Driver
     /**
      * {@inheritdoc}
      */
+    public function credit(): int
+    {
+        $response = Http::withHeaders($this->credentials())
+            ->baseUrl($this->baseUrl)
+            ->get('GetAccountInformation')
+            ->throw();
+
+        return (int) $response->json('Data.Credit');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function getDefaultSender(): string
     {
         return $this->from;
@@ -133,11 +146,7 @@ final class GhasedakDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $credentials = [
-            'ApiKey' => $this->token,
-        ];
-
-        $response = Http::withHeaders($credentials)
+        $response = Http::withHeaders($this->credentials())
             ->baseUrl($this->baseUrl)
             ->post($endpoint, $data)
             ->throw();
@@ -147,6 +156,16 @@ final class GhasedakDriver extends Driver
         $this->apiStatus = (bool) $response['IsSuccess'];
         $this->apiStatusCode = (int) $response['StatusCode'];
         $this->apiMessage = (string) $response['Message'];
+    }
+
+    /**
+     * @return array{ApiKey: string}
+     */
+    private function credentials(): array
+    {
+        return [
+            'ApiKey' => $this->token,
+        ];
     }
 
     /**

@@ -35,6 +35,20 @@ final class FaraPayamakDriver extends Driver
     /**
      * {@inheritdoc}
      */
+    public function credit(): int
+    {
+        $response = Http::baseUrl($this->baseUrl)
+            ->asForm()
+            ->acceptJson()
+            ->post('GetCredit', $this->credentials())
+            ->throw();
+
+        return (int) $response->json('Value');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function getDefaultSender(): string
     {
         return $this->from;
@@ -143,19 +157,25 @@ final class FaraPayamakDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $credentials = [
-            'username' => $this->username,
-            'password' => $this->password,
-        ];
-
         $response = Http::baseUrl($this->baseUrl)
             ->asForm()
             ->acceptJson()
-            ->post($endpoint, array_merge($credentials, $data))
+            ->post($endpoint, array_merge($this->credentials(), $data))
             ->throw();
 
         $this->apiStatusCode = (string) $response->json('Value');
 
+    }
+
+    /**
+     * @return array{username: string, password: string}
+     */
+    private function credentials(): array
+    {
+        return [
+            'username' => $this->username,
+            'password' => $this->password,
+        ];
     }
 
     /**

@@ -159,6 +159,22 @@ final class PayamResanDriverTest extends TestCase
         $this->callProtectedMethod($this->driver(), 'sendOtp', ['013', 'Otp message', '4567']);
     }
 
+    #[Test]
+    public function it_returns_credit_successfully(): void
+    {
+        Http::fake(['*' => Http::response(['Credit' => 1000])]);
+
+        $credit = $this->driver()->credit();
+
+        $this->assertSame(1000, $credit);
+
+        Http::assertSent(fn (Request $request) => $request->url() === 'https://api.sms-webservice.com/api/V3/AccountInfo'
+                && $request->method() === 'POST'
+                && $request->hasHeader('Content-Type', 'application/json')
+                && $request['ApiKey'] === 'sms_token'
+        );
+    }
+
     // -----------------
     // Helper Methods
     // -----------------

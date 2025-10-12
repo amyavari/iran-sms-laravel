@@ -37,6 +37,19 @@ final class AsanakDriver extends Driver
     /**
      * {@inheritdoc}
      */
+    public function credit(): int
+    {
+        $response = Http::baseUrl($this->baseUrl)
+            ->acceptJson()
+            ->post('getrialcredit', $this->credentials())
+            ->throw();
+
+        return (int) $response->json('data.credit');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function getDefaultSender(): string
     {
         return $this->from;
@@ -137,18 +150,23 @@ final class AsanakDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $credentials = [
-            'username' => $this->username,
-            'password' => $this->password,
-        ];
-
         $response = Http::baseUrl($this->baseUrl)
             ->acceptJson()
-            ->post($endpoint, array_merge($credentials, $data))
+            ->post($endpoint, array_merge($this->credentials(), $data))
             ->throw();
 
         $this->apiStatusCode = (int) $response->json('meta.status');
+    }
 
+    /**
+     * @return array{username: string, password:string}
+     */
+    private function credentials(): array
+    {
+        return [
+            'username' => $this->username,
+            'password' => $this->password,
+        ];
     }
 
     /**

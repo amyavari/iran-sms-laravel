@@ -36,6 +36,18 @@ final class BehinPayamDriver extends Driver
     /**
      * {@inheritdoc}
      */
+    public function credit(): int
+    {
+        $response = Http::baseUrl($this->baseUrl)
+            ->post('AccountInfo', $this->credentials())
+            ->throw();
+
+        return (int) $response->json('Credit');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function getDefaultSender(): string
     {
         return $this->from;
@@ -120,16 +132,22 @@ final class BehinPayamDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $credentials = [
-            'ApiKey' => $this->token,
-        ];
-
         $response = Http::baseUrl($this->baseUrl)
             ->acceptJson()
-            ->get($endpoint, array_merge($credentials, $data))
+            ->get($endpoint, array_merge($this->credentials(), $data))
             ->throw();
 
         $this->smsId = (int) $response->json('id');
+    }
+
+    /**
+     * @return array{ApiKey: string,}
+     */
+    private function credentials(): array
+    {
+        return [
+            'ApiKey' => $this->token,
+        ];
     }
 
     /**

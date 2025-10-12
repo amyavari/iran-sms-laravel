@@ -34,6 +34,18 @@ final class AmootSmsDriver extends Driver
     /**
      * {@inheritdoc}
      */
+    public function credit(): int
+    {
+        $response = Http::baseUrl($this->baseUrl)
+            ->get('AccountStatus', $this->credentials())
+            ->throw();
+
+        return (int) $response->json('RemaindCredit');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function getDefaultSender(): string
     {
         return $this->from;
@@ -117,16 +129,21 @@ final class AmootSmsDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $credentials = [
-            'Token' => $this->token,
-
-        ];
-
         $response = Http::baseUrl($this->baseUrl)
-            ->get($endpoint, array_merge($credentials, $data))
+            ->get($endpoint, array_merge($this->credentials(), $data))
             ->throw();
 
         $this->apiStatus = $response->json('Status');
+    }
+
+    /**
+     * @return array{Token: string}
+     */
+    private function credentials(): array
+    {
+        return [
+            'Token' => $this->token,
+        ];
     }
 
     /**

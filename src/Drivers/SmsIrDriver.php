@@ -21,7 +21,7 @@ final class SmsIrDriver extends Driver
     /**
      * The base URL for the API.
      */
-    private string $baseUrl = 'https://api.sms.ir/v1/send';
+    private string $baseUrl = 'https://api.sms.ir/v1/';
 
     /**
      * The status code returned in the API response body (e.g., `status` field).
@@ -32,6 +32,20 @@ final class SmsIrDriver extends Driver
         private readonly string $token,
         private readonly string $from,
     ) {}
+
+    /**
+     * {@inheritdoc}
+     */
+    public function credit(): int
+    {
+        $response = Http::baseUrl($this->baseUrl)
+            ->withHeaders($this->credentials())
+            ->acceptJson()
+            ->get('credit')
+            ->throw();
+
+        return (int) $response->json('data');
+    }
 
     /**
      * {@inheritdoc}
@@ -69,7 +83,7 @@ final class SmsIrDriver extends Driver
             'parameters' => $this->toApiPattern($variables),
         ];
 
-        $this->execute('verify', $data);
+        $this->execute('send/verify', $data);
 
         return $this;
     }
@@ -86,7 +100,7 @@ final class SmsIrDriver extends Driver
             'sendDateTime' => null,
         ];
 
-        $this->execute('bulk', $data);
+        $this->execute('send/bulk', $data);
 
         return $this;
     }
@@ -152,17 +166,23 @@ final class SmsIrDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $credentials = [
-            'x-api-key' => $this->token,
-        ];
-
         $response = Http::baseUrl($this->baseUrl)
-            ->withHeaders($credentials)
+            ->withHeaders($this->credentials())
             ->acceptJson()
             ->post($endpoint, $data)
             ->throw();
 
         $this->apiStatusCode = (int) $response->json('status');
+    }
+
+    /**
+     * @return array{x-api-key: string}
+     */
+    private function credentials(): array
+    {
+        return [
+            'x-api-key' => $this->token,
+        ];
     }
 
     /**

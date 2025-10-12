@@ -38,6 +38,19 @@ final class WebOneDriver extends Driver
     /**
      * {@inheritdoc}
      */
+    public function credit(): int
+    {
+        $response = Http::withHeaders($this->credentials())
+            ->baseUrl($this->baseUrl)
+            ->get('SMS/GetCredit')
+            ->throw();
+
+        return (int) $response->body();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function getDefaultSender(): string
     {
         return $this->from;
@@ -138,11 +151,7 @@ final class WebOneDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $credentials = [
-            'X-API-KEY' => $this->token,
-        ];
-
-        $response = Http::withHeaders($credentials)
+        $response = Http::withHeaders($this->credentials())
             ->baseUrl($this->baseUrl)
             ->post($endpoint, $data)
             ->throw()
@@ -150,5 +159,16 @@ final class WebOneDriver extends Driver
 
         $this->apiStatus = (bool) $response['succeeded'];
         $this->apiStatusCode = (int) $response['resultCode'];
+    }
+
+    /**
+     * @return array{X-API-KEY: string}
+     */
+    private function credentials(): array
+    {
+        return [
+            'X-API-KEY' => $this->token,
+        ];
+
     }
 }

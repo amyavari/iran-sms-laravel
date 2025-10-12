@@ -29,7 +29,7 @@ final class SmsIrDriverTest extends TestCase
     public function it_execute_request_correctly(): void
     {
         Http::fake([
-            'https://api.sms.ir/v1/send/end-point' => Http::response(['status' => 1]),
+            'https://api.sms.ir/v1/end-point' => Http::response(['status' => 1]),
         ]);
 
         $smsDriver = $this->driver();
@@ -38,7 +38,7 @@ final class SmsIrDriverTest extends TestCase
 
         Http::assertSent(fn (Request $request) => $request->hasHeader('x-api-key', 'sms_token')
             && $request->hasHeader('Accept', 'application/json')
-            && $request->url() === 'https://api.sms.ir/v1/send/end-point'
+            && $request->url() === 'https://api.sms.ir/v1/end-point'
             && $request->method() === 'POST'
             && $request['key'] === 'value');
     }
@@ -47,8 +47,8 @@ final class SmsIrDriverTest extends TestCase
     public function it_sets_and_returns_the_response_status_correctly(): void
     {
         Http::fake([
-            'https://api.sms.ir/v1/send/success-end-point' => Http::response(['status' => 1]), // 1 is successful status
-            'https://api.sms.ir/v1/send/fail-end-point' => Http::response(['status' => 10]), // Other numbers are failed status
+            'https://api.sms.ir/v1/success-end-point' => Http::response(['status' => 1]), // 1 is successful status
+            'https://api.sms.ir/v1/fail-end-point' => Http::response(['status' => 10]), // Other numbers are failed status
         ]);
 
         $smsDriver = $this->driver();
@@ -70,7 +70,7 @@ final class SmsIrDriverTest extends TestCase
     public function it_throws_exception_for_any_connection_error(): void
     {
         Http::fake([
-            'https://api.sms.ir/v1/send/*' => Http::failedConnection(),
+            'https://api.sms.ir/v1/*' => Http::failedConnection(),
         ]);
 
         $this->expectException(ConnectionException::class);
@@ -139,6 +139,22 @@ final class SmsIrDriverTest extends TestCase
         $this->expectExceptionMessage('Provider "sms_ir" does not support sending "otp" message, please use "pattern" method instead.');
 
         $this->callProtectedMethod($this->driver(), 'sendOtp', ['013', 'Otp message', '4567']);
+    }
+
+    #[Test]
+    public function it_returns_credit_successfully(): void
+    {
+        Http::fake(['*' => Http::response(['data' => 1000.4])]);
+
+        $credit = $this->driver()->credit();
+
+        $this->assertSame(1000, $credit);
+
+        Http::assertSent(fn (Request $request) => $request->url() === 'https://api.sms.ir/v1/credit'
+            && $request->hasHeader('x-api-key', 'sms_token')
+            && $request->hasHeader('Accept', 'application/json')
+            && $request->method() === 'GET'
+        );
     }
 
     // -----------------

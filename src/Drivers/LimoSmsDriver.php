@@ -8,6 +8,7 @@ use AliYavari\IranSms\Abstracts\Driver;
 use AliYavari\IranSms\Exceptions\UnsupportedMethodException;
 use AliYavari\IranSms\Exceptions\UnsupportedMultiplePhonesException;
 use Illuminate\Support\Facades\Http;
+use LogicException;
 
 /**
  * @internal
@@ -35,6 +36,14 @@ final class LimoSmsDriver extends Driver
         private readonly string $token,
         private readonly string $from,
     ) {}
+
+    /**
+     * {@inheritdoc}
+     */
+    public function credit(): int
+    {
+        throw new LogicException('The "credit()" method is not implemented due to insufficient documentation.');
+    }
 
     /**
      * {@inheritdoc}

@@ -123,6 +123,24 @@ final class FaraPayamakDriverTest extends TestCase
         $this->callProtectedMethod($this->driver(), 'sendOtp', ['013', 'Otp message', '4567']);
     }
 
+    #[Test]
+    public function it_returns_credit_successfully(): void
+    {
+        Http::fake(['*' => Http::response(['Value' => '1000'])]);
+
+        $credit = $this->driver()->credit();
+
+        $this->assertSame(1000, $credit);
+
+        Http::assertSent(fn (Request $request) => $request->url() === 'https://rest.payamak-panel.com/api/SendSMS/GetCredit'
+            && $request->hasHeader('Content-Type', 'application/x-www-form-urlencoded')
+            && $request->hasHeader('Accept', 'application/json')
+            && $request->method() === 'POST'
+            && $request->data()['username'] === 'sms_username'
+            && $request->data()['password'] === 'sms_password'
+        );
+    }
+
     // -----------------
     // Helper Methods
     // -----------------
