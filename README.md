@@ -51,6 +51,8 @@ To view the Persian documentation, please refer to [README_FA.md](./docs/README_
   - [Changing the Sender Number at Runtime](#changing-the-sender-number-at-runtime)
   - [Automatic Logging](#automatic-logging)
   - [Sending SMS](#sending-sms)
+  - [Checking Sending Status](#checking-sending-status)
+  - [Get Credit](#get-credit)
 - [Working with Queues and Notifications](#working-with-queues-and-notifications)
 - [Testing](#testing)
 - [Contributing](#contributing)
@@ -253,6 +255,22 @@ $sms->failed();     // bool
 // Get the error message (returns null if successful)
 $sms->error();      // string|null
 ```
+
+### Get Credit
+
+To Retrieve your current credit balance (in Rials):
+
+```php
+use AliYavari\IranSms\Facades\Sms;
+
+// Default provider credit balance
+$credit = Sms::credit();                                // int
+
+// Specific provider credit balance
+$credit = Sms::provider(string $provider)->credit();    // int
+```
+
+**Note:** For the `$provider` name, refer to the `Provider Key` column in the [List of Available SMS Providers](#list-of-available-sms-providers).
 
 ## Working with Queues and Notifications
 
