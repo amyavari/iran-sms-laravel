@@ -23,24 +23,14 @@ final class RayganSmsDriver extends Driver
     private string $otpUrl = 'https://raygansms.com/SendMessageWithCode.ashx';
 
     /**
-     * The URL for sending text message
-     */
-    private string $textUrl = 'https://smspanel.trez.ir/api/smsAPI/SendMessage';
-
-    /**
-     * The URL for sending pattern message
-     */
-    private string $patternUrl = 'https://smspanel.trez.ir/api/smsApiWithPattern/SendMessage';
-
-    /**
      * The URL for getting credit
      */
-    private string $creditUrl = 'https://smspanel.trez.ir/api/smsAPI/GetCredit';
+    private string $restBaseUrl = 'https://smspanel.trez.ir/api/';
 
     /**
      * Sending status based on the API response code (`$apiStatusCode`).
      */
-    private bool $apiStatus;
+    private bool $isSuccessful;
 
     /**
      * The status code returned in the API response body.
@@ -65,7 +55,8 @@ final class RayganSmsDriver extends Driver
     public function credit(): int
     {
         $response = Http::withBasicAuth($this->username, $this->password)
-            ->post($this->creditUrl)
+            ->baseUrl($this->restBaseUrl)
+            ->post('smsAPI/GetCredit')
             ->throw();
 
         return (int) $response->json('Result');
@@ -117,11 +108,7 @@ final class RayganSmsDriver extends Driver
             'SendDateInTimeStamp' => now()->timestamp,
         ], $variables);
 
-        $response = Http::withBasicAuth($this->username, $this->password)
-            ->post($this->patternUrl, $data)
-            ->throw();
-
-        $this->parsePostResponse($response->json());
+        $this->execute('smsApiWithPattern/SendMessage', $data);
 
         return $this;
     }
@@ -139,11 +126,7 @@ final class RayganSmsDriver extends Driver
             'SendDateInTimeStamp' => now()->timestamp,
         ];
 
-        $response = Http::withBasicAuth($this->username, $this->password)
-            ->post($this->textUrl, $data)
-            ->throw();
-
-        $this->parsePostResponse($response->json());
+        $this->execute('smsAPI/SendMessage', $data);
 
         return $this;
     }
@@ -153,7 +136,7 @@ final class RayganSmsDriver extends Driver
      */
     protected function isSuccessful(): bool
     {
-        return $this->apiStatus;
+        return $this->isSuccessful;
     }
 
     /**
@@ -170,6 +153,21 @@ final class RayganSmsDriver extends Driver
     protected function getErrorCode(): int
     {
         return $this->apiStatusCode;
+    }
+
+    /**
+     * Executes the API request to the specified endpoint with given data.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    private function execute(string $endpoint, array $data): void
+    {
+        $response = Http::withBasicAuth($this->username, $this->password)
+            ->baseUrl($this->restBaseUrl)
+            ->post($endpoint, $data)
+            ->throw();
+
+        $this->parseRestResponse($response->json());
     }
 
     /**
@@ -193,18 +191,20 @@ final class RayganSmsDriver extends Driver
     {
         $this->apiStatusCode = (int) $response;
         $this->apiErrorMessage = sprintf('خطا با کد "%s" رخ داده است.', $this->apiStatusCode);
-        $this->apiStatus = $this->apiStatusCode > 2000;
+
+        $this->isSuccessful = $this->apiStatusCode > 2000;
     }
 
     /**
-     * Extracts POST API response data into status properties.
+     * Extracts REST API response data into status properties.
      *
      * @param  array<string,mixed>  $response
      */
-    private function parsePostResponse(array $response): void
+    private function parseRestResponse(array $response): void
     {
         $this->apiStatusCode = (int) $response['Code'];
         $this->apiErrorMessage = $response['Message'];
-        $this->apiStatus = $this->apiStatusCode === 0;
+
+        $this->isSuccessful = $this->apiStatusCode === 0;
     }
 }

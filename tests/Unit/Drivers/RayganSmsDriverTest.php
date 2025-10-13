@@ -27,6 +27,65 @@ final class RayganSmsDriverTest extends TestCase
     }
 
     #[Test]
+    public function it_execute_request_correctly(): void
+    {
+        Http::fake([
+            'https://smspanel.trez.ir/api/end-point' => Http::response(['Code' => 0, 'Message' => 'successful.']),
+        ]);
+
+        $smsDriver = $this->driver();
+
+        $this->callProtectedMethod($smsDriver, 'execute', ['end-point', ['key' => 'value']]);
+
+        Http::assertSent(fn (Request $request) => $request->url() === 'https://smspanel.trez.ir/api/end-point'
+            && $request->method() === 'POST'
+            && $request->hasHeader('Authorization', $this->expectedAuth())
+            && $request['key'] === 'value');
+    }
+
+    #[Test]
+    public function it_sets_and_returns_the_successful_response_status_correctly(): void
+    {
+        Http::fake([
+            'https://smspanel.trez.ir/api/end-point' => Http::response(['Code' => 0, 'Message' => 'successful.']), // status `0` is successful
+        ]);
+
+        $smsDriver = $this->driver();
+
+        $this->callProtectedMethod($smsDriver, 'execute', ['end-point', ['key' => 'value']]);
+
+        $this->assertTrue($this->callProtectedMethod($smsDriver, 'isSuccessful'));
+    }
+
+    #[Test]
+    public function it_sets_and_returns_the_failed_response_status_correctly(): void
+    {
+        Http::fake([
+            'https://smspanel.trez.ir/api/end-point' => Http::response(['Code' => 8, 'Message' => 'Something went wrong.']),
+        ]);
+
+        $smsDriver = $this->driver();
+
+        $this->callProtectedMethod($smsDriver, 'execute', ['end-point', ['key' => 'value']]);
+
+        $this->assertFalse($this->callProtectedMethod($smsDriver, 'isSuccessful'));
+        $this->assertSame('Something went wrong.', $this->callProtectedMethod($smsDriver, 'getErrorMessage'));
+        $this->assertSame(8, $this->callProtectedMethod($smsDriver, 'getErrorCode'));
+    }
+
+    #[Test]
+    public function it_throws_exception_for_any_connection_error(): void
+    {
+        Http::fake([
+            'https://smspanel.trez.ir/api/end-point' => Http::failedConnection(),
+        ]);
+
+        $this->expectException(ConnectionException::class);
+
+        $this->callProtectedMethod($this->driver(), 'execute', ['end-point', ['key' => 'value']]);
+    }
+
+    #[Test]
     public function it_sends_text_message_successfully(): void
     {
         Http::fake(['*' => Http::response(['Code' => 0, 'Message' => 'successful.'])]);
@@ -36,8 +95,6 @@ final class RayganSmsDriverTest extends TestCase
         $this->callProtectedMethod($smsDriver, 'sendText', [['0913', '0914'], 'Text message', '4567']);
 
         Http::assertSent(fn (Request $request) => $request->url() === 'https://smspanel.trez.ir/api/smsAPI/SendMessage'
-            && $request->method() === 'POST'
-            && $request->hasHeader('Authorization', $this->expectedAuth())
             && $request['PhoneNumber'] === '4567'
             && $request['Message'] === 'Text message'
             && $request['Mobiles'] === ['0913', '0914']
@@ -46,30 +103,6 @@ final class RayganSmsDriverTest extends TestCase
         );
 
         $this->assertTrue($this->callProtectedMethod($smsDriver, 'isSuccessful'));
-    }
-
-    #[Test]
-    public function it_sends_text_message_with_error(): void
-    {
-        Http::fake(['*' => Http::response(['Code' => 8, 'Message' => 'Something went wrong.'])]); // 0 is successful
-
-        $smsDriver = $this->driver();
-
-        $this->callProtectedMethod($smsDriver, 'sendText', [['0913', '0914'], 'Text message', '4567']);
-
-        $this->assertFalse($this->callProtectedMethod($smsDriver, 'isSuccessful'));
-        $this->assertSame('Something went wrong.', $this->callProtectedMethod($smsDriver, 'getErrorMessage'));
-        $this->assertSame(8, $this->callProtectedMethod($smsDriver, 'getErrorCode'));
-    }
-
-    #[Test]
-    public function it_throws_exception_for_any_connection_error_when_sending_text_message(): void
-    {
-        Http::fake(['*' => Http::failedConnection()]);
-
-        $this->expectException(ConnectionException::class);
-
-        $this->callProtectedMethod($this->driver(), 'sendText', [['0913', '0914'], 'Text message', '4567']);
     }
 
     #[Test]
@@ -82,8 +115,6 @@ final class RayganSmsDriverTest extends TestCase
         $this->callProtectedMethod($smsDriver, 'sendPattern', [['0913', '0914'], 'pattern_code', ['token1' => 'value_1', 'token2' => 'value_2'], '4567']);
 
         Http::assertSent(fn (Request $request) => $request->url() === 'https://smspanel.trez.ir/api/smsApiWithPattern/SendMessage'
-            && $request->method() === 'POST'
-            && $request->hasHeader('Authorization', $this->expectedAuth())
             && $request['AccessHash'] === 'sms_token'
             && $request['PhoneNumber'] === '4567'
             && $request['PatternId'] === 'pattern_code'
@@ -94,30 +125,6 @@ final class RayganSmsDriverTest extends TestCase
             && Carbon::createFromTimestamp($request['SendDateInTimeStamp'])->lessThan(now()));
 
         $this->assertTrue($this->callProtectedMethod($smsDriver, 'isSuccessful'));
-    }
-
-    #[Test]
-    public function it_sends_pattern_message_with_error(): void
-    {
-        Http::fake(['*' => Http::response(['Code' => 8, 'Message' => 'Something went wrong.'])]); // 0 is successful
-
-        $smsDriver = $this->driver();
-
-        $this->callProtectedMethod($smsDriver, 'sendPattern', [['0913', '0914'], 'pattern_code', ['token1' => 'value_1', 'token2' => 'value_2'], '4567']);
-
-        $this->assertFalse($this->callProtectedMethod($smsDriver, 'isSuccessful'));
-        $this->assertSame('Something went wrong.', $this->callProtectedMethod($smsDriver, 'getErrorMessage'));
-        $this->assertSame(8, $this->callProtectedMethod($smsDriver, 'getErrorCode'));
-    }
-
-    #[Test]
-    public function it_throws_exception_for_any_connection_error_when_sending_pattern_message(): void
-    {
-        Http::fake(['*' => Http::failedConnection()]);
-
-        $this->expectException(ConnectionException::class);
-
-        $this->callProtectedMethod($this->driver(), 'sendPattern', [['0913', '0914'], 'pattern_code', ['token1' => 'value_1', 'token2' => 'value_2'], '4567']);
     }
 
     #[Test]
