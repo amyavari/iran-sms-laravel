@@ -149,6 +149,25 @@ final class AsanakDriverTest extends TestCase
         $this->callProtectedMethod($this->driver(), 'sendOtp', ['013', 'Otp message', '4567']);
     }
 
+    #[Test]
+    public function it_returns_credit_successfully(): void
+    {
+        Http::fake(['*' => Http::response([
+            'meta' => ['status' => 200, 'message' => 'success'],
+            'data' => ['credit' => 1000],
+        ])]);
+
+        $credit = $this->driver()->credit();
+
+        $this->assertSame(1000, $credit);
+
+        Http::assertSent(fn (Request $request) => $request->url() === 'https://sms.asanak.ir/webservice/v2rest/getrialcredit'
+            && $request['username'] === 'sms_username'
+            && $request['password'] === 'sms_password'
+            && $request->method() === 'POST'
+        );
+    }
+
     // -----------------
     // Helper Methods
     // -----------------

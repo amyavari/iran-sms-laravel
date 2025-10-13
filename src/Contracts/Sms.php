@@ -10,6 +10,11 @@ namespace AliYavari\IranSms\Contracts;
 interface Sms
 {
     /**
+     * Get SMS provider credit balance in Rials
+     */
+    public function credit(): int;
+
+    /**
      * Create OTP SMS instance
      */
     public function otp(string $phone, string $message): static;

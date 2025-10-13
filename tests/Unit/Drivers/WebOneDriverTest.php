@@ -117,6 +117,21 @@ final class WebOneDriverTest extends TestCase
         $this->callProtectedMethod($this->driver(), 'sendPattern', [['0913', '0914'], 'pattern_code', ['key_1' => 'value_1', 'key_2' => 'value_2'], '4567']);
     }
 
+    #[Test]
+    public function it_returns_credit_successfully(): void
+    {
+        Http::fake(['*' => Http::response(1000.4)]);
+
+        $credit = $this->driver()->credit();
+
+        $this->assertSame(1000, $credit);
+
+        Http::assertSent(fn (Request $request) => $request->url() === 'https://api.payamakapi.ir/api/v1/SMS/GetCredit'
+            && $request->hasHeader('X-API-KEY', 'sms_token')
+            && $request->method() === 'GET'
+        );
+    }
+
     // -----------------
     // Helper Methods
     // -----------------

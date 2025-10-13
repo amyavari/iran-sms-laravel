@@ -14,12 +14,15 @@ use InvalidArgumentException;
 use UnexpectedValueException;
 
 /**
+ * @method static int credit() Get SMS provider credit balance in Rials
  * @method static \AliYavari\IranSms\Contracts\Sms driver(string $driver = null) Get SMS instance for sending by specified driver
  * @method static \AliYavari\IranSms\Contracts\Sms provider(string $provider = null) Get SMS instance for sending by specified provider
  * @method static \AliYavari\IranSms\Contracts\Sms otp(string $phone, string $message) Create OTP SMS instance.
  * @method static \AliYavari\IranSms\Contracts\Sms pattern(string|list<string> $phones, string $patternCode, array<mixed> $variables) Create Pattern SMS instance
  * @method static \AliYavari\IranSms\Contracts\Sms text(string|list<string> $phones, string $message) Create regular text SMS instance
  * @method static \AliYavari\IranSms\Contracts\Sms from(string $from) Set the sender number for the SMS
+ *
+ * @see \AliYavari\IranSms\Abstracts\Driver
  */
 final class Sms extends Facade
 {

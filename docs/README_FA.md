@@ -21,7 +21,6 @@
 | 1.1.0      | `amoot_sms`      | [amootsms.com]      | پیامک آموت            | Amoot SMS               |
 | منتشر نشده | `fara_payamak`   | [farapayamak.ir]    | فراپیامک              | Fara Payamak            |
 | منتشر نشده | `ghasedak`       | [ghasedak.me]       | قاصدک                 | Ghasedak                |
-| منتشر نشده | `limo_sms`       | [limosms.com]       | لیمو اس ام اس         | Limo SMS                |
 | منتشر نشده | `behin_payam`    | [behinpayam.com]    | بهین پیام             | Behin Payam             |
 | منتشر نشده | `asanak`         | [asanak.com]        | آسانک                 | Asanak                  |
 
@@ -36,8 +35,10 @@
 - [استفاده](#استفاده)
   - [ایجاد پیامک](#ایجاد-پیامک)
   - [تغییر شماره فرستنده](#تغییر-شماره-فرستنده)
-  - [لاگ‌گیری خودکار](#لاگگیری-خودکار)
+  - [لاگ‌گیری خودکار](#لاگ‌گیری-خودکار)
   - [ارسال پیامک](#ارسال-پیامک)
+  - [بررسی وضعیت ارسال](#بررسی-وضعیت-ارسال)
+  - [دریافت اعتبار حساب](#دریافت-اعتبار-حساب)
 - [استفاده با صف‌ها و نوتیفیکیشن‌ها](#استفاده-با-صفها-و-نوتیفیکیشنها)
 - [تست](#تست)
 
@@ -234,6 +235,22 @@ $sms->failed();     // bool
 $sms->error();      // string|null
 ```
 
+### دریافت اعتبار حساب
+
+بر ای مشاهده اعتبار حساب (بر حسب ریال):
+
+```php
+use AliYavari\IranSms\Facades\Sms;
+
+// ارائه‌دهنده پیش‌فرض
+$credit = Sms::credit();                                // int
+
+// ارائه‌دهنده خاص
+$credit = Sms::provider(string $provider)->credit();    // int
+```
+
+**نکته:** برای `$provider` از ستون `کلید ارائه‌دهنده` در [فهرست ارائه‌دهندگان پیامک](#فهرست-ارائه‌دهندگان-پیامک) استفاده کنید.
+
 ## استفاده با صف‌ها و نوتیفیکیشن‌ها
 
 ### صف‌ها
@@ -364,7 +381,6 @@ Sms::fake([
 [amootsms.com]: https://www.amootsms.com/
 [farapayamak.ir]: https://farapayamak.ir/
 [ghasedak.me]: https://ghasedak.me/
-[limosms.com]: https://limosms.com/
 [behinpayam.com]: https://behinpayam.com/
 [asanak.com]: https://asanak.com/
 [HTTP Client]: https://laravel.com/docs/12.x/http-client#throwing-exceptions

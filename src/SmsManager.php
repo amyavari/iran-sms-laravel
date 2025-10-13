@@ -14,7 +14,6 @@ use AliYavari\IranSms\Drivers\FaraPayamakDriver;
 use AliYavari\IranSms\Drivers\FarazSmsDriver;
 use AliYavari\IranSms\Drivers\GhasedakDriver;
 use AliYavari\IranSms\Drivers\KavenegarDriver;
-use AliYavari\IranSms\Drivers\LimoSmsDriver;
 use AliYavari\IranSms\Drivers\MeliPayamakDriver;
 use AliYavari\IranSms\Drivers\PayamResanDriver;
 use AliYavari\IranSms\Drivers\RayganSmsDriver;
@@ -120,11 +119,6 @@ final class SmsManager extends Manager
     protected function createGhasedakDriver(): GhasedakDriver
     {
         return $this->container->make(GhasedakDriver::class);
-    }
-
-    protected function createLimoSmsDriver(): LimoSmsDriver
-    {
-        return $this->container->make(LimoSmsDriver::class);
     }
 
     protected function createBehinPayamDriver(): BehinPayamDriver

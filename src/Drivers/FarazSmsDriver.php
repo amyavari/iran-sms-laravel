@@ -13,14 +13,14 @@ use Illuminate\Support\Facades\Http;
 /**
  * @internal
  *
- * See https://github.com/ippanelcom/Edge-Document
+ * @see https://github.com/ippanelcom/Edge-Document
  */
 final class FarazSmsDriver extends Driver
 {
     /**
      * The base URL for the API.
      */
-    private string $baseUrl = 'https://edge.ippanel.com/v1/api/send';
+    private string $baseUrl = 'https://edge.ippanel.com/v1/api/';
 
     /**
      * The sent status returned in the API response body (e.g., `meta.status` field).
@@ -41,6 +41,20 @@ final class FarazSmsDriver extends Driver
         private readonly string $token,
         private readonly string $from,
     ) {}
+
+    /**
+     * {@inheritdoc}
+     */
+    public function credit(): int
+    {
+        $response = Http::baseUrl($this->baseUrl)
+            ->withHeaders($this->credentials())
+            ->asJson()
+            ->get('payment/credit/mine')
+            ->throw();
+
+        return (int) $response->json('data.credit');
+    }
 
     /**
      * {@inheritdoc}
@@ -132,12 +146,9 @@ final class FarazSmsDriver extends Driver
      */
     private function execute(array $data): void
     {
-        $credentials = [
-            'Authorization' => $this->token,
-        ];
-
-        $response = Http::withHeaders($credentials)
-            ->post($this->baseUrl, $data)
+        $response = Http::baseUrl($this->baseUrl)
+            ->withHeaders($this->credentials())
+            ->post('send', $data)
             ->throw();
 
         $meta = $response->json('meta');
@@ -145,6 +156,16 @@ final class FarazSmsDriver extends Driver
         $this->apiStatus = $meta['status'];
         $this->apiStatusCode = $meta['message_code'];
         $this->apiErrorMessage = $meta['message'];
+    }
+
+    /**
+     * @return array{Authorization: string}
+     */
+    private function credentials(): array
+    {
+        return [
+            'Authorization' => $this->token,
+        ];
     }
 
     /**

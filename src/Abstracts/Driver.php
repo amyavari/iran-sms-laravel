@@ -55,6 +55,11 @@ abstract class Driver implements Sms
     private bool $isSent = false;
 
     /**
+     * {@inheritdoc}
+     */
+    abstract public function credit(): int;
+
+    /**
      * Get the default sender number from config
      */
     abstract protected function getDefaultSender(): string;

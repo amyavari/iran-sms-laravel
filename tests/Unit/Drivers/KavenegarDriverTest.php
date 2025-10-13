@@ -136,6 +136,25 @@ final class KavenegarDriverTest extends TestCase
         $this->callProtectedMethod($this->driver(), 'sendOtp', ['013', 'Otp message', '4567']);
     }
 
+    #[Test]
+    public function it_returns_credit_successfully(): void
+    {
+        Http::fake(['*' => Http::response(['entries' => ['remaincredit' => 1000]])]);
+
+        $credit = $this->driver()->credit();
+
+        $this->assertSame(1000, $credit);
+
+        Http::assertSent(fn (Request $request) => Str::of($request->url())->startsWith('https://api.kavenegar.com/v1/')
+            && $request->hasHeader('charset', 'utf-8')
+            && $request->hasHeader('Accept', 'application/json')
+            && $request->hasHeader('Content-Type', 'application/x-www-form-urlencoded')
+            && Str::of($request->url())->contains('/sms_token')
+            && Str::of($request->url())->endsWith('/account/info.json')
+            && $request->method() === 'GET'
+        );
+    }
+
     // -----------------
     // Helper Methods
     // -----------------

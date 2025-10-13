@@ -35,11 +35,9 @@ final class RayganSmsDriverTest extends TestCase
 
         $this->callProtectedMethod($smsDriver, 'sendText', [['0913', '0914'], 'Text message', '4567']);
 
-        $expectedAuth = 'Basic '.base64_encode('sms_username:sms_password');
-
-        Http::assertSent(fn (Request $request) => $request->url() === 'http://smspanel.trez.ir/api/smsAPI/SendMessage'
+        Http::assertSent(fn (Request $request) => $request->url() === 'https://smspanel.trez.ir/api/smsAPI/SendMessage'
             && $request->method() === 'POST'
-            && $request->hasHeader('Authorization', $expectedAuth)
+            && $request->hasHeader('Authorization', $this->expectedAuth())
             && $request['PhoneNumber'] === '4567'
             && $request['Message'] === 'Text message'
             && $request['Mobiles'] === ['0913', '0914']
@@ -83,11 +81,9 @@ final class RayganSmsDriverTest extends TestCase
 
         $this->callProtectedMethod($smsDriver, 'sendPattern', [['0913', '0914'], 'pattern_code', ['token1' => 'value_1', 'token2' => 'value_2'], '4567']);
 
-        $expectedAuth = 'Basic '.base64_encode('sms_username:sms_password');
-
         Http::assertSent(fn (Request $request) => $request->url() === 'https://smspanel.trez.ir/api/smsApiWithPattern/SendMessage'
             && $request->method() === 'POST'
-            && $request->hasHeader('Authorization', $expectedAuth)
+            && $request->hasHeader('Authorization', $this->expectedAuth())
             && $request['AccessHash'] === 'sms_token'
             && $request['PhoneNumber'] === '4567'
             && $request['PatternId'] === 'pattern_code'
@@ -180,6 +176,21 @@ final class RayganSmsDriverTest extends TestCase
         $this->callProtectedMethod($this->driver(), 'sendOtp', ['013', 'Otp message', '4567']);
     }
 
+    #[Test]
+    public function it_returns_credit_successfully(): void
+    {
+        Http::fake(['*' => Http::response(['Result' => '1000'])]);
+
+        $credit = $this->driver()->credit();
+
+        $this->assertSame(1000, $credit);
+
+        Http::assertSent(fn (Request $request) => $request->url() === 'https://smspanel.trez.ir/api/smsAPI/GetCredit'
+            && $request->hasHeader('Authorization', $this->expectedAuth())
+            && $request->method() === 'POST'
+        );
+    }
+
     // -----------------
     // Helper Methods
     // -----------------
@@ -192,5 +203,10 @@ final class RayganSmsDriverTest extends TestCase
         Config::set('iran-sms.providers.raygan_sms.from', '123');
 
         return $this->app->make(RayganSmsDriver::class);
+    }
+
+    private function expectedAuth(): string
+    {
+        return 'Basic '.base64_encode('sms_username:sms_password');
     }
 }

@@ -20,6 +20,14 @@ final class FakeDriver extends Driver
     /**
      * {@inheritdoc}
      */
+    public function credit(): int
+    {
+        return 0;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function getDefaultSender(): string
     {
         return '';

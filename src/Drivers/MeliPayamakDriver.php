@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Http;
 /**
  * @internal
  *
- * See https://www.melipayamak.com/api/sendsimplesms2/
- * See https://www.melipayamak.com/api/sendbybasenumber2/
+ * @see https://www.melipayamak.com/api/sendsimplesms2/
+ * @see https://www.melipayamak.com/api/sendbybasenumber2/
  */
 final class MeliPayamakDriver extends Driver
 {
@@ -32,6 +32,20 @@ final class MeliPayamakDriver extends Driver
         private readonly string $password,
         private readonly string $from,
     ) {}
+
+    /**
+     * {@inheritdoc}
+     */
+    public function credit(): int
+    {
+        $response = Http::baseUrl($this->baseUrl)
+            ->asForm()
+            ->acceptJson()
+            ->post('GetCredit', $this->credentials())
+            ->throw();
+
+        return (int) $response->json('Value');
+    }
 
     /**
      * {@inheritdoc}
@@ -144,19 +158,25 @@ final class MeliPayamakDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $credentials = [
-            'username' => $this->username,
-            'password' => $this->password,
-        ];
-
         $response = Http::baseUrl($this->baseUrl)
             ->asForm()
             ->acceptJson()
-            ->post($endpoint, array_merge($credentials, $data))
+            ->post($endpoint, array_merge($this->credentials(), $data))
             ->throw();
 
         $this->apiStatusCode = (string) $response->json('Value');
 
+    }
+
+    /**
+     * @return array{username: string, password: string}
+     */
+    private function credentials(): array
+    {
+        return [
+            'username' => $this->username,
+            'password' => $this->password,
+        ];
     }
 
     /**

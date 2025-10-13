@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Http;
 /**
  * @internal
  *
- * See https://webone-sms.ir/Home/WebServices
+ * @see https://webone-sms.ir/Home/WebServices
  */
 final class WebOneDriver extends Driver
 {
@@ -34,6 +34,19 @@ final class WebOneDriver extends Driver
         private readonly string $token,
         private readonly string $from,
     ) {}
+
+    /**
+     * {@inheritdoc}
+     */
+    public function credit(): int
+    {
+        $response = Http::withHeaders($this->credentials())
+            ->baseUrl($this->baseUrl)
+            ->get('SMS/GetCredit')
+            ->throw();
+
+        return (int) $response->body();
+    }
 
     /**
      * {@inheritdoc}
@@ -138,11 +151,7 @@ final class WebOneDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $credentials = [
-            'X-API-KEY' => $this->token,
-        ];
-
-        $response = Http::withHeaders($credentials)
+        $response = Http::withHeaders($this->credentials())
             ->baseUrl($this->baseUrl)
             ->post($endpoint, $data)
             ->throw()
@@ -150,5 +159,16 @@ final class WebOneDriver extends Driver
 
         $this->apiStatus = (bool) $response['succeeded'];
         $this->apiStatusCode = (int) $response['resultCode'];
+    }
+
+    /**
+     * @return array{X-API-KEY: string}
+     */
+    private function credentials(): array
+    {
+        return [
+            'X-API-KEY' => $this->token,
+        ];
+
     }
 }

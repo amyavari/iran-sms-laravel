@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Http;
 /**
  * @internal
  *
- * See https://asanak.com/api-docs
+ * @see https://asanak.com/api-docs
  */
 final class AsanakDriver extends Driver
 {
@@ -33,6 +33,19 @@ final class AsanakDriver extends Driver
         private readonly string $password,
         private readonly string $from,
     ) {}
+
+    /**
+     * {@inheritdoc}
+     */
+    public function credit(): int
+    {
+        $response = Http::baseUrl($this->baseUrl)
+            ->acceptJson()
+            ->post('getrialcredit', $this->credentials())
+            ->throw();
+
+        return (int) $response->json('data.credit');
+    }
 
     /**
      * {@inheritdoc}
@@ -137,18 +150,23 @@ final class AsanakDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $credentials = [
-            'username' => $this->username,
-            'password' => $this->password,
-        ];
-
         $response = Http::baseUrl($this->baseUrl)
             ->acceptJson()
-            ->post($endpoint, array_merge($credentials, $data))
+            ->post($endpoint, array_merge($this->credentials(), $data))
             ->throw();
 
         $this->apiStatusCode = (int) $response->json('meta.status');
+    }
 
+    /**
+     * @return array{username: string, password:string}
+     */
+    private function credentials(): array
+    {
+        return [
+            'username' => $this->username,
+            'password' => $this->password,
+        ];
     }
 
     /**

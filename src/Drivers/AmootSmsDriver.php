@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Http;
 /**
  * @internal
  *
- * See https://portal.amootsms.com/Documentation
+ * @see https://portal.amootsms.com/Documentation
  */
 final class AmootSmsDriver extends Driver
 {
@@ -30,6 +30,18 @@ final class AmootSmsDriver extends Driver
         private readonly string $token,
         private readonly string $from,
     ) {}
+
+    /**
+     * {@inheritdoc}
+     */
+    public function credit(): int
+    {
+        $response = Http::baseUrl($this->baseUrl)
+            ->get('AccountStatus', $this->credentials())
+            ->throw();
+
+        return (int) $response->json('RemaindCredit');
+    }
 
     /**
      * {@inheritdoc}
@@ -117,16 +129,21 @@ final class AmootSmsDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $credentials = [
-            'Token' => $this->token,
-
-        ];
-
         $response = Http::baseUrl($this->baseUrl)
-            ->get($endpoint, array_merge($credentials, $data))
+            ->get($endpoint, array_merge($this->credentials(), $data))
             ->throw();
 
         $this->apiStatus = $response->json('Status');
+    }
+
+    /**
+     * @return array{Token: string}
+     */
+    private function credentials(): array
+    {
+        return [
+            'Token' => $this->token,
+        ];
     }
 
     /**

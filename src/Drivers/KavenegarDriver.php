@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Http;
 /**
  * @internal
  *
- * See https://kavenegar.com/rest.html
+ * @see https://kavenegar.com/rest.html
  */
 final class KavenegarDriver extends Driver
 {
@@ -32,6 +32,21 @@ final class KavenegarDriver extends Driver
         private readonly string $token,
         private readonly string $from,
     ) {}
+
+    /**
+     * {@inheritdoc}
+     */
+    public function credit(): int
+    {
+        $response = Http::baseUrl($this->baseUrl.$this->credentials())
+            ->withHeader('charset', 'utf-8')
+            ->asForm()
+            ->acceptJson()
+            ->get('account/info.json')
+            ->throw();
+
+        return (int) $response->json('entries.remaincredit');
+    }
 
     /**
      * {@inheritdoc}
@@ -151,9 +166,7 @@ final class KavenegarDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $credentials = '/'.$this->token;
-
-        $response = Http::baseUrl($this->baseUrl.$credentials)
+        $response = Http::baseUrl($this->baseUrl.$this->credentials())
             ->withHeader('charset', 'utf-8')
             ->asForm()
             ->acceptJson()
@@ -161,6 +174,11 @@ final class KavenegarDriver extends Driver
             ->throw();
 
         $this->apiStatusCode = (int) $response->json('return.status');
+    }
+
+    private function credentials(): string
+    {
+        return '/'.$this->token;
     }
 
     /**

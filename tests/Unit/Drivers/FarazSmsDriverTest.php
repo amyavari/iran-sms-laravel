@@ -141,6 +141,22 @@ final class FarazSmsDriverTest extends TestCase
         $this->callProtectedMethod($this->driver(), 'sendOtp', ['013', 'Otp message', '4567']);
     }
 
+    #[Test]
+    public function it_returns_credit_successfully(): void
+    {
+        Http::fake(['*' => Http::response(['data' => ['credit' => 1000.2354]])]);
+
+        $credit = $this->driver()->credit();
+
+        $this->assertSame(1000, $credit);
+
+        Http::assertSent(fn (Request $request) => $request->url() === 'https://edge.ippanel.com/v1/api/payment/credit/mine'
+                && $request->method() === 'GET'
+                && $request->hasHeader('Content-Type', 'application/json')
+                && $request->hasHeader('Authorization', 'sms_token')
+        );
+    }
+
     // -----------------
     // Helper Methods
     // -----------------

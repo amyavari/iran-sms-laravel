@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Http;
 /**
  * @internal
  *
- * See https://doc.sms-webservice.com/
+ * @see https://doc.sms-webservice.com/
  */
 final class BehinPayamDriver extends Driver
 {
@@ -32,6 +32,18 @@ final class BehinPayamDriver extends Driver
         private readonly string $token,
         private readonly string $from,
     ) {}
+
+    /**
+     * {@inheritdoc}
+     */
+    public function credit(): int
+    {
+        $response = Http::baseUrl($this->baseUrl)
+            ->post('AccountInfo', $this->credentials())
+            ->throw();
+
+        return (int) $response->json('Credit');
+    }
 
     /**
      * {@inheritdoc}
@@ -120,16 +132,22 @@ final class BehinPayamDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $credentials = [
-            'ApiKey' => $this->token,
-        ];
-
         $response = Http::baseUrl($this->baseUrl)
             ->acceptJson()
-            ->get($endpoint, array_merge($credentials, $data))
+            ->get($endpoint, array_merge($this->credentials(), $data))
             ->throw();
 
         $this->smsId = (int) $response->json('id');
+    }
+
+    /**
+     * @return array{ApiKey: string,}
+     */
+    private function credentials(): array
+    {
+        return [
+            'ApiKey' => $this->token,
+        ];
     }
 
     /**

@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 /**
  * @internal
  *
- * See https://raygansms.com/webservice/api/home#samplecode
+ * @see https://raygansms.com/webservice/api/home#samplecode
  */
 final class RayganSmsDriver extends Driver
 {
@@ -25,12 +25,17 @@ final class RayganSmsDriver extends Driver
     /**
      * The URL for sending text message
      */
-    private string $textUrl = 'http://smspanel.trez.ir/api/smsAPI/SendMessage';
+    private string $textUrl = 'https://smspanel.trez.ir/api/smsAPI/SendMessage';
 
     /**
      * The URL for sending pattern message
      */
     private string $patternUrl = 'https://smspanel.trez.ir/api/smsApiWithPattern/SendMessage';
+
+    /**
+     * The URL for getting credit
+     */
+    private string $creditUrl = 'https://smspanel.trez.ir/api/smsAPI/GetCredit';
 
     /**
      * Sending status based on the API response code (`$apiStatusCode`).
@@ -53,6 +58,18 @@ final class RayganSmsDriver extends Driver
         private readonly string $password,
         private readonly string $from,
     ) {}
+
+    /**
+     * {@inheritdoc}
+     */
+    public function credit(): int
+    {
+        $response = Http::withBasicAuth($this->username, $this->password)
+            ->post($this->creditUrl)
+            ->throw();
+
+        return (int) $response->json('Result');
+    }
 
     /**
      * {@inheritdoc}
