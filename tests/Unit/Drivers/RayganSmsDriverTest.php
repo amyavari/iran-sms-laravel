@@ -47,7 +47,7 @@ final class RayganSmsDriverTest extends TestCase
     public function it_sets_and_returns_the_successful_response_status_correctly(): void
     {
         Http::fake([
-            'https://smspanel.trez.ir/api/end-point' => Http::response(['Code' => 0, 'Message' => 'successful.']), // status `0` is successful
+            'https://smspanel.trez.ir/api/end-point' => Http::response(['Code' => 0, 'Message' => 'successful.']), // Code `0` is successful
         ]);
 
         $smsDriver = $this->driver();
