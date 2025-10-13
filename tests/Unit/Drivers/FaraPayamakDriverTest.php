@@ -39,28 +39,35 @@ final class FaraPayamakDriverTest extends TestCase
             && $request->hasHeader('Accept', 'application/json')
             && $request->url() === 'https://rest.payamak-panel.com/api/SendSMS/end-point'
             && $request->method() === 'POST'
-            && $request->data()['username'] === 'sms_username'
-            && $request->data()['password'] === 'sms_password'
-            && $request->data()['key'] === 'value');
+            && $request['username'] === 'sms_username'
+            && $request['password'] === 'sms_password'
+            && $request['key'] === 'value');
     }
 
     #[Test]
-    public function it_sets_and_returns_the_response_status_correctly(): void
+    public function it_sets_and_returns_the_successful_response_status_correctly(): void
     {
         Http::fake([
-            'https://rest.payamak-panel.com/api/SendSMS/success-end-point' => Http::response(['Value' => '123456789012345']), // More than 15 digits is successful status
-            'https://rest.payamak-panel.com/api/SendSMS/fail-end-point' => Http::response(['Value' => '10']), // Other numbers are failed status
+            'https://rest.payamak-panel.com/api/SendSMS/end-point' => Http::response(['Value' => '123456789012345']), // More than 15 digits is successful status
         ]);
 
         $smsDriver = $this->driver();
 
-        // Successful response
-        $this->callProtectedMethod($smsDriver, 'execute', ['success-end-point', ['key' => 'value']]);
+        $this->callProtectedMethod($smsDriver, 'execute', ['end-point', ['key' => 'value']]);
 
         $this->assertTrue($this->callProtectedMethod($smsDriver, 'isSuccessful'));
+    }
 
-        // failed response
-        $this->callProtectedMethod($smsDriver, 'execute', ['fail-end-point', ['key' => 'value']]);
+    #[Test]
+    public function it_sets_and_returns_the_failed_response_status_correctly(): void
+    {
+        Http::fake([
+            'https://rest.payamak-panel.com/api/SendSMS/end-point' => Http::response(['Value' => '10']),
+        ]);
+
+        $smsDriver = $this->driver();
+
+        $this->callProtectedMethod($smsDriver, 'execute', ['end-point', ['key' => 'value']]);
 
         $this->assertFalse($this->callProtectedMethod($smsDriver, 'isSuccessful'));
         $this->assertSame('کاربر موردنظر فعال نمی‌باشد', $this->callProtectedMethod($smsDriver, 'getErrorMessage'));
@@ -87,9 +94,9 @@ final class FaraPayamakDriverTest extends TestCase
         $this->callProtectedMethod($this->driver(), 'sendText', [['0913', '0914'], 'Text message', '4567']);
 
         Http::assertSent(fn (Request $request) => $request->url() === 'https://rest.payamak-panel.com/api/SendSMS/SendSMS'
-            && $request->data()['from'] === '4567'
-            && $request->data()['to'] === '0913,0914'
-            && $request->data()['text'] === 'Text message');
+            && $request['from'] === '4567'
+            && $request['to'] === '0913,0914'
+            && $request['text'] === 'Text message');
     }
 
     #[Test]
@@ -100,9 +107,9 @@ final class FaraPayamakDriverTest extends TestCase
         $this->callProtectedMethod($this->driver(), 'sendPattern', [['0913'], 'pattern_code', ['key_1' => 'value_1', 'key_2' => 'value_2'], '4567']);
 
         Http::assertSent(fn (Request $request) => $request->url() === 'https://rest.payamak-panel.com/api/SendSMS/BaseServiceNumber'
-            && $request->data()['to'] === '0913'
-            && $request->data()['bodyId'] === 'pattern_code'
-            && $request->data()['text'] === 'value_1;value_2');
+            && $request['to'] === '0913'
+            && $request['bodyId'] === 'pattern_code'
+            && $request['text'] === 'value_1;value_2');
     }
 
     #[Test]
@@ -136,8 +143,8 @@ final class FaraPayamakDriverTest extends TestCase
             && $request->hasHeader('Content-Type', 'application/x-www-form-urlencoded')
             && $request->hasHeader('Accept', 'application/json')
             && $request->method() === 'POST'
-            && $request->data()['username'] === 'sms_username'
-            && $request->data()['password'] === 'sms_password'
+            && $request['username'] === 'sms_username'
+            && $request['password'] === 'sms_password'
         );
     }
 

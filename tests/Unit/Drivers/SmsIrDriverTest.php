@@ -44,22 +44,29 @@ final class SmsIrDriverTest extends TestCase
     }
 
     #[Test]
-    public function it_sets_and_returns_the_response_status_correctly(): void
+    public function it_sets_and_returns_the_successful_response_status_correctly(): void
     {
         Http::fake([
-            'https://api.sms.ir/v1/success-end-point' => Http::response(['status' => 1]), // 1 is successful status
-            'https://api.sms.ir/v1/fail-end-point' => Http::response(['status' => 10]), // Other numbers are failed status
+            'https://api.sms.ir/v1/end-point' => Http::response(['status' => 1]), // `1` is successful status
         ]);
 
         $smsDriver = $this->driver();
 
-        // Successful response
-        $this->callProtectedMethod($smsDriver, 'execute', ['success-end-point', ['key' => 'value']]);
+        $this->callProtectedMethod($smsDriver, 'execute', ['end-point', ['key' => 'value']]);
 
         $this->assertTrue($this->callProtectedMethod($smsDriver, 'isSuccessful'));
+    }
 
-        // failed response
-        $this->callProtectedMethod($smsDriver, 'execute', ['fail-end-point', ['key' => 'value']]);
+    #[Test]
+    public function it_sets_and_returns_the_failed_response_status_correctly(): void
+    {
+        Http::fake([
+            'https://api.sms.ir/v1/end-point' => Http::response(['status' => 10]),
+        ]);
+
+        $smsDriver = $this->driver();
+
+        $this->callProtectedMethod($smsDriver, 'execute', ['end-point', ['key' => 'value']]);
 
         $this->assertFalse($this->callProtectedMethod($smsDriver, 'isSuccessful'));
         $this->assertSame('کلیدوب سرویس نامعتبر است شد', $this->callProtectedMethod($smsDriver, 'getErrorMessage'));

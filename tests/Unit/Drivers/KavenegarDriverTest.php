@@ -48,22 +48,29 @@ final class KavenegarDriverTest extends TestCase
     }
 
     #[Test]
-    public function it_sets_and_returns_the_response_status_correctly(): void
+    public function it_sets_and_returns_the_successful_response_status_correctly(): void
     {
         Http::fake([
-            'https://api.kavenegar.com/v1/sms_token/success-end-point.json' => Http::response(['return' => ['status' => 200]]), // Follows REST API status
-            'https://api.kavenegar.com/v1/sms_token/fail-end-point.json' => Http::response(['return' => ['status' => 412]]),
+            'https://api.kavenegar.com/v1/sms_token/end-point.json' => Http::response(['return' => ['status' => 200]]), // Follows REST API status
         ]);
 
         $smsDriver = $this->driver();
 
-        // Successful response
-        $this->callProtectedMethod($smsDriver, 'execute', ['success-end-point', ['key' => 'value']]);
+        $this->callProtectedMethod($smsDriver, 'execute', ['end-point', ['key' => 'value']]);
 
         $this->assertTrue($this->callProtectedMethod($smsDriver, 'isSuccessful'));
+    }
 
-        // failed response
-        $this->callProtectedMethod($smsDriver, 'execute', ['fail-end-point', ['key' => 'value']]);
+    #[Test]
+    public function it_sets_and_returns_the_failed_response_status_correctly(): void
+    {
+        Http::fake([
+            'https://api.kavenegar.com/v1/sms_token/end-point.json' => Http::response(['return' => ['status' => 412]]),
+        ]);
+
+        $smsDriver = $this->driver();
+
+        $this->callProtectedMethod($smsDriver, 'execute', ['end-point', ['key' => 'value']]);
 
         $this->assertFalse($this->callProtectedMethod($smsDriver, 'isSuccessful'));
         $this->assertSame('ارسال کننده نامعتبر است', $this->callProtectedMethod($smsDriver, 'getErrorMessage'));
