@@ -41,7 +41,7 @@ final class MeliPayamakDriver extends Driver
         $response = Http::baseUrl($this->baseUrl)
             ->asForm()
             ->acceptJson()
-            ->post('GetCredit', $this->credentials())
+            ->post('GetCredit2', $this->credentials())
             ->throw();
 
         return (int) $response->json('Value');

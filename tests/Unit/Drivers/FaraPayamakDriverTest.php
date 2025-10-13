@@ -139,7 +139,7 @@ final class FaraPayamakDriverTest extends TestCase
 
         $this->assertSame(1000, $credit);
 
-        Http::assertSent(fn (Request $request) => $request->url() === 'https://rest.payamak-panel.com/api/SendSMS/GetCredit'
+        Http::assertSent(fn (Request $request) => $request->url() === 'https://rest.payamak-panel.com/api/SendSMS/GetCredit2'
             && $request->hasHeader('Content-Type', 'application/x-www-form-urlencoded')
             && $request->hasHeader('Accept', 'application/json')
             && $request->method() === 'POST'
