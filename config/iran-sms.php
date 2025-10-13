@@ -91,12 +91,6 @@ return [
             'from' => env('SMS_FROM', ''),
         ],
 
-        // https://limosms.com/
-        'limo_sms' => [
-            'token' => env('SMS_TOKEN', ''),
-            'from' => env('SMS_FROM', ''),
-        ],
-
         // https://behinpayam.com/
         'behin_payam' => [
             'token' => env('SMS_TOKEN', ''),
