@@ -9,4 +9,5 @@
 .env
 .env.backup
 .env.production
-TODO.md
+todos.md
+composer.lock
