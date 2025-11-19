@@ -10,7 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Removed
 
 - `composer.lock`.
-- Patch version constraints from dependencies.
+
+### Changed
+
+- Increased minimum Laravel version support due to security advisories.
 
 ## [1.2.0] - 2025-10-13
 
