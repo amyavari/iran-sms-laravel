@@ -21,7 +21,7 @@ jobs:
       fail-fast: true
       matrix:
         os: [ubuntu-latest]
-        php: ["8.2", "8.3", "8.4"]
+        php: [8.2, 8.3, 8.4]
 
     name: PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -46,7 +46,7 @@ jobs:
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: dependencies-php-${{ matrix.php }}-os-${{ matrix.os }}-version-${{ matrix.dependency-version }}-composer-${{ hashFiles('composer.json') }}
-          restore-keys: dependencies-php-${{ matrix.php }}-os-${{ matrix.os }}-version-
+          restore-keys: dependencies-php-${{ matrix.php }}-os-${{ matrix.os }}-version-${{ matrix.dependency-version }}-
 
       - name: Install Composer dependencies
         run: composer update --no-interaction --prefer-dist
