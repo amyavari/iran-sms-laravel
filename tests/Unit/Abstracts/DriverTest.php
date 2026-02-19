@@ -128,7 +128,7 @@ final class DriverTest extends TestCase
     #[Test]
     public function it_creates_and_sends_sms_with_user_defined_sender_successfully(): void
     {
-        $this->getAllSmsTypes(from: '1234')->each(function (ConcreteTestDriver $sms) {
+        $this->getAllSmsTypes(from: '1234')->each(function (ConcreteTestDriver $sms): void {
             $sms->from('4567')->send();
 
             $this->assertSame('4567', $sms->dataToAssert['from']);
@@ -235,13 +235,13 @@ final class DriverTest extends TestCase
     #[Test]
     public function it_calls_handle_log_after_sending_sms(): void
     {
-        $this->getAllSmsTypes(successful: true)->each(function (ConcreteTestDriver $sms) {
+        $this->getAllSmsTypes(successful: true)->each(function (ConcreteTestDriver $sms): void {
             $sms->logSuccessful()->send(); // Must be logged
         });
 
         $this->assertDatabaseCount(SmsLog::class, 3);
 
-        $this->getAllSmsTypes(successful: true)->each(function (ConcreteTestDriver $sms) {
+        $this->getAllSmsTypes(successful: true)->each(function (ConcreteTestDriver $sms): void {
             $sms->logFailed()->send(); // Must not be logged
         });
 
@@ -252,12 +252,12 @@ final class DriverTest extends TestCase
     // Helper Methods
     // -----------------
 
-    private function sms($from = '123', $successful = true): ConcreteTestDriver
+    private function sms(string $from = '123', bool $successful = true): ConcreteTestDriver
     {
         return new ConcreteTestDriver($from, $successful);
     }
 
-    private function getAllSmsTypes($from = '123', $successful = true): Collection
+    private function getAllSmsTypes(string $from = '123', bool $successful = true): Collection
     {
         return collect([
             $this->sms($from, $successful)->text('091234567', 'Text Message'),

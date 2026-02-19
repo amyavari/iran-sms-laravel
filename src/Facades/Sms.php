@@ -61,8 +61,8 @@ final class Sms extends Facade
 
         self::ensureDriverResponseMapping($providers, $response)
             ->pipeThrough([
-                fn (Collection $driverResponseMap) => self::resolveDefaultDriverName($driverResponseMap),
-                fn (Collection $driverResponseMap) => self::registerFakeDrivers($driverResponseMap),
+                self::resolveDefaultDriverName(...),
+                self::registerFakeDrivers(...),
             ]);
     }
 
@@ -114,7 +114,7 @@ final class Sms extends Facade
         if (Arr::isList($drivers)) {
             $response ??= self::successfulRequest();
 
-            $drivers = Arr::mapWithKeys($drivers, fn (string $value) => [$value => $response]);
+            $drivers = Arr::mapWithKeys($drivers, fn (string $value): array => [$value => $response]);
         }
 
         return collect($drivers);
@@ -128,8 +128,8 @@ final class Sms extends Facade
      */
     private static function resolveDefaultDriverName(Collection $driverResponseMap): Collection
     {
-        return $driverResponseMap->mapWithKeys(function (MockResponse $response, string $driver) {
-            $driver = $driver === 'default' ? static::getFacadeRoot()->getDefaultDriver() : $driver;
+        return $driverResponseMap->mapWithKeys(function (MockResponse $response, string $driver): array {
+            $driver = $driver === 'default' ? self::getFacadeRoot()->getDefaultDriver() : $driver;
 
             return [$driver => $response];
         });
@@ -142,10 +142,10 @@ final class Sms extends Facade
      */
     private static function registerFakeDrivers(Collection $driverResponseMap): void
     {
-        $driverResponseMap->each(function (MockResponse $response, string $driver) {
+        $driverResponseMap->each(function (MockResponse $response, string $driver): void {
             $fakeDriver = new FakeDriver($response);
 
-            static::getFacadeRoot()->setDriver($driver, $fakeDriver);
+            self::getFacadeRoot()->setDriver($driver, $fakeDriver);
         });
     }
 }

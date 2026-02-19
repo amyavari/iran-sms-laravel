@@ -36,7 +36,7 @@ final class SmsIrDriverTest extends TestCase
 
         $this->callProtectedMethod($smsDriver, 'execute', ['end-point', ['key' => 'value']]);
 
-        Http::assertSent(fn (Request $request) => $request->hasHeader('x-api-key', 'sms_token')
+        Http::assertSent(fn (Request $request): bool => $request->hasHeader('x-api-key', 'sms_token')
             && $request->hasHeader('Accept', 'application/json')
             && $request->url() === 'https://api.sms.ir/v1/end-point'
             && $request->method() === 'POST'
@@ -92,7 +92,7 @@ final class SmsIrDriverTest extends TestCase
 
         $this->callProtectedMethod($this->driver(), 'sendText', [['0913', '0914'], 'Text message', '4567']);
 
-        Http::assertSent(fn (Request $request) => $request->url() === 'https://api.sms.ir/v1/send/bulk'
+        Http::assertSent(fn (Request $request): bool => $request->url() === 'https://api.sms.ir/v1/send/bulk'
             && $request['lineNumber'] === '4567'
             && $request['messageText'] === 'Text message'
             && $request['mobiles'] === ['0913', '0914']
@@ -106,7 +106,7 @@ final class SmsIrDriverTest extends TestCase
 
         $this->callProtectedMethod($this->driver(), 'sendPattern', [['0913'], 'pattern_code', ['key_1' => 'value_1', 'key_2' => 'value_2'], '4567']);
 
-        Http::assertSent(fn (Request $request) => $request->url() === 'https://api.sms.ir/v1/send/verify'
+        Http::assertSent(fn (Request $request): bool => $request->url() === 'https://api.sms.ir/v1/send/verify'
             && $request['mobile'] === '0913'
             && $request['templateId'] === 'pattern_code'
             && $request['parameters'] === [
@@ -157,7 +157,7 @@ final class SmsIrDriverTest extends TestCase
 
         $this->assertSame(1000, $credit);
 
-        Http::assertSent(fn (Request $request) => $request->url() === 'https://api.sms.ir/v1/credit'
+        Http::assertSent(fn (Request $request): bool => $request->url() === 'https://api.sms.ir/v1/credit'
             && $request->hasHeader('x-api-key', 'sms_token')
             && $request->hasHeader('Accept', 'application/json')
             && $request->method() === 'GET'

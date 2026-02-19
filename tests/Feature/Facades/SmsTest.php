@@ -65,8 +65,8 @@ final class SmsTest extends TestCase
         Sms::fake($sampleDrivers);
 
         collect($sampleDrivers)
-            ->map(fn (string $driver) => $driver === 'default' ? null : $driver)
-            ->each(function (?string $driver) {
+            ->map(fn (string $driver): ?string => $driver === 'default' ? null : $driver)
+            ->each(function (?string $driver): void {
                 $sms = Sms::driver($driver)->otp('012', 'test')->send();
 
                 $this->assertInstanceOf(FakeDriver::class, $sms);
@@ -83,8 +83,8 @@ final class SmsTest extends TestCase
         Sms::fake($sampleDrivers, Sms::successfulRequest());
 
         collect($sampleDrivers)
-            ->map(fn (string $driver) => $driver === 'default' ? null : $driver)
-            ->each(function (?string $driver) {
+            ->map(fn (string $driver): ?string => $driver === 'default' ? null : $driver)
+            ->each(function (?string $driver): void {
                 $sms = Sms::driver($driver)->otp('012', 'test')->send();
 
                 $this->assertInstanceOf(FakeDriver::class, $sms);
@@ -101,8 +101,8 @@ final class SmsTest extends TestCase
         Sms::fake($sampleDrivers, Sms::failedRequest('Custom error message', 40));
 
         collect($sampleDrivers)
-            ->map(fn (string $driver) => $driver === 'default' ? null : $driver)
-            ->each(function (?string $driver) {
+            ->map(fn (string $driver): ?string => $driver === 'default' ? null : $driver)
+            ->each(function (?string $driver): void {
                 $sms = Sms::driver($driver)->otp('012', 'test')->send();
 
                 $this->assertInstanceOf(FakeDriver::class, $sms);

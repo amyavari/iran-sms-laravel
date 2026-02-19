@@ -39,7 +39,7 @@ final class AmootSmsDriverTest extends TestCase
 
         $this->callProtectedMethod($smsDriver, 'execute', ['end-point', ['key' => 'value']]);
 
-        Http::assertSent(function (Request $request) {
+        Http::assertSent(function (Request $request): bool {
             $uri = Uri::of($request->url());
 
             return Str::of($request->url())->startsWith('https://portal.amootsms.com/rest/end-point')
@@ -100,7 +100,7 @@ final class AmootSmsDriverTest extends TestCase
 
         $this->callProtectedMethod($this->driver(), 'sendText', [['0913', '0914'], 'Text message', '4567']);
 
-        Http::assertSent(function (Request $request) {
+        Http::assertSent(function (Request $request): bool {
             $uri = Uri::of($request->url());
 
             return Str::of($request->url())->startsWith('https://portal.amootsms.com/rest/SendSimple')
@@ -118,7 +118,7 @@ final class AmootSmsDriverTest extends TestCase
 
         $this->callProtectedMethod($this->driver(), 'sendPattern', [['0913'], 'pattern_code', ['p1' => 'value_1', 'p2' => 'value_2', 'p3' => 'value_3'], '4567']);
 
-        Http::assertSent(function (Request $request) {
+        Http::assertSent(function (Request $request): bool {
             $uri = Uri::of($request->url());
 
             return Str::of($request->url())->startsWith('https://portal.amootsms.com/rest/SendWithPattern')
@@ -155,7 +155,7 @@ final class AmootSmsDriverTest extends TestCase
 
         $this->assertSame(1000, $credit);
 
-        Http::assertSent(function (Request $request) {
+        Http::assertSent(function (Request $request): bool {
             $uri = Uri::of($request->url());
 
             return Str::of($request->url())->startsWith('https://portal.amootsms.com/rest/AccountStatus')

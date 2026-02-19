@@ -56,7 +56,7 @@ final class SmsManagerTest extends TestCase
     #[Test]
     public function it_always_returns_new_instance_of_sms_driver_class_for_immutability(): void
     {
-        $this->smsManager()->extend('test_driver', fn () => new ConcreteTestDriver('123456', true));
+        $this->smsManager()->extend('test_driver', fn (): ConcreteTestDriver => new ConcreteTestDriver('123456', true));
 
         $instanceOne = $this->smsManager()->driver('test_driver');
         $instanceTwo = $this->smsManager()->driver('test_driver');

@@ -37,7 +37,7 @@ final class KavenegarDriverTest extends TestCase
 
         $this->callProtectedMethod($smsDriver, 'execute', ['end-point', ['key' => 'value']]);
 
-        Http::assertSent(fn (Request $request) => Str::of($request->url())->startsWith('https://api.kavenegar.com/v1/')
+        Http::assertSent(fn (Request $request): bool => Str::of($request->url())->startsWith('https://api.kavenegar.com/v1/')
             && $request->hasHeader('charset', 'utf-8')
             && $request->hasHeader('Accept', 'application/json')
             && $request->hasHeader('Content-Type', 'application/x-www-form-urlencoded')
@@ -96,7 +96,7 @@ final class KavenegarDriverTest extends TestCase
 
         $this->callProtectedMethod($this->driver(), 'sendText', [['0913', '0914'], 'Text message', '4567']);
 
-        Http::assertSent(fn (Request $request) => Str::of($request->url())->endsWith('/sms/send.json')
+        Http::assertSent(fn (Request $request): bool => Str::of($request->url())->endsWith('/sms/send.json')
             && $request['sender'] === '4567'
             && $request['message'] === 'Text message'
             && $request['receptor'] === '0913,0914');
@@ -109,7 +109,7 @@ final class KavenegarDriverTest extends TestCase
 
         $this->callProtectedMethod($this->driver(), 'sendPattern', [['0913'], 'pattern_code', ['token' => 'value_1', 'token2' => 'value_2'], '4567']);
 
-        Http::assertSent(fn (Request $request) => Str::of($request->url())->endsWith('/verify/lookup.json')
+        Http::assertSent(fn (Request $request): bool => Str::of($request->url())->endsWith('/verify/lookup.json')
             && $request['template'] === 'pattern_code'
             && $request['receptor'] === '0913'
             && $request['token'] === 'value_1'
@@ -152,7 +152,7 @@ final class KavenegarDriverTest extends TestCase
 
         $this->assertSame(1000, $credit);
 
-        Http::assertSent(fn (Request $request) => Str::of($request->url())->startsWith('https://api.kavenegar.com/v1/')
+        Http::assertSent(fn (Request $request): bool => Str::of($request->url())->startsWith('https://api.kavenegar.com/v1/')
             && $request->hasHeader('charset', 'utf-8')
             && $request->hasHeader('Accept', 'application/json')
             && $request->hasHeader('Content-Type', 'application/x-www-form-urlencoded')
