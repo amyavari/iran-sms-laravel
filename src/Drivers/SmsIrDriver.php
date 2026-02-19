@@ -196,7 +196,7 @@ final class SmsIrDriver extends Driver
     private function toApiPattern(array $variables): array
     {
         return collect($variables)
-            ->map(fn (mixed $value, string $key) => [
+            ->map(fn (mixed $value, string $key): array => [
                 'name' => $key,
                 'value' => $value,
             ])

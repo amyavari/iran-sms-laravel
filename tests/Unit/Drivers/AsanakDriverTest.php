@@ -36,7 +36,7 @@ final class AsanakDriverTest extends TestCase
 
         $this->callProtectedMethod($smsDriver, 'execute', ['end-point', ['key' => 'value']]);
 
-        Http::assertSent(fn (Request $request) => $request->url() === 'https://sms.asanak.ir/webservice/v2rest/end-point'
+        Http::assertSent(fn (Request $request): bool => $request->url() === 'https://sms.asanak.ir/webservice/v2rest/end-point'
             && $request->hasHeader('Content-Type', 'application/json')
             && $request->method() === 'POST'
             && $request['username'] === 'sms_username'
@@ -99,7 +99,7 @@ final class AsanakDriverTest extends TestCase
 
         $this->callProtectedMethod($this->driver(), 'sendText', [['0913', '0914'], 'Text message', '4567']);
 
-        Http::assertSent(fn (Request $request) => $request->url() === 'https://sms.asanak.ir/webservice/v2rest/sendsms'
+        Http::assertSent(fn (Request $request): bool => $request->url() === 'https://sms.asanak.ir/webservice/v2rest/sendsms'
             && $request['source'] === '4567'
             && $request['message'] === 'Text message'
             && $request['destination'] === '0913,0914'
@@ -114,7 +114,7 @@ final class AsanakDriverTest extends TestCase
 
         $this->callProtectedMethod($this->driver(), 'sendPattern', [['0913'], 'pattern_code', ['key_1' => 'value_1', 'key_2' => 'value_2'], '4567']);
 
-        Http::assertSent(fn (Request $request) => $request->url() === 'https://sms.asanak.ir/webservice/v2rest/template'
+        Http::assertSent(fn (Request $request): bool => $request->url() === 'https://sms.asanak.ir/webservice/v2rest/template'
             && $request['template_id'] === 'pattern_code'
             && $request['destination'] === '0913'
             && $request['parameters'] === ['key_1' => 'value_1', 'key_2' => 'value_2']
@@ -161,7 +161,7 @@ final class AsanakDriverTest extends TestCase
 
         $this->assertSame(1000, $credit);
 
-        Http::assertSent(fn (Request $request) => $request->url() === 'https://sms.asanak.ir/webservice/v2rest/getrialcredit'
+        Http::assertSent(fn (Request $request): bool => $request->url() === 'https://sms.asanak.ir/webservice/v2rest/getrialcredit'
             && $request['username'] === 'sms_username'
             && $request['password'] === 'sms_password'
             && $request->method() === 'POST'

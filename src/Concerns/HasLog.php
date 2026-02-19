@@ -196,6 +196,6 @@ trait HasLog
     {
         $this->typesToLog ??= [];
 
-        $this->typesToLog = collect($this->typesToLog)->reject(fn (Type $value) => $value === $type)->all();
+        $this->typesToLog = collect($this->typesToLog)->reject(fn (Type $value): bool => $value === $type)->all();
     }
 }

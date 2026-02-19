@@ -34,7 +34,7 @@ final class WebOneDriverTest extends TestCase
 
         $this->callProtectedMethod($smsDriver, 'execute', ['end-point', ['key' => 'value']]);
 
-        Http::assertSent(fn (Request $request) => $request->hasHeader('X-API-KEY', 'sms_token')
+        Http::assertSent(fn (Request $request): bool => $request->hasHeader('X-API-KEY', 'sms_token')
             && $request->hasHeader('Content-Type', 'application/json')
             && $request->url() === 'https://api.payamakapi.ir/api/v1/end-point'
             && $request->method() === 'POST'
@@ -90,7 +90,7 @@ final class WebOneDriverTest extends TestCase
 
         $this->callProtectedMethod($this->driver(), 'sendText', [['0913', '0914'], 'Text message', '4567']);
 
-        Http::assertSent(fn (Request $request) => $request->url() === 'https://api.payamakapi.ir/api/v1/SMS/Send'
+        Http::assertSent(fn (Request $request): bool => $request->url() === 'https://api.payamakapi.ir/api/v1/SMS/Send'
             && $request['From'] === '4567'
             && $request['ToNumbers'] === ['0913', '0914']
             && $request['Content'] === 'Text message');
@@ -103,7 +103,7 @@ final class WebOneDriverTest extends TestCase
 
         $this->callProtectedMethod($this->driver(), 'sendOtp', ['0913', 'Otp message', '4567']);
 
-        Http::assertSent(fn (Request $request) => $request->url() === 'https://api.payamakapi.ir/api/v1/SMS/SmartOTP'
+        Http::assertSent(fn (Request $request): bool => $request->url() === 'https://api.payamakapi.ir/api/v1/SMS/SmartOTP'
             && $request['ToNumber'] === '0913'
             && $request['Content'] === 'Otp message');
     }
@@ -126,7 +126,7 @@ final class WebOneDriverTest extends TestCase
 
         $this->assertSame(1000, $credit);
 
-        Http::assertSent(fn (Request $request) => $request->url() === 'https://api.payamakapi.ir/api/v1/SMS/GetCredit'
+        Http::assertSent(fn (Request $request): bool => $request->url() === 'https://api.payamakapi.ir/api/v1/SMS/GetCredit'
             && $request->hasHeader('X-API-KEY', 'sms_token')
             && $request->method() === 'GET'
         );

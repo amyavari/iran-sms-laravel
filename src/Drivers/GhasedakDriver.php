@@ -179,7 +179,7 @@ final class GhasedakDriver extends Driver
     private function toApiPhones(array $phones): array
     {
         return collect($phones)
-            ->map(fn (string $phone) => [
+            ->map(fn (string $phone): array => [
                 'mobile' => $phone,
                 'clientReferenceId' => null,
             ])
@@ -197,7 +197,7 @@ final class GhasedakDriver extends Driver
     private function toApiPattern(array $variables): array
     {
         return collect($variables)
-            ->map(fn (string $value, string $key) => [
+            ->map(fn (string $value, string $key): array => [
                 'param' => $key,
                 'value' => $value,
             ])

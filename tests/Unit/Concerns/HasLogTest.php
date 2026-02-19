@@ -107,7 +107,7 @@ final class HasLogTest extends TestCase
     #[Test]
     public function it_logs_all_types_with_successful_status_successfully(): void
     {
-        $this->getAllSmsTypes(from: '1234', successful: true, error: null)->each(function (HasLogTestDriver $sms) {
+        $this->getAllSmsTypes(from: '1234', successful: true)->each(function (HasLogTestDriver $sms): void {
             $this->callProtectedMethod($sms, 'storeLog');
         });
 
@@ -123,7 +123,7 @@ final class HasLogTest extends TestCase
     #[Test]
     public function it_logs_all_types_with_failed_status_successfully(): void
     {
-        $this->getAllSmsTypes(from: '1234', successful: false, error: 'Test error message')->each(function (HasLogTestDriver $sms) {
+        $this->getAllSmsTypes(from: '1234', successful: false, error: 'Test error message')->each(function (HasLogTestDriver $sms): void {
             $this->callProtectedMethod($sms, 'storeLog');
         });
 
@@ -139,7 +139,7 @@ final class HasLogTest extends TestCase
     #[Test]
     public function it_does_not_log_anything_if_user_did_not_set_log_config(): void
     {
-        $this->getAllSmsTypes()->each(function (HasLogTestDriver $sms) {
+        $this->getAllSmsTypes()->each(function (HasLogTestDriver $sms): void {
             $sms->callHandleLog();
         });
 
@@ -149,7 +149,7 @@ final class HasLogTest extends TestCase
     #[Test]
     public function it_does_not_log_anything_if_user_sets_log_to_false_for_all_types(): void
     {
-        $this->getAllSmsTypes()->each(function (HasLogTestDriver $sms) {
+        $this->getAllSmsTypes()->each(function (HasLogTestDriver $sms): void {
             $sms->log(false)->callHandleLog();
         });
 
@@ -159,7 +159,7 @@ final class HasLogTest extends TestCase
     #[Test]
     public function it_logs_everything_if_user_sets_log_all(): void
     {
-        $this->getAllSmsTypes()->each(function (HasLogTestDriver $sms) {
+        $this->getAllSmsTypes()->each(function (HasLogTestDriver $sms): void {
             $sms->log(true)->callHandleLog();
         });
 
@@ -169,11 +169,11 @@ final class HasLogTest extends TestCase
     #[Test]
     public function it_logs_only_otp_messages_if_user_sets_log_to_only_otp(): void
     {
-        $this->getAllSmsTypes()->each(function (HasLogTestDriver $sms) {
+        $this->getAllSmsTypes()->each(function (HasLogTestDriver $sms): void {
             $sms->logOtp(true)->callHandleLog();
         });
 
-        $this->getAllSmsTypes()->each(function (HasLogTestDriver $sms) {
+        $this->getAllSmsTypes()->each(function (HasLogTestDriver $sms): void {
             $sms->log(false)->logOtp(true)->callHandleLog();
         });
 
@@ -195,11 +195,11 @@ final class HasLogTest extends TestCase
     #[Test]
     public function it_logs_only_text_messages_if_user_sets_log_to_only_text(): void
     {
-        $this->getAllSmsTypes()->each(function (HasLogTestDriver $sms) {
+        $this->getAllSmsTypes()->each(function (HasLogTestDriver $sms): void {
             $sms->logText(true)->callHandleLog();
         });
 
-        $this->getAllSmsTypes()->each(function (HasLogTestDriver $sms) {
+        $this->getAllSmsTypes()->each(function (HasLogTestDriver $sms): void {
             $sms->log(false)->logText(true)->callHandleLog();
         });
 
@@ -221,11 +221,11 @@ final class HasLogTest extends TestCase
     #[Test]
     public function it_logs_only_pattern_messages_if_user_sets_log_to_only_pattern(): void
     {
-        $this->getAllSmsTypes()->each(function (HasLogTestDriver $sms) {
+        $this->getAllSmsTypes()->each(function (HasLogTestDriver $sms): void {
             $sms->logPattern(true)->callHandleLog();
         });
 
-        $this->getAllSmsTypes()->each(function (HasLogTestDriver $sms) {
+        $this->getAllSmsTypes()->each(function (HasLogTestDriver $sms): void {
             $sms->log(false)->logPattern(true)->callHandleLog();
         });
 
@@ -248,12 +248,12 @@ final class HasLogTest extends TestCase
     public function it_only_logs_successful_messages_if_user_sets_it_to_log_successful(): void
     {
         // Must be logged
-        $this->getAllSmsTypes(successful: true)->each(function (HasLogTestDriver $sms) {
+        $this->getAllSmsTypes(successful: true)->each(function (HasLogTestDriver $sms): void {
             $sms->log(true)->logSuccessful()->callHandleLog();
         });
 
         // Won't log
-        $this->getAllSmsTypes(successful: false)->each(function (HasLogTestDriver $sms) {
+        $this->getAllSmsTypes(successful: false)->each(function (HasLogTestDriver $sms): void {
             $sms->log(true)->logSuccessful()->callHandleLog();
         });
 
@@ -266,7 +266,7 @@ final class HasLogTest extends TestCase
     #[Test]
     public function it_calls_log_if_user_did_not_call_type_logs_before_only_successful_log(): void
     {
-        $this->getAllSmsTypes(successful: true)->each(function (HasLogTestDriver $sms) {
+        $this->getAllSmsTypes(successful: true)->each(function (HasLogTestDriver $sms): void {
             $sms->logSuccessful()->callHandleLog();
         });
 
@@ -276,19 +276,19 @@ final class HasLogTest extends TestCase
     #[Test]
     public function it_will_not_call_log_if_user_called_type_logs_before_only_successful_log(): void
     {
-        $this->getAllSmsTypes(successful: true)->each(function (HasLogTestDriver $sms) {
+        $this->getAllSmsTypes(successful: true)->each(function (HasLogTestDriver $sms): void {
             $sms->log(false)->logSuccessful()->callHandleLog();
         });
 
-        $this->getAllSmsTypes(successful: true)->each(function (HasLogTestDriver $sms) {
+        $this->getAllSmsTypes(successful: true)->each(function (HasLogTestDriver $sms): void {
             $sms->logOtp(false)->logSuccessful()->callHandleLog();
         });
 
-        $this->getAllSmsTypes(successful: true)->each(function (HasLogTestDriver $sms) {
+        $this->getAllSmsTypes(successful: true)->each(function (HasLogTestDriver $sms): void {
             $sms->logPattern(false)->logSuccessful()->callHandleLog();
         });
 
-        $this->getAllSmsTypes(successful: true)->each(function (HasLogTestDriver $sms) {
+        $this->getAllSmsTypes(successful: true)->each(function (HasLogTestDriver $sms): void {
             $sms->logText(false)->logSuccessful()->callHandleLog();
         });
 
@@ -299,12 +299,12 @@ final class HasLogTest extends TestCase
     public function it_only_logs_failed_messages_if_user_sets_it_to_log_failed(): void
     {
         // Must be logged
-        $this->getAllSmsTypes(successful: false)->each(function (HasLogTestDriver $sms) {
+        $this->getAllSmsTypes(successful: false)->each(function (HasLogTestDriver $sms): void {
             $sms->log(true)->logFailed()->callHandleLog();
         });
 
         // Won't log
-        $this->getAllSmsTypes(successful: true)->each(function (HasLogTestDriver $sms) {
+        $this->getAllSmsTypes(successful: true)->each(function (HasLogTestDriver $sms): void {
             $sms->log(true)->logFailed()->callHandleLog();
         });
 
@@ -317,7 +317,7 @@ final class HasLogTest extends TestCase
     #[Test]
     public function it_calls_log_if_user_did_not_call_type_logs_before_only_failed_log(): void
     {
-        $this->getAllSmsTypes(successful: false)->each(function (HasLogTestDriver $sms) {
+        $this->getAllSmsTypes(successful: false)->each(function (HasLogTestDriver $sms): void {
             $sms->logFailed()->callHandleLog();
         });
 
@@ -327,19 +327,19 @@ final class HasLogTest extends TestCase
     #[Test]
     public function it_will_not_call_log_if_user_called_type_logs_before_only_failed_log(): void
     {
-        $this->getAllSmsTypes(successful: false)->each(function (HasLogTestDriver $sms) {
+        $this->getAllSmsTypes(successful: false)->each(function (HasLogTestDriver $sms): void {
             $sms->log(false)->logSuccessful()->callHandleLog();
         });
 
-        $this->getAllSmsTypes(successful: false)->each(function (HasLogTestDriver $sms) {
+        $this->getAllSmsTypes(successful: false)->each(function (HasLogTestDriver $sms): void {
             $sms->logOtp(false)->logSuccessful()->callHandleLog();
         });
 
-        $this->getAllSmsTypes(successful: false)->each(function (HasLogTestDriver $sms) {
+        $this->getAllSmsTypes(successful: false)->each(function (HasLogTestDriver $sms): void {
             $sms->logPattern(false)->logSuccessful()->callHandleLog();
         });
 
-        $this->getAllSmsTypes(successful: false)->each(function (HasLogTestDriver $sms) {
+        $this->getAllSmsTypes(successful: false)->each(function (HasLogTestDriver $sms): void {
             $sms->logText(false)->logSuccessful()->callHandleLog();
         });
 
@@ -350,12 +350,12 @@ final class HasLogTest extends TestCase
     // Helper Methods
     // -----------------
 
-    private function sms($type, $phones, $content, $patternCode = null, $successful = true, $error = null, $callHandleLoger = '123'): HasLogTestDriver
+    private function sms(Type $type, string $phones, string|array $content, ?string $patternCode = null, bool $successful = true, ?string $error = null, string $callHandleLogger = '123'): HasLogTestDriver
     {
-        return new HasLogTestDriver($type, $phones, $content, $patternCode, $successful, $error, $callHandleLoger);
+        return new HasLogTestDriver($type, $phones, $content, $patternCode, $successful, $error, $callHandleLogger);
     }
 
-    private function getAllSmsTypes($from = '123', $successful = true, $error = null): Collection
+    private function getAllSmsTypes(string $from = '123', bool $successful = true, ?string $error = null): Collection
     {
         return collect([
             $this->sms(Type::Text, '091234567', 'Text Message', null, $successful, $error, $from),

@@ -35,7 +35,7 @@ final class MeliPayamakDriverTest extends TestCase
 
         $this->callProtectedMethod($smsDriver, 'execute', ['end-point', ['key' => 'value']]);
 
-        Http::assertSent(fn (Request $request) => $request->hasHeader('Content-Type', 'application/x-www-form-urlencoded')
+        Http::assertSent(fn (Request $request): bool => $request->hasHeader('Content-Type', 'application/x-www-form-urlencoded')
             && $request->hasHeader('Accept', 'application/json')
             && $request->url() === 'https://rest.payamak-panel.com/api/SendSMS/end-point'
             && $request->method() === 'POST'
@@ -93,7 +93,7 @@ final class MeliPayamakDriverTest extends TestCase
 
         $this->callProtectedMethod($this->driver(), 'sendText', [['0913', '0914'], 'Text message', '4567']);
 
-        Http::assertSent(fn (Request $request) => $request->url() === 'https://rest.payamak-panel.com/api/SendSMS/SendSMS'
+        Http::assertSent(fn (Request $request): bool => $request->url() === 'https://rest.payamak-panel.com/api/SendSMS/SendSMS'
             && $request['from'] === '4567'
             && $request['to'] === '0913,0914'
             && $request['text'] === 'Text message');
@@ -106,7 +106,7 @@ final class MeliPayamakDriverTest extends TestCase
 
         $this->callProtectedMethod($this->driver(), 'sendPattern', [['0913'], 'pattern_code', ['key_1' => 'value_1', 'key_2' => 'value_2'], '4567']);
 
-        Http::assertSent(fn (Request $request) => $request->url() === 'https://rest.payamak-panel.com/api/SendSMS/BaseServiceNumber'
+        Http::assertSent(fn (Request $request): bool => $request->url() === 'https://rest.payamak-panel.com/api/SendSMS/BaseServiceNumber'
             && $request['to'] === '0913'
             && $request['bodyId'] === 'pattern_code'
             && $request['text'] === 'value_1;value_2');
@@ -139,7 +139,7 @@ final class MeliPayamakDriverTest extends TestCase
 
         $this->assertSame(1000, $credit);
 
-        Http::assertSent(fn (Request $request) => $request->url() === 'https://rest.payamak-panel.com/api/SendSMS/GetCredit2'
+        Http::assertSent(fn (Request $request): bool => $request->url() === 'https://rest.payamak-panel.com/api/SendSMS/GetCredit2'
             && $request->hasHeader('Content-Type', 'application/x-www-form-urlencoded')
             && $request->hasHeader('Accept', 'application/json')
             && $request->method() === 'POST'

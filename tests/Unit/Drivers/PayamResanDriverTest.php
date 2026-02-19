@@ -38,7 +38,7 @@ final class PayamResanDriverTest extends TestCase
 
         $this->callProtectedMethod($smsDriver, 'execute', ['end-point', ['key' => 'value']]);
 
-        Http::assertSent(function (Request $request) {
+        Http::assertSent(function (Request $request): bool {
             $uri = Uri::of($request->url());
 
             return $request->hasHeader('Accept', 'application/json')
@@ -85,7 +85,7 @@ final class PayamResanDriverTest extends TestCase
 
         $this->callProtectedMethod($this->driver(), 'sendText', [['0913', '0914'], 'Text message', '4567']);
 
-        Http::assertSent(function (Request $request) {
+        Http::assertSent(function (Request $request): bool {
             $uri = Uri::of($request->url());
 
             return Str::of($request->url())->startsWith('https://api.sms-webservice.com/api/V3/Send')
@@ -102,7 +102,7 @@ final class PayamResanDriverTest extends TestCase
 
         $this->callProtectedMethod($this->driver(), 'sendPattern', [['0913'], 'pattern_code', ['p1' => 'value_1', 'p2' => 'value_2', 'p3' => 'value_3'], '4567']);
 
-        Http::assertSent(function (Request $request) {
+        Http::assertSent(function (Request $request): bool {
             $uri = Uri::of($request->url());
 
             return Str::of($request->url())->startsWith('https://api.sms-webservice.com/api/V3/SendTokenSingle')
@@ -168,7 +168,7 @@ final class PayamResanDriverTest extends TestCase
 
         $this->assertSame(1000, $credit);
 
-        Http::assertSent(fn (Request $request) => $request->url() === 'https://api.sms-webservice.com/api/V3/AccountInfo'
+        Http::assertSent(fn (Request $request): bool => $request->url() === 'https://api.sms-webservice.com/api/V3/AccountInfo'
                 && $request->method() === 'POST'
                 && $request->hasHeader('Content-Type', 'application/json')
                 && $request['ApiKey'] === 'sms_token'

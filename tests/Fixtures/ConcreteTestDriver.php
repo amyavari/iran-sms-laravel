@@ -78,7 +78,7 @@ final class ConcreteTestDriver extends Driver
         return 'Test error message';
     }
 
-    protected function getErrorCode(): string|int
+    protected function getErrorCode(): int
     {
         return 40;
     }
