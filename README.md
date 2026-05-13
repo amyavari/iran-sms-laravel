@@ -22,20 +22,21 @@ To view the Persian documentation, please refer to [README_FA.md](./docs/README_
 
 ## List of Available SMS Providers
 
-| Provider Name (EN) | Provider Name (FA) | Provider Website  | Provider Key   | Version |
-| ------------------ | ------------------ | ----------------- | -------------- | ------- |
-| SMS.ir             | اس ام اس دات آی آر | [sms.ir]          | `sms_ir`       | 1.0.0   |
-| Meli Payamak       | ملی پیامک          | [melipayamak.com] | `meli_payamak` | 1.0.0   |
-| Payam Resan        | پیام رسان          | [payam-resan.com] | `payam_resan`  | 1.0.0   |
-| Kavenegar          | کاوه نگار          | [kavenegar.com]   | `kavenegar`    | 1.0.0   |
-| Faraz SMS          | فراز اس ام اس      | [farazsms.com]    | `faraz_sms`    | 1.0.0   |
-| Raygan SMS         | رایگان اس ام اس    | [raygansms.com]   | `raygan_sms`   | 1.0.0   |
-| Web One SMS        | وب وان             | [webone-sms.com]  | `web_one`      | 1.1.0   |
-| Amoot SMS          | پیامک آموت         | [amootsms.com]    | `amoot_sms`    | 1.1.0   |
-| Fara Payamak       | فراپیامک           | [farapayamak.ir]  | `fara_payamak` | 1.2.0   |
-| Ghasedak           | قاصدک              | [ghasedak.me]     | `ghasedak`     | 1.2.0   |
-| Behin Payam        | بهین پیام          | [behinpayam.com]  | `behin_payam`  | 1.2.0   |
-| Asanak             | آسانک              | [asanak.com]      | `asanak`       | 1.2.0   |
+| Provider Name (EN) | Provider Name (FA) | Provider Website  | Provider Key   | Version    |
+| ------------------ | ------------------ | ----------------- | -------------- | ---------- |
+| SMS.ir             | اس ام اس دات آی آر | [sms.ir]          | `sms_ir`       | 1.0.0      |
+| Meli Payamak       | ملی پیامک          | [melipayamak.com] | `meli_payamak` | 1.0.0      |
+| Payam Resan        | پیام رسان          | [payam-resan.com] | `payam_resan`  | 1.0.0      |
+| Kavenegar          | کاوه نگار          | [kavenegar.com]   | `kavenegar`    | 1.0.0      |
+| Faraz SMS          | فراز اس ام اس      | [farazsms.com]    | `faraz_sms`    | 1.0.0      |
+| Raygan SMS         | رایگان اس ام اس    | [raygansms.com]   | `raygan_sms`   | 1.0.0      |
+| Web One SMS        | وب وان             | [webone-sms.com]  | `web_one`      | 1.1.0      |
+| Amoot SMS          | پیامک آموت         | [amootsms.com]    | `amoot_sms`    | 1.1.0      |
+| Fara Payamak       | فراپیامک           | [farapayamak.ir]  | `fara_payamak` | 1.2.0      |
+| Ghasedak           | قاصدک              | [ghasedak.me]     | `ghasedak`     | 1.2.0      |
+| Behin Payam        | بهین پیام          | [behinpayam.com]  | `behin_payam`  | 1.2.0      |
+| Asanak             | آسانک              | [asanak.com]      | `asanak`       | 1.2.0      |
+| Mediana            | مدیانا             | [mediana.ir]      | `mediana`      | Unreleased |
 
 > [!CAUTION]
 > Providers have different rules for sending SMS messages. Please check [providers_note_en.md](./docs/providers_note_en.md).
@@ -417,6 +418,7 @@ Thank you for considering contributing to the Iran SMS Laravel! The contribution
 [ghasedak.me]: https://ghasedak.me/
 [behinpayam.com]: https://behinpayam.com/
 [asanak.com]: https://asanak.com/
+[mediana.ir]: https://mediana.ir/
 [HTTP Client]: https://laravel.com/docs/12.x/http-client#throwing-exceptions
 [queues]: https://laravel.com/docs/12.x/queues
 [notifications]: https://laravel.com/docs/12.x/notifications

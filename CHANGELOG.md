@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **Mediana** provider.
+
 ### Changed
 
 - **FarazaSMS** implementation to match its new APIs.
@@ -15,7 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Support for Laravel `^13.0.0`
+- Support for Laravel `13`
 
 ## [1.3.0] - 2025-11-19
 

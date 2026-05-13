@@ -72,3 +72,8 @@
 - This provider does not offer a dedicated API for sending OTP messages. Use the pattern-based method instead.
 - This provider doesn't support sending pattern to multiple phones at once.
 - Pattern variables must be passed as key-value pairs.
+
+## Mediana
+
+- This provider does not offer a dedicated API for sending OTP messages. Use the pattern-based method instead.
+- Pattern variables must be passed as key-value pairs.
