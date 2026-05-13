@@ -7,6 +7,7 @@ namespace AliYavari\IranSms\Tests\Unit\Drivers;
 use AliYavari\IranSms\Drivers\FarazSmsDriver;
 use AliYavari\IranSms\Exceptions\InvalidPatternStructureException;
 use AliYavari\IranSms\Exceptions\UnsupportedMethodException;
+use AliYavari\IranSms\Exceptions\UnsupportedMultiplePhonesException;
 use AliYavari\IranSms\Tests\TestCase;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Request;
@@ -28,16 +29,16 @@ final class FarazSmsDriverTest extends TestCase
     public function it_execute_request_correctly(): void
     {
         Http::fake([
-            'https://edge.ippanel.com/v1/api/send' => Http::response(['meta' => ['status' => true, 'message' => '', 'message_code' => '']]),
+            'https://api.iranpayamak.com/ws/v1/end-point' => Http::response(['status' => 'success', 'data' => 0, 'messages' => null]),
         ]);
 
         $smsDriver = $this->driver();
 
-        $this->callProtectedMethod($smsDriver, 'execute', [['key' => 'value']]);
+        $this->callProtectedMethod($smsDriver, 'execute', ['end-point', ['key' => 'value']]);
 
-        Http::assertSent(fn (Request $request): bool => $request->hasHeader('Authorization', 'sms_token')
+        Http::assertSent(fn (Request $request): bool => $request->hasHeader('Api-Key', 'sms_token')
             && $request->hasHeader('Content-Type', 'application/json')
-            && $request->url() === 'https://edge.ippanel.com/v1/api/send'
+            && $request->url() === 'https://api.iranpayamak.com/ws/v1/end-point'
             && $request->method() === 'POST'
             && $request['key'] === 'value');
     }
@@ -46,18 +47,16 @@ final class FarazSmsDriverTest extends TestCase
     public function it_sets_and_returns_the_successful_response_status_correctly(): void
     {
         Http::fake([
-            'https://edge.ippanel.com/v1/api/send' => Http::response([
-                'meta' => [
-                    'status' => true,
-                    'message' => 'انجام شد',
-                    'message_code' => '200-1',
-                ],
-            ]), // Statue `true` is successful
+            'https://api.iranpayamak.com/ws/v1/end-point' => Http::response([
+                'status' => 'success',
+                'data' => 0,
+                'messages' => null,
+            ]),
         ]);
 
         $smsDriver = $this->driver();
 
-        $this->callProtectedMethod($smsDriver, 'execute', [['key' => 'value']]);
+        $this->callProtectedMethod($smsDriver, 'execute', ['end-point', ['key' => 'value']]);
 
         $this->assertTrue($this->callProtectedMethod($smsDriver, 'isSuccessful'));
     }
@@ -66,61 +65,72 @@ final class FarazSmsDriverTest extends TestCase
     public function it_sets_and_returns_the_failed_response_status_correctly(): void
     {
         Http::fake([
-            'https://edge.ippanel.com/v1/api/send' => Http::response([
-                'meta' => [
-                    'status' => false,
-                    'message' => 'Something went wrong.',
-                    'message_code' => '400-1',
-                ], // All data about error is inside the response
+            'https://api.iranpayamak.com/ws/v1/end-point' => Http::response([
+                'status' => 'error',
+                'data' => 0,
+                'messages' => 'Auth required',
             ]),
         ]);
 
         $smsDriver = $this->driver();
 
-        $this->callProtectedMethod($smsDriver, 'execute', [['key' => 'value']]);
+        $this->callProtectedMethod($smsDriver, 'execute', ['end-point', ['key' => 'value']]);
 
         $this->assertFalse($this->callProtectedMethod($smsDriver, 'isSuccessful'));
-        $this->assertSame('Something went wrong.', $this->callProtectedMethod($smsDriver, 'getErrorMessage'));
-        $this->assertSame('400-1', $this->callProtectedMethod($smsDriver, 'getErrorCode'));
+        $this->assertSame('Auth required', $this->callProtectedMethod($smsDriver, 'getErrorMessage'));
+        $this->assertSame('0', $this->callProtectedMethod($smsDriver, 'getErrorCode'));
     }
 
     #[Test]
     public function it_throws_exception_for_any_connection_error(): void
     {
         Http::fake([
-            'https://edge.ippanel.com/v1/api/send' => Http::failedConnection(),
+            'https://api.iranpayamak.com/ws/v1/end-point' => Http::failedConnection(),
         ]);
 
         $this->expectException(ConnectionException::class);
 
-        $this->callProtectedMethod($this->driver(), 'execute', [['key' => 'value']]);
+        $this->callProtectedMethod($this->driver(), 'execute', ['end-point', ['key' => 'value']]);
     }
 
     #[Test]
     public function it_sends_text_message_successfully(): void
     {
-        Http::fake(['*' => Http::response(['meta' => ['status' => true, 'message' => '', 'message_code' => '']])]);
+        Http::fake(['*' => Http::response(['status' => 'success', 'data' => 0, 'messages' => null])]);
 
         $this->callProtectedMethod($this->driver(), 'sendText', [['0913', '0914'], 'Text message', '4567']);
 
-        Http::assertSent(fn (Request $request): bool => $request['sending_type'] === 'normal'
-            && $request['from_number'] === '4567'
-            && $request['message'] === 'Text message'
-            && $request['params'] === ['recipients' => ['0913', '0914']]);
+        Http::assertSent(fn (Request $request): bool => $request->url() === 'https://api.iranpayamak.com/ws/v1/sms/simple'
+            && $request['number_format'] === 'english'
+            && $request['schedule'] === null
+            && $request['line_number'] === '4567'
+            && $request['text'] === 'Text message'
+            && $request['recipients'] === ['0913', '0914']);
     }
 
     #[Test]
     public function it_sends_pattern_message_successfully(): void
     {
-        Http::fake(['*' => Http::response(['meta' => ['status' => true, 'message' => '', 'message_code' => '']])]);
+        Http::fake(['*' => Http::response(['status' => 'success', 'data' => 0, 'messages' => null])]);
 
-        $this->callProtectedMethod($this->driver(), 'sendPattern', [['0913', '0914'], 'pattern_code', ['key_1' => 'value_1', 'key_2' => 'value_2'], '4567']);
+        $this->callProtectedMethod($this->driver(), 'sendPattern', [['0913'], 'pattern_code', ['key_1' => 'value_1', 'key_2' => 'value_2'], '4567']);
 
-        Http::assertSent(fn (Request $request): bool => $request['sending_type'] === 'pattern'
-            && $request['from_number'] === '4567'
+        Http::assertSent(fn (Request $request): bool => $request->url() === 'https://api.iranpayamak.com/ws/v1/sms/pattern'
+            && $request['number_format'] === 'english'
+            && $request['schedule'] === null
+            && $request['line_number'] === '4567'
             && $request['code'] === 'pattern_code'
-            && $request['recipients'] === ['0913', '0914']
-            && $request['params'] === ['key_1' => 'value_1', 'key_2' => 'value_2']);
+            && $request['recipient'] === '0913'
+            && $request['attributes'] === ['key_1' => 'value_1', 'key_2' => 'value_2']);
+    }
+
+    #[Test]
+    public function it_throws_exception_if_we_pass_multiple_phone_numbers_to_send_with_pattern(): void
+    {
+        $this->expectException(UnsupportedMultiplePhonesException::class);
+        $this->expectExceptionMessage('Provider "faraz_sms" only supports sending to one phone number at a time for "pattern" message.');
+
+        $this->callProtectedMethod($this->driver(), 'sendPattern', [['0913', '0914'], 'pattern_code', [], '4567']);
     }
 
     #[Test]
@@ -144,16 +154,30 @@ final class FarazSmsDriverTest extends TestCase
     #[Test]
     public function it_returns_credit_successfully(): void
     {
-        Http::fake(['*' => Http::response(['data' => ['credit' => 1000.2354]])]);
+        Http::fake(['*' => Http::response([
+            'status' => 'success',
+            'message' => null,
+            'data' => [
+                'balanceAmount' => 1000,
+                'balanceCount' => 25,
+                'details' => [
+                    [
+                        'count' => 25,
+                        'rate' => 200,
+                        'amount' => 2000,
+                    ],
+                ],
+            ],
+        ])]);
 
         $credit = $this->driver()->credit();
 
         $this->assertSame(1000, $credit);
 
-        Http::assertSent(fn (Request $request): bool => $request->url() === 'https://edge.ippanel.com/v1/api/payment/credit/mine'
+        Http::assertSent(fn (Request $request): bool => $request->url() === 'https://api.iranpayamak.com/ws/v1/account/balance'
                 && $request->method() === 'GET'
                 && $request->hasHeader('Content-Type', 'application/json')
-                && $request->hasHeader('Authorization', 'sms_token')
+                && $request->hasHeader('Api-Key', 'sms_token')
         );
     }
 

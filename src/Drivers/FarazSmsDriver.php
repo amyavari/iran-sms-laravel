@@ -7,33 +7,29 @@ namespace AliYavari\IranSms\Drivers;
 use AliYavari\IranSms\Abstracts\Driver;
 use AliYavari\IranSms\Exceptions\InvalidPatternStructureException;
 use AliYavari\IranSms\Exceptions\UnsupportedMethodException;
+use AliYavari\IranSms\Exceptions\UnsupportedMultiplePhonesException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 
 /**
  * @internal
  *
- * @see https://github.com/ippanelcom/Edge-Document
+ * @see https://docs.iranpayamak.com/ or https://docs2.farazsms.com/
  */
 final class FarazSmsDriver extends Driver
 {
     /**
      * The base URL for the API.
      */
-    private string $baseUrl = 'https://edge.ippanel.com/v1/api/';
+    private string $baseUrl = 'https://api.iranpayamak.com/ws/v1';
 
     /**
-     * The sent status returned in the API response body (e.g., `meta.status` field).
+     * The sent status returned in the API response body (e.g., `status` field).
      */
-    private bool $apiStatus;
+    private string $apiStatus;
 
     /**
-     * The status code returned in the API response body (e.g., `meta.message_code` field).
-     */
-    private string $apiStatusCode;
-
-    /**
-     * The error message returned in the API response body (e.g., `meta.message` field).
+     * The error message returned in the API response body (e.g., `messages` field).
      */
     private string $apiErrorMessage;
 
@@ -50,10 +46,10 @@ final class FarazSmsDriver extends Driver
         $response = Http::baseUrl($this->baseUrl)
             ->withHeaders($this->credentials())
             ->asJson()
-            ->get('payment/credit/mine')
-            ->throw();
+            ->get('account/balance')
+            ->throwIfServerError();
 
-        return (int) $response->json('data.credit');
+        return (int) $response->json('data.balanceAmount');
     }
 
     /**
@@ -81,17 +77,20 @@ final class FarazSmsDriver extends Driver
      */
     protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
     {
+        $this->validatePatternPhones($phones);
+
         $this->validatePatternVariables($variables);
 
         $data = [
-            'sending_type' => 'pattern',
-            'from_number' => $from,
+            'number_format' => 'english',
+            'line_number' => $from,
             'code' => $patternCode,
-            'recipients' => $phones,
-            'params' => $variables,
+            'recipient' => $phones[0],
+            'attributes' => $variables,
+            'schedule' => null,
         ];
 
-        $this->execute($data);
+        $this->execute('sms/pattern', $data);
 
         return $this;
     }
@@ -102,15 +101,14 @@ final class FarazSmsDriver extends Driver
     protected function sendText(array $phones, string $message, string $from): static
     {
         $data = [
-            'sending_type' => 'normal',
-            'from_number' => $from,
-            'message' => $message,
-            'params' => [
-                'recipients' => $phones,
-            ],
+            'number_format' => 'english',
+            'line_number' => $from,
+            'text' => $message,
+            'recipients' => $phones,
+            'schedule' => null,
         ];
 
-        $this->execute($data);
+        $this->execute('sms/simple', $data);
 
         return $this;
     }
@@ -120,7 +118,7 @@ final class FarazSmsDriver extends Driver
      */
     protected function isSuccessful(): bool
     {
-        return $this->apiStatus;
+        return $this->apiStatus === 'success';
     }
 
     /**
@@ -136,7 +134,7 @@ final class FarazSmsDriver extends Driver
      */
     protected function getErrorCode(): string
     {
-        return $this->apiStatusCode;
+        return '0';
     }
 
     /**
@@ -144,28 +142,38 @@ final class FarazSmsDriver extends Driver
      *
      * @param  array<string, mixed>  $data
      */
-    private function execute(array $data): void
+    private function execute(string $endpoint, array $data): void
     {
         $response = Http::baseUrl($this->baseUrl)
             ->withHeaders($this->credentials())
-            ->post('send', $data)
-            ->throw();
+            ->post($endpoint, $data)
+            ->throwIfServerError();
 
-        $meta = $response->json('meta');
-
-        $this->apiStatus = $meta['status'];
-        $this->apiStatusCode = $meta['message_code'];
-        $this->apiErrorMessage = $meta['message'];
+        $this->apiStatus = $response->json('status');
+        $this->apiErrorMessage = (string) $response->json('messages');
     }
 
     /**
-     * @return array{Authorization: string}
+     * @return array{Api-Key: string}
      */
     private function credentials(): array
     {
         return [
-            'Authorization' => $this->token,
+            'Api-Key' => $this->token,
         ];
+    }
+
+    /**
+     * @param  array<string>  $phones
+     *
+     * @throws UnsupportedMultiplePhonesException
+     */
+    private function validatePatternPhones(array $phones): void
+    {
+        if (count($phones) !== 1) {
+            throw UnsupportedMultiplePhonesException::make($this->getDriverName(), method: 'pattern');
+        }
+
     }
 
     /**
