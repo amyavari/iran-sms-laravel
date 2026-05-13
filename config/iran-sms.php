@@ -103,5 +103,11 @@ return [
             'password' => env('SMS_PASSWORD', ''),
             'from' => env('SMS_FROM', ''),
         ],
+
+        // https://mediana.ir/
+        'mediana' => [
+            'token' => env('SMS_TOKEN', ''),
+            'from' => env('SMS_FROM', ''),
+        ],
     ],
 ];
