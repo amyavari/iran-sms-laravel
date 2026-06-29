@@ -139,7 +139,7 @@ final class RayganSmsDriverTest extends TestCase
     #[Test]
     public function it_sends_otp_message_successfully(): void
     {
-        Http::fake(['*' => Http::response(2001)]); // Greater than 2000 is successful
+        Http::fake(['*' => Http::response('2001')]); // Greater than 2000 is successful
 
         $smsDriver = $this->driver();
 
@@ -162,7 +162,7 @@ final class RayganSmsDriverTest extends TestCase
     #[Test]
     public function it_sends_otp_message_with_error(): void
     {
-        Http::fake(['*' => Http::response(8)]);
+        Http::fake(['*' => Http::response('8')]);
 
         $smsDriver = $this->driver();
 

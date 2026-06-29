@@ -120,7 +120,7 @@ final class WebOneDriverTest extends TestCase
     #[Test]
     public function it_returns_credit_successfully(): void
     {
-        Http::fake(['*' => Http::response(1000.4)]);
+        Http::fake(['*' => Http::response('1000.4')]);
 
         $credit = $this->driver()->credit();
 
