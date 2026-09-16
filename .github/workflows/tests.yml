@@ -69,6 +69,9 @@ jobs:
           composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update --dev
         shell: bash
 
+      - name: Remove Laravel Pao (local dev only)
+        run: composer remove laravel/pao --dev --no-update --no-interaction
+
       - name: Install Composer dependencies
         run: composer update --${{ matrix.dependency-version }} --no-interaction --prefer-dist
 
