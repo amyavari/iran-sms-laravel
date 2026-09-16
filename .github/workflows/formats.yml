@@ -51,6 +51,9 @@ jobs:
           key: dependencies-php-${{ matrix.php }}-os-${{ matrix.os }}-version-${{ matrix.dependency-version }}-composer-${{ hashFiles('composer.json') }}
           restore-keys: dependencies-php-${{ matrix.php }}-os-${{ matrix.os }}-version-${{ matrix.dependency-version }}-
 
+      - name: Remove Laravel Pao (local dev only)
+        run: composer remove laravel/pao --dev --no-update --no-interaction
+
       - name: Install Composer dependencies
         run: composer update --no-interaction --prefer-dist
 
