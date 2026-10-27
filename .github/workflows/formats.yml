@@ -24,7 +24,7 @@ jobs:
       fail-fast: true
       matrix:
         os: [ubuntu-latest]
-        php: [8.2, 8.3, 8.4, 8.5]
+        php: [8.3, 8.4, 8.5]
 
     name: PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -62,3 +62,6 @@ jobs:
 
       - name: Type Checks
         run: composer test:types
+
+      - name: Type Coverage Checks
+        run: composer test:type-coverage
