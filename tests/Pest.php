@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use AliYavari\IranSms\Tests\Fixtures\TestDriver;
 use AliYavari\IranSms\Tests\TestCase;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
@@ -86,4 +87,12 @@ function getRecordedHttpRequest(): Request
     Assert::assertNotNull($request, 'No request has been recorded.');
 
     return $request;
+}
+
+/**
+ * Get a new instance of the test driver.
+ */
+function testDriver(): TestDriver
+{
+    return new TestDriver();
 }
