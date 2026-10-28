@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Override;
-use ReflectionMethod;
 
 abstract class TestCase extends Orchestra
 {
@@ -21,16 +20,6 @@ abstract class TestCase extends Orchestra
 
         $this->enableFinalClassMocking();
         $this->preventStrayRequests();
-    }
-
-    /**
-     * Invoke a protected or private method on the given object using reflection.
-     */
-    protected function callProtectedMethod(object $object, string $method, array $args = []): mixed
-    {
-        $reflectionMethod = new ReflectionMethod($object, $method);
-
-        return $reflectionMethod->invoke($object, ...$args);
     }
 
     /**
