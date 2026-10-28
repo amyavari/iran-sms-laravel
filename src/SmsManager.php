@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace AliYavari\IranSms;
 
-use AliYavari\IranSms\Abstracts\Driver;
 use AliYavari\IranSms\Contracts\Sms;
 use AliYavari\IranSms\Drivers\AmootSmsDriver;
 use AliYavari\IranSms\Drivers\AsanakDriver;
 use AliYavari\IranSms\Drivers\BehinPayamDriver;
-use AliYavari\IranSms\Drivers\FakeDriver;
 use AliYavari\IranSms\Drivers\FaraPayamakDriver;
 use AliYavari\IranSms\Drivers\FarazSmsDriver;
 use AliYavari\IranSms\Drivers\GhasedakDriver;
@@ -20,6 +18,7 @@ use AliYavari\IranSms\Drivers\PayamResanDriver;
 use AliYavari\IranSms\Drivers\RayganSmsDriver;
 use AliYavari\IranSms\Drivers\SmsIrDriver;
 use AliYavari\IranSms\Drivers\WebOneDriver;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Manager;
 use InvalidArgumentException;
 use Override;
@@ -38,16 +37,14 @@ final class SmsManager extends Manager
      * {@inheritdoc}
      */
     #[Override]
-    public function driver($driver = null)
+    public function driver($driver = null): Sms
     {
         $driver ??= $this->getDefaultDriver();
 
         /**
          * Make sure we get a new SMS instance each time by removing it from the manager cache.
          */
-        if ($this->mustBeFresh($driver)) {
-            unset($this->drivers[$driver]);
-        }
+        Arr::forget($this->drivers, $driver);
 
         return parent::driver($driver);
     }
@@ -60,16 +57,6 @@ final class SmsManager extends Manager
     public function provider(?string $provider = null): Sms
     {
         return $this->driver($provider);
-    }
-
-    /**
-     * Set custom driver instance for the given driver key
-     */
-    public function setDriver(string $key, Driver $driver): self
-    {
-        $this->drivers[$key] = $driver;
-
-        return $this;
     }
 
     protected function createSmsIrDriver(): SmsIrDriver
@@ -135,11 +122,5 @@ final class SmsManager extends Manager
     protected function createMedianaDriver(): MedianaDriver
     {
         return $this->container->make(MedianaDriver::class);
-    }
-
-    private function mustBeFresh(string $driver): bool
-    {
-        return isset($this->drivers[$driver])
-            && ! $this->drivers[$driver] instanceof FakeDriver;
     }
 }
