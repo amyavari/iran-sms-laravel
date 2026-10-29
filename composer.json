@@ -18,7 +18,7 @@
         }
     ],
     "require": {
-        "php": "^8.2",
+        "php": "^8.3",
         "spatie/laravel-package-tools": "^1.92",
         "illuminate/contracts": "^11.44|^12.4|^13.0"
     },
@@ -27,8 +27,10 @@
         "orchestra/testbench": "^9.13|^10.2|^11.0",
         "larastan/larastan": "^3.4",
         "rector/rector": "^2.0",
-        "nunomaduro/mock-final-classes": "^1.2",
-        "laravel/pao": "^1.1"
+        "laravel/pao": "^1.1",
+        "dg/bypass-finals": "^1.9",
+        "pestphp/pest": "^4.7",
+        "pestphp/pest-plugin-type-coverage": "^4.0"
     },
     "autoload": {
         "psr-4": {
@@ -43,27 +45,27 @@
     "scripts": {
         "lint": "pint -v",
         "refactor": "rector process --ansi",
-        "test:coverage": "XDEBUG_MODE=coverage phpunit --coverage-text",
         "test:lint": "pint --test -v",
         "test:refactor": "rector process --dry-run --ansi",
         "test:types": "phpstan analyse --configuration=phpstan.neon.dist --ansi --memory-limit=1G",
-        "test:unit": "phpunit",
+        "test:type-coverage": "pest --colors=always --type-coverage --parallel --memory-limit=1G",
+        "test:unit": "pest --colors=always --coverage --parallel",
         "test": [
-            "@test:coverage",
             "@test:lint",
             "@test:refactor",
             "@test:types",
+            "@test:type-coverage",
             "@test:unit"
         ]
     },
     "scripts-descriptions": {
         "lint": "Run Laravel Pint to automatically fix code style issues.",
         "refactor": "Run Rector to automatically refactor code.",
-        "test:coverage": "Run unit tests with code coverage report.",
         "test:lint": "Run Laravel Pint to check code style without fixing issues.",
         "test:refactor": "Run Rector to check refactor needs without fixing issues.",
         "test:types": "Run static analysis to check for type errors in the codebase.",
-        "test:unit": "Run unit tests using PHPUnit."
+        "test:type-coverage": "Run Pest type coverage to check for missing type declarations.",
+        "test:unit": "Run unit tests with code coverage report using Pest."
     },
     "extra": {
         "laravel": {
@@ -73,5 +75,10 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
 }

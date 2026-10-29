@@ -7,6 +7,7 @@ namespace AliYavari\IranSms\Facades;
 use AliYavari\IranSms\Drivers\FakeDriver;
 use AliYavari\IranSms\Dtos\MockResponse;
 use AliYavari\IranSms\SmsManager;
+use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Facade;
@@ -136,16 +137,16 @@ final class Sms extends Facade
     }
 
     /**
-     * Create a fake driver for each driver and register it with the corresponding mocked response.
+     * Register a fake driver creator for each driver with the corresponding mocked response.
      *
      * @param  Collection<string, MockResponse>  $driverResponseMap
      */
     private static function registerFakeDrivers(Collection $driverResponseMap): void
     {
-        $driverResponseMap->each(function (MockResponse $response, string $driver): void {
-            $fakeDriver = new FakeDriver($response);
+        $smsManager = self::getFacadeRoot();
 
-            self::getFacadeRoot()->setDriver($driver, $fakeDriver);
+        $driverResponseMap->each(function (MockResponse $response, string $driver) use ($smsManager): void {
+            $smsManager->extend($driver, fn (Container $app): FakeDriver => $app->make(FakeDriver::class, ['response' => $response]));
         });
     }
 }

@@ -5,28 +5,31 @@ declare(strict_types=1);
 namespace AliYavari\IranSms\Tests;
 
 use AliYavari\IranSms\IranSmsServiceProvider;
+use DG\BypassFinals;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Orchestra\Testbench\TestCase as Orchestra;
-use ReflectionMethod;
+use Override;
 
 abstract class TestCase extends Orchestra
 {
+    #[Override]
     protected function setUp(): void
     {
         parent::setUp();
 
-        Http::preventStrayRequests();
+        $this->enableFinalClassMocking();
+        $this->preventStrayRequests();
     }
 
     /**
-     * Invoke a protected or private method on the given object using reflection.
+     * {@inheritdoc}
      */
-    protected function callProtectedMethod(object $object, string $method, array $args = []): mixed
+    protected function getPackageProviders($app)
     {
-        $reflectionMethod = new ReflectionMethod($object, $method);
-
-        return $reflectionMethod->invoke($object, ...$args);
+        return [
+            IranSmsServiceProvider::class,
+        ];
     }
 
     /**
@@ -44,12 +47,15 @@ abstract class TestCase extends Orchestra
     }
 
     /**
-     * {@inheritdoc}
+     * Prevents any request that is not faked.
      */
-    protected function getPackageProviders($app)
+    private function preventStrayRequests(): void
     {
-        return [
-            IranSmsServiceProvider::class,
-        ];
+        Http::preventStrayRequests();
+    }
+
+    private function enableFinalClassMocking(): void
+    {
+        BypassFinals::enable(bypassReadOnly: false);
     }
 }

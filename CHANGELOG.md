@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Removed
+
+- Support for PHP `8.2`
+
+### Fixed
+
+- A faked provider now returns a new SMS instance on each call, so it can send more than one SMS.
+
 ## [1.5.0] - 2026-05-13
 
 ### Added
@@ -77,6 +87,7 @@ Supported Providers:
 - Faraz SMS
 - Raygan SMS
 
+[Unreleased]: https://github.com/amyavari/iran-sms-laravel/compare/v1.5.0...HEAD
 [1.5.0]: https://github.com/amyavari/iran-sms-laravel/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/amyavari/iran-sms-laravel/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/amyavari/iran-sms-laravel/compare/v1.2.0...v1.3.0
