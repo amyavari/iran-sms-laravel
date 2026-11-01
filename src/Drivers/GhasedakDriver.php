@@ -25,7 +25,7 @@ final class GhasedakDriver extends Driver
     /**
      * The sent status returned in the API response body (e.g., `IsSuccess` field).
      */
-    private bool $apiStatus;
+    private bool $isSuccessful;
 
     /**
      * The status code returned in the API response body (e.g., `StatusCode` field).
@@ -33,9 +33,9 @@ final class GhasedakDriver extends Driver
     private int $apiStatusCode;
 
     /**
-     * The message returned in the API response body (e.g., `Message` field).
+     * The error message returned in the API response body (e.g., `Message` field).
      */
-    private string $apiMessage;
+    private string $apiErrorMessage;
 
     public function __construct(
         private readonly string $token,
@@ -120,7 +120,7 @@ final class GhasedakDriver extends Driver
      */
     protected function isSuccessful(): bool
     {
-        return $this->apiStatus;
+        return $this->isSuccessful;
     }
 
     /**
@@ -128,7 +128,7 @@ final class GhasedakDriver extends Driver
      */
     protected function getErrorMessage(): string
     {
-        return $this->apiMessage;
+        return $this->apiErrorMessage;
     }
 
     /**
@@ -153,9 +153,9 @@ final class GhasedakDriver extends Driver
 
         $response = $response->json();
 
-        $this->apiStatus = (bool) $response['IsSuccess'];
+        $this->isSuccessful = (bool) $response['IsSuccess'];
         $this->apiStatusCode = (int) $response['StatusCode'];
-        $this->apiMessage = (string) $response['Message'];
+        $this->apiErrorMessage = (string) $response['Message'];
     }
 
     /**

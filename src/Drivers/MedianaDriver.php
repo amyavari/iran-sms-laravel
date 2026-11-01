@@ -25,7 +25,7 @@ final class MedianaDriver extends Driver
     /**
      * The sent status returned in the API response body (e.g., `meta.status` field).
      */
-    private bool $apiStatus;
+    private bool $isSuccessful;
 
     /**
      * The status code returned in the API response body (e.g., `meta.message_code` field).
@@ -120,7 +120,7 @@ final class MedianaDriver extends Driver
      */
     protected function isSuccessful(): bool
     {
-        return $this->apiStatus;
+        return $this->isSuccessful;
     }
 
     /**
@@ -153,7 +153,7 @@ final class MedianaDriver extends Driver
 
         $meta = $response->json('meta');
 
-        $this->apiStatus = $meta['status'];
+        $this->isSuccessful = $meta['status'];
         $this->apiStatusCode = $meta['message_code'];
         $this->apiErrorMessage = $meta['message'];
     }

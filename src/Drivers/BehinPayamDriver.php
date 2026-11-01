@@ -24,10 +24,10 @@ final class BehinPayamDriver extends Driver
     private string $baseUrl = 'https://api.sms-webservice.com/api/V3';
 
     /**
-     * The status returned in the API response body (`Success` field).
+     * The sent status returned in the API response body (`Success` field).
      * The docs show no such field, so a missing one means success.
      */
-    private bool $apiStatus;
+    private bool $isSuccessful;
 
     /**
      * The error code returned in the API response body (`ErrorCode` field).
@@ -117,7 +117,7 @@ final class BehinPayamDriver extends Driver
      */
     protected function isSuccessful(): bool
     {
-        return $this->apiStatus;
+        return $this->isSuccessful;
     }
 
     /**
@@ -148,7 +148,7 @@ final class BehinPayamDriver extends Driver
             ->get($endpoint, array_merge($this->credentials(), $data))
             ->throw();
 
-        $this->apiStatus = (bool) $response->json('Success', true);
+        $this->isSuccessful = (bool) $response->json('Success', true);
         $this->apiStatusCode = (int) $response->json('ErrorCode');
         $this->apiErrorMessage = (string) $response->json('Error');
     }

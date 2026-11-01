@@ -23,7 +23,7 @@ final class WebOneDriver extends Driver
     /**
      * The sent status returned in the API response body (e.g., `succeeded` field).
      */
-    private bool $apiStatus;
+    private bool $isSuccessful;
 
     /**
      * The status code returned in the API response body (e.g., `resultCode` field).
@@ -102,7 +102,7 @@ final class WebOneDriver extends Driver
      */
     protected function isSuccessful(): bool
     {
-        return $this->apiStatus;
+        return $this->isSuccessful;
     }
 
     /**
@@ -157,7 +157,7 @@ final class WebOneDriver extends Driver
             ->throw()
             ->json();
 
-        $this->apiStatus = (bool) $response['succeeded'];
+        $this->isSuccessful = (bool) $response['succeeded'];
         $this->apiStatusCode = (int) $response['resultCode'];
     }
 
