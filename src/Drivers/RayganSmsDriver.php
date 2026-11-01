@@ -54,8 +54,8 @@ final class RayganSmsDriver extends Driver
      */
     public function credit(): int
     {
-        $response = Http::withBasicAuth($this->username, $this->password)
-            ->baseUrl($this->restBaseUrl)
+        $response = Http::baseUrl($this->restBaseUrl)
+            ->withBasicAuth($this->username, $this->password)
             ->post('smsAPI/GetCredit')
             ->throw();
 
@@ -162,8 +162,8 @@ final class RayganSmsDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $response = Http::withBasicAuth($this->username, $this->password)
-            ->baseUrl($this->restBaseUrl)
+        $response = Http::baseUrl($this->restBaseUrl)
+            ->withBasicAuth($this->username, $this->password)
             ->post($endpoint, $data)
             ->throw();
 

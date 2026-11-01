@@ -46,8 +46,8 @@ final class GhasedakDriver extends Driver
      */
     public function credit(): int
     {
-        $response = Http::withHeaders($this->credentials())
-            ->baseUrl($this->baseUrl)
+        $response = Http::baseUrl($this->baseUrl)
+            ->withHeaders($this->credentials())
             ->get('GetAccountInformation')
             ->throw();
 
@@ -145,8 +145,8 @@ final class GhasedakDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $response = Http::withHeaders($this->credentials())
-            ->baseUrl($this->baseUrl)
+        $response = Http::baseUrl($this->baseUrl)
+            ->withHeaders($this->credentials())
             ->post($endpoint, $data)
             ->throw();
 
