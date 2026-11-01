@@ -222,6 +222,8 @@ You can chain the logging methods to define custom logic fluently:
 $sms->log()->logOtp(false)->logSuccessful();
 ```
 
+**Note:** Logs are stored in the `sms_logs` table. To read or query them, use `AliYavari\IranSms\Models\SmsLog` model.
+
 #### Prune Old Logs
 
 To help keep your log table clean, this package provides an Artisan command to prune old log records. You can schedule this command using [Laravel's task scheduler]
