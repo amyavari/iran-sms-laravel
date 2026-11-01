@@ -102,7 +102,7 @@ final class MedianaDriver extends Driver
     protected function sendText(array $phones, string $message, string $from): static
     {
         $data = [
-            'sending_type' => 'normal',
+            'sending_type' => 'webservice',
             'from_number' => $from,
             'message' => $message,
             'params' => [

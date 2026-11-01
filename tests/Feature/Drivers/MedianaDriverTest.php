@@ -34,7 +34,7 @@ it('sends text message with the default sender', function (): void {
         ->header('Authorization')->toBe(['sms_token']); // Config token
 
     expect($request->data())
-        ->sending_type->toBe('normal')
+        ->sending_type->toBe('webservice')
         ->from_number->toBe('5000555') // Config sender
         ->message->toBe('Text message')
         ->params->toEqual(['recipients' => ['09123456789']]);
