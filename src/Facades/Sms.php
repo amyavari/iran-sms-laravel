@@ -64,9 +64,9 @@ final class Sms extends Facade
      */
     public static function fake(array $providers = [], ?MockResponse $response = null): void
     {
-        self::validateFakeSetupInputs($providers, $response);
+        self::ensureFakeSetupIsValid($providers, $response);
 
-        self::ensureDriverResponseMapping($providers, $response)
+        self::normalizeDriverResponses($providers, $response)
             ->pipeThrough([
                 self::resolveDefaultDriverName(...),
                 self::registerFakeDrivers(...),
@@ -89,7 +89,7 @@ final class Sms extends Facade
      * @throws InvalidArgumentException
      * @throws UnexpectedValueException
      */
-    private static function validateFakeSetupInputs(array $drivers, ?MockResponse $response): void
+    private static function ensureFakeSetupIsValid(array $drivers, ?MockResponse $response): void
     {
         if (Arr::isAssoc($drivers)) {
             if (filled($response)) {
@@ -107,12 +107,12 @@ final class Sms extends Facade
     }
 
     /**
-     * Ensures drivers are mapped to their MockResponse in format of [driver => MockResponse]
+     * Maps drivers to their MockResponse in format of [driver => MockResponse]
      *
      * @param  array<string, MockResponse>|list<string>  $drivers
      * @return Collection<string, MockResponse>
      */
-    private static function ensureDriverResponseMapping(array $drivers, ?MockResponse $response): Collection
+    private static function normalizeDriverResponses(array $drivers, ?MockResponse $response): Collection
     {
         if (blank($drivers)) {
             $drivers = ['default'];

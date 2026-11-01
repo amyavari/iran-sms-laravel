@@ -24,7 +24,7 @@ use Illuminate\Support\Str;
  * @method ?string error()
  * @method bool successful()
  * @method string getSender()
- * @method list<string> ensureIsArray(string|list<string> $phones)
+ * @method list<string> wrapInList(string|list<string> $phones)
  *
  * @property Type $type
  * @property string|list<string> $phones
@@ -157,7 +157,7 @@ trait HasLog
             'type' => $this->type,
             'driver' => $this->getDriverName(),
             'from' => $this->getSender(),
-            'to' => $this->ensureIsArray($this->phones),
+            'to' => $this->wrapInList($this->phones),
             'content' => $this->serializeContent(),
             'is_successful' => $this->successful(),
             'error' => $this->error(),

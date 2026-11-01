@@ -110,7 +110,7 @@ abstract class Driver implements Sms
      */
     final public function otp(string $phone, string $message): static
     {
-        $this->checkSmsIsNotSet();
+        $this->ensureSmsIsNotSet();
 
         $this->type = Type::Otp;
 
@@ -127,11 +127,11 @@ abstract class Driver implements Sms
      */
     final public function pattern(string|array $phones, string $patternCode, array $variables): static
     {
-        $this->checkSmsIsNotSet();
+        $this->ensureSmsIsNotSet();
 
         $this->type = Type::Pattern;
 
-        $this->phones = $this->ensureIsArray($phones);
+        $this->phones = $this->wrapInList($phones);
         $this->patternCode = $patternCode;
         $this->content = $variables;
 
@@ -145,11 +145,11 @@ abstract class Driver implements Sms
      */
     final public function text(string|array $phones, string $message): static
     {
-        $this->checkSmsIsNotSet();
+        $this->ensureSmsIsNotSet();
 
         $this->type = Type::Text;
 
-        $this->phones = $this->ensureIsArray($phones);
+        $this->phones = $this->wrapInList($phones);
         $this->content = $message;
 
         return $this;
@@ -196,7 +196,7 @@ abstract class Driver implements Sms
      */
     final public function successful(): bool
     {
-        $this->checkSmsIsSent();
+        $this->ensureSmsIsSent();
 
         return $this->isSuccessful();
     }
@@ -208,7 +208,7 @@ abstract class Driver implements Sms
      */
     final public function failed(): bool
     {
-        $this->checkSmsIsSent();
+        $this->ensureSmsIsSent();
 
         return ! $this->isSuccessful();
     }
@@ -220,7 +220,7 @@ abstract class Driver implements Sms
      */
     final public function error(): ?string
     {
-        $this->checkSmsIsSent();
+        $this->ensureSmsIsSent();
 
         if ($this->isSuccessful()) {
             return null;
@@ -284,7 +284,7 @@ abstract class Driver implements Sms
      *
      * @throws SmsIsImmutableException
      */
-    private function checkSmsIsNotSet(): void
+    private function ensureSmsIsNotSet(): void
     {
         if (isset($this->type)) {
             throw new SmsIsImmutableException('SMS object is immutable, to create new SMS content you need to create new instance.');
@@ -296,7 +296,7 @@ abstract class Driver implements Sms
      *
      * @return list<string>
      */
-    private function ensureIsArray(mixed $data): array
+    private function wrapInList(mixed $data): array
     {
         return Collection::wrap($data)->values()->all();
     }
@@ -306,7 +306,7 @@ abstract class Driver implements Sms
      *
      * @throws SmsNotSentYetException
      */
-    private function checkSmsIsSent(): void
+    private function ensureSmsIsSent(): void
     {
         if (! $this->isSent) {
             throw new SmsNotSentYetException('To check SMS status, you first must send it with "send".');
