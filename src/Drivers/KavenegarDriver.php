@@ -37,7 +37,7 @@ final class KavenegarDriver extends Driver
      */
     public function credit(): int
     {
-        $response = Http::baseUrl(self::BASE_URL.$this->credentials())
+        $response = Http::baseUrl($this->authenticatedBaseUrl())
             ->withHeader('charset', 'utf-8')
             ->asForm()
             ->acceptJson()
@@ -161,7 +161,7 @@ final class KavenegarDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $response = Http::baseUrl(self::BASE_URL.$this->credentials())
+        $response = Http::baseUrl($this->authenticatedBaseUrl())
             ->withHeader('charset', 'utf-8')
             ->asForm()
             ->acceptJson()
@@ -171,8 +171,8 @@ final class KavenegarDriver extends Driver
         $this->apiStatusCode = (int) $response->json('return.status');
     }
 
-    private function credentials(): string
+    private function authenticatedBaseUrl(): string
     {
-        return '/'.$this->token;
+        return sprintf('%s/%s', self::BASE_URL, $this->token);
     }
 }

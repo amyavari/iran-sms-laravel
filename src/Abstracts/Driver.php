@@ -32,7 +32,7 @@ abstract class Driver implements Sms
     /**
      * User defined sender number
      */
-    private string $from;
+    private string $sender;
 
     /**
      * Phone(s) to send message to
@@ -160,7 +160,7 @@ abstract class Driver implements Sms
      */
     final public function from(string $from): static
     {
-        $this->from = $from;
+        $this->sender = $from;
 
         return $this;
     }
@@ -276,7 +276,7 @@ abstract class Driver implements Sms
      */
     private function getSender(): string
     {
-        return $this->from ?? $this->getDefaultSender();
+        return $this->sender ?? $this->getDefaultSender();
     }
 
     /**
