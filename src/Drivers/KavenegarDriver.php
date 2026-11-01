@@ -20,7 +20,7 @@ final class KavenegarDriver extends Driver
     /**
      * The base URL for the API.
      */
-    private string $baseUrl = 'https://api.kavenegar.com/v1';
+    private const string BASE_URL = 'https://api.kavenegar.com/v1';
 
     /**
      * The status code returned in the API response body (e.g., `return.status` field).
@@ -37,7 +37,7 @@ final class KavenegarDriver extends Driver
      */
     public function credit(): int
     {
-        $response = Http::baseUrl($this->baseUrl.$this->credentials())
+        $response = Http::baseUrl(self::BASE_URL.$this->credentials())
             ->withHeader('charset', 'utf-8')
             ->asForm()
             ->acceptJson()
@@ -165,7 +165,7 @@ final class KavenegarDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $response = Http::baseUrl($this->baseUrl.$this->credentials())
+        $response = Http::baseUrl(self::BASE_URL.$this->credentials())
             ->withHeader('charset', 'utf-8')
             ->asForm()
             ->acceptJson()

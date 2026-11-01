@@ -22,7 +22,7 @@ final class MeliPayamakDriver extends Driver
     /**
      * The base URL for the API.
      */
-    private string $baseUrl = 'https://rest.payamak-panel.com/api/SendSMS';
+    private const string BASE_URL = 'https://rest.payamak-panel.com/api/SendSMS';
 
     /**
      * The status code returned in the API response body (e.g., `Value` field).
@@ -40,7 +40,7 @@ final class MeliPayamakDriver extends Driver
      */
     public function credit(): int
     {
-        $response = Http::baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
             ->asForm()
             ->acceptJson()
             ->post('GetCredit2', $this->credentials())
@@ -160,7 +160,7 @@ final class MeliPayamakDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $response = Http::baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
             ->asForm()
             ->acceptJson()
             ->post($endpoint, array_merge($this->credentials(), $data))

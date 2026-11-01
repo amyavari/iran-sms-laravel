@@ -20,7 +20,7 @@ final class BehinPayamDriver extends Driver
     /**
      * The base URL for the API.
      */
-    private string $baseUrl = 'https://api.sms-webservice.com/api/V3';
+    private const string BASE_URL = 'https://api.sms-webservice.com/api/V3';
 
     /**
      * The sent status returned in the API response body (`Success` field).
@@ -48,7 +48,7 @@ final class BehinPayamDriver extends Driver
      */
     public function credit(): int
     {
-        $response = Http::baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
             ->post('AccountInfo', $this->credentials())
             ->throw();
 
@@ -144,7 +144,7 @@ final class BehinPayamDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $response = Http::baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
             ->acceptJson()
             ->get($endpoint, array_merge($this->credentials(), $data))
             ->throw();

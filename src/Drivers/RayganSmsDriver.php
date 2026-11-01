@@ -20,12 +20,12 @@ final class RayganSmsDriver extends Driver
     /**
      * The URL for sending OTP message
      */
-    private string $otpUrl = 'https://raygansms.com/SendMessageWithCode.ashx';
+    private const string OTP_URL = 'https://raygansms.com/SendMessageWithCode.ashx';
 
     /**
-     * The URL for getting credit
+     * The base URL for the REST API.
      */
-    private string $restBaseUrl = 'https://smspanel.trez.ir/api/';
+    private const string REST_BASE_URL = 'https://smspanel.trez.ir/api';
 
     /**
      * Sending status based on the API response code (`$apiStatusCode`).
@@ -54,7 +54,7 @@ final class RayganSmsDriver extends Driver
      */
     public function credit(): int
     {
-        $response = Http::baseUrl($this->restBaseUrl)
+        $response = Http::baseUrl(self::REST_BASE_URL)
             ->withBasicAuth($this->username, $this->password)
             ->post('smsAPI/GetCredit')
             ->throw();
@@ -82,7 +82,7 @@ final class RayganSmsDriver extends Driver
             'Message' => $message,
         ];
 
-        $response = Http::get($this->otpUrl, $data)
+        $response = Http::get(self::OTP_URL, $data)
             ->throw();
 
         $this->parseOtpResponse($response->body());
@@ -162,7 +162,7 @@ final class RayganSmsDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $response = Http::baseUrl($this->restBaseUrl)
+        $response = Http::baseUrl(self::REST_BASE_URL)
             ->withBasicAuth($this->username, $this->password)
             ->post($endpoint, $data)
             ->throw();

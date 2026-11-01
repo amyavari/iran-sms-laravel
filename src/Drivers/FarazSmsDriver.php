@@ -20,7 +20,7 @@ final class FarazSmsDriver extends Driver
     /**
      * The base URL for the API.
      */
-    private string $baseUrl = 'https://api.iranpayamak.com/ws/v1';
+    private const string BASE_URL = 'https://api.iranpayamak.com/ws/v1';
 
     /**
      * The sent status returned in the API response body (e.g., `status` field).
@@ -42,7 +42,7 @@ final class FarazSmsDriver extends Driver
      */
     public function credit(): int
     {
-        $response = Http::baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
             ->withHeaders($this->credentials())
             ->asJson()
             ->get('account/balance')
@@ -144,7 +144,7 @@ final class FarazSmsDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $response = Http::baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
             ->withHeaders($this->credentials())
             ->post($endpoint, $data)
             ->throwIfServerError();

@@ -20,7 +20,7 @@ final class AsanakDriver extends Driver
     /**
      * The base URL for the API.
      */
-    private string $baseUrl = 'https://sms.asanak.ir/webservice/v2rest';
+    private const string BASE_URL = 'https://sms.asanak.ir/webservice/v2rest';
 
     /**
      * The status code returned in the API response body (e.g., `meta.status` field).
@@ -38,7 +38,7 @@ final class AsanakDriver extends Driver
      */
     public function credit(): int
     {
-        $response = Http::baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
             ->acceptJson()
             ->post('getrialcredit', $this->credentials())
             ->throw();
@@ -149,7 +149,7 @@ final class AsanakDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $response = Http::baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
             ->acceptJson()
             ->post($endpoint, array_merge($this->credentials(), $data))
             ->throw();

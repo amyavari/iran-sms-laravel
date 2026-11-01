@@ -18,7 +18,7 @@ final class WebOneDriver extends Driver
     /**
      * The base URL for the API.
      */
-    private string $baseUrl = 'https://api.payamakapi.ir/api/v1';
+    private const string BASE_URL = 'https://api.payamakapi.ir/api/v1';
 
     /**
      * The sent status returned in the API response body (e.g., `succeeded` field).
@@ -40,7 +40,7 @@ final class WebOneDriver extends Driver
      */
     public function credit(): int
     {
-        $response = Http::baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
             ->withHeaders($this->credentials())
             ->get('SMS/GetCredit')
             ->throw();
@@ -151,7 +151,7 @@ final class WebOneDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $response = Http::baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
             ->withHeaders($this->credentials())
             ->post($endpoint, $data)
             ->throw();

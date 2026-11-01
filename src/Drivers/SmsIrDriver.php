@@ -20,7 +20,7 @@ final class SmsIrDriver extends Driver
     /**
      * The base URL for the API.
      */
-    private string $baseUrl = 'https://api.sms.ir/v1/';
+    private const string BASE_URL = 'https://api.sms.ir/v1';
 
     /**
      * The status code returned in the API response body (e.g., `status` field).
@@ -37,7 +37,7 @@ final class SmsIrDriver extends Driver
      */
     public function credit(): int
     {
-        $response = Http::baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
             ->withHeaders($this->credentials())
             ->acceptJson()
             ->get('credit')
@@ -165,7 +165,7 @@ final class SmsIrDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $response = Http::baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
             ->withHeaders($this->credentials())
             ->acceptJson()
             ->post($endpoint, $data)

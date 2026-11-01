@@ -19,7 +19,7 @@ final class GhasedakDriver extends Driver
     /**
      * The base URL for the API.
      */
-    private string $baseUrl = 'https://gateway.ghasedak.me/rest/api/v1/WebService';
+    private const string BASE_URL = 'https://gateway.ghasedak.me/rest/api/v1/WebService';
 
     /**
      * The sent status returned in the API response body (e.g., `IsSuccess` field).
@@ -46,7 +46,7 @@ final class GhasedakDriver extends Driver
      */
     public function credit(): int
     {
-        $response = Http::baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
             ->withHeaders($this->credentials())
             ->get('GetAccountInformation')
             ->throw();
@@ -145,7 +145,7 @@ final class GhasedakDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $response = Http::baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
             ->withHeaders($this->credentials())
             ->post($endpoint, $data)
             ->throw();

@@ -19,7 +19,7 @@ final class MedianaDriver extends Driver
     /**
      * The base URL for the API.
      */
-    private string $baseUrl = 'https://edge.ippanel.com/v1/api/';
+    private const string BASE_URL = 'https://edge.ippanel.com/v1/api';
 
     /**
      * The sent status returned in the API response body (e.g., `meta.status` field).
@@ -46,7 +46,7 @@ final class MedianaDriver extends Driver
      */
     public function credit(): int
     {
-        $response = Http::baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
             ->withHeaders($this->credentials())
             ->asJson()
             ->get('payment/credit/mine')
@@ -145,7 +145,7 @@ final class MedianaDriver extends Driver
      */
     private function execute(array $data): void
     {
-        $response = Http::baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
             ->withHeaders($this->credentials())
             ->post('send', $data)
             ->throw();
