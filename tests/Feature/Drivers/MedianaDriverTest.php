@@ -141,6 +141,15 @@ it('returns failed status with error when message is not sent', function (Median
         ->toBeFailedSms('400-1', 'Something went wrong.'); // The API gives the error code and message
 })->with('mediana_messages');
 
+it('returns failed status when the response has no expected fields', function (MedianaDriver $sms): void {
+    fakeHttp([]);
+
+    $sms->send();
+
+    expect($sms)
+        ->failed()->toBeTrue();
+})->with('mediana_messages');
+
 it('throws an exception when the provider returns a server error', function (MedianaDriver $sms): void {
     fakeHttp(status: 500);
 

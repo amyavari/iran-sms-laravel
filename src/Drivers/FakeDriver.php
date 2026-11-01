@@ -38,31 +38,25 @@ final class FakeDriver extends Driver
     /**
      * {@inheritdoc}
      */
-    protected function sendOtp(string $phone, string $message, string $from): static
+    protected function sendOtp(string $phone, string $message, string $from): void
     {
         $this->throwConnectionExceptionIfRequired();
-
-        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
+    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): void
     {
         $this->throwConnectionExceptionIfRequired();
-
-        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function sendText(array $phones, string $message, string $from): static
+    protected function sendText(array $phones, string $message, string $from): void
     {
         $this->throwConnectionExceptionIfRequired();
-
-        return $this;
     }
 
     /**

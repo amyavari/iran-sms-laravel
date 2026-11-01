@@ -18,12 +18,10 @@ final class UnsupportedMultiplePhonesException extends LogicException
 
     /**
      * Make instance of this exception with prepared message
-     *
-     * @param  'otp'|'text'|'pattern'  $method
      */
-    public static function make(string $driver, string $method): self
+    public static function make(string $driver): self
     {
-        $message = sprintf('Provider "%s" only supports sending to one phone number at a time for "%s" message.', $driver, $method);
+        $message = sprintf('Provider "%s" only supports sending pattern SMS to one phone number at a time.', $driver);
 
         return new self($message);
     }

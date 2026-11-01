@@ -186,6 +186,24 @@ it('returns failed status with error when OTP message is not sent', function ():
         ->toBeFailedSms('8', 'خطا با کد "8" رخ داده است.'); // Raygan SMS's message for OTP status 8
 });
 
+it('returns failed status when REST API response has no expected fields', function (RayganSmsDriver $sms): void {
+    fakeHttp([]);
+
+    $sms->send();
+
+    expect($sms)
+        ->failed()->toBeTrue();
+})->with('raygan_sms_rest_messages');
+
+it('returns failed status when OTP response has no expected fields', function (): void {
+    fakeHttp([]);
+
+    $sms = rayganSmsDriver()->otp('09123456789', 'OTP message')->send();
+
+    expect($sms)
+        ->failed()->toBeTrue();
+});
+
 it('throws an exception when the provider returns a server error', function (RayganSmsDriver $sms): void {
     fakeHttp(status: 500);
 

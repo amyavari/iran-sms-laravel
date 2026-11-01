@@ -6,7 +6,7 @@ namespace AliYavari\IranSms\Drivers;
 
 use AliYavari\IranSms\Abstracts\Driver;
 use AliYavari\IranSms\Exceptions\InvalidPatternStructureException;
-use Illuminate\Support\Arr;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
@@ -20,12 +20,12 @@ final class RayganSmsDriver extends Driver
     /**
      * The URL for sending OTP message
      */
-    private string $otpUrl = 'https://raygansms.com/SendMessageWithCode.ashx';
+    private const string OTP_URL = 'https://raygansms.com/SendMessageWithCode.ashx';
 
     /**
-     * The URL for getting credit
+     * The base URL for the REST API.
      */
-    private string $restBaseUrl = 'https://smspanel.trez.ir/api/';
+    private const string REST_BASE_URL = 'https://smspanel.trez.ir/api';
 
     /**
      * Sending status based on the API response code (`$apiStatusCode`).
@@ -54,8 +54,8 @@ final class RayganSmsDriver extends Driver
      */
     public function credit(): int
     {
-        $response = Http::withBasicAuth($this->username, $this->password)
-            ->baseUrl($this->restBaseUrl)
+        $response = Http::baseUrl(self::REST_BASE_URL)
+            ->withBasicAuth($this->username, $this->password)
             ->post('smsAPI/GetCredit')
             ->throw();
 
@@ -73,7 +73,7 @@ final class RayganSmsDriver extends Driver
     /**
      * {@inheritdoc}
      */
-    protected function sendOtp(string $phone, string $message, string $from): static
+    protected function sendOtp(string $phone, string $message, string $from): void
     {
         $data = [
             'Username' => $this->username,
@@ -82,12 +82,10 @@ final class RayganSmsDriver extends Driver
             'Message' => $message,
         ];
 
-        $response = Http::get($this->otpUrl, $data)
+        $response = Http::get(self::OTP_URL, $data)
             ->throw();
 
         $this->parseOtpResponse($response->body());
-
-        return $this;
     }
 
     /**
@@ -95,9 +93,9 @@ final class RayganSmsDriver extends Driver
      *
      * @throws InvalidPatternStructureException
      */
-    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
+    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): void
     {
-        $this->validatePatternVariables($variables);
+        $this->ensureKeyValuePattern($variables);
 
         $data = array_merge([
             'AccessHash' => $this->token,
@@ -109,14 +107,12 @@ final class RayganSmsDriver extends Driver
         ], $variables);
 
         $this->execute('smsApiWithPattern/SendMessage', $data);
-
-        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function sendText(array $phones, string $message, string $from): static
+    protected function sendText(array $phones, string $message, string $from): void
     {
         $data = [
             'PhoneNumber' => $from,
@@ -127,8 +123,6 @@ final class RayganSmsDriver extends Driver
         ];
 
         $this->execute('smsAPI/SendMessage', $data);
-
-        return $this;
     }
 
     /**
@@ -162,26 +156,12 @@ final class RayganSmsDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $response = Http::withBasicAuth($this->username, $this->password)
-            ->baseUrl($this->restBaseUrl)
+        $response = Http::baseUrl(self::REST_BASE_URL)
+            ->withBasicAuth($this->username, $this->password)
             ->post($endpoint, $data)
             ->throw();
 
-        $this->parseRestResponse($response->json());
-    }
-
-    /**
-     * @param  array<mixed>  $variables
-     *
-     * @throws InvalidPatternStructureException
-     */
-    private function validatePatternVariables(array $variables): void
-    {
-        if (Arr::isList($variables)) {
-            throw new InvalidPatternStructureException(
-                sprintf('Provider "%s" only accepts pattern data as key-value pairs.', $this->getDriverName())
-            );
-        }
+        $this->parseRestResponse($response);
     }
 
     /**
@@ -197,13 +177,11 @@ final class RayganSmsDriver extends Driver
 
     /**
      * Extracts REST API response data into status properties.
-     *
-     * @param  array<string,mixed>  $response
      */
-    private function parseRestResponse(array $response): void
+    private function parseRestResponse(Response $response): void
     {
-        $this->apiStatusCode = (int) $response['Code'];
-        $this->apiErrorMessage = $response['Message'];
+        $this->apiStatusCode = (int) $response->json('Code', -1);
+        $this->apiErrorMessage = (string) $response->json('Message');
 
         $this->isSuccessful = $this->apiStatusCode === 0;
     }

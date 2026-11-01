@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- The `SmsLog` model is now public, so you can query your SMS logs directly.
+
 ### Removed
 
 - Support for PHP `8.2`
@@ -15,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Increased minimum Laravel version support due to security advisories.
+- **Breaking:** `UnsupportedMultiplePhonesException` has a new message: `Provider "%s" only supports sending pattern SMS to one phone number at a time.`
 
 ### Fixed
 
@@ -26,6 +31,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `Sms::failedConnection()` no longer records an extra HTTP request, and it now makes `credit()` throw too.
 - **Ghasedak** pattern messages no longer throw a `TypeError` when a variable is `null`.
 - **Payam Resan** and **Behin Payam** now report a provider error returned with HTTP 200 as a failed SMS, instead of a successful one.
+- A missing field in a provider's response now gives a failed SMS, instead of a `TypeError`.
 
 ## [1.5.0] - 2026-05-13
 

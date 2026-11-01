@@ -88,7 +88,7 @@ it('throws an exception when sending pattern message to multiple phones', functi
     $sms = behinPayamDriver()->pattern(['09123456789', '09129876543'], 'pattern_code', ['token1' => 'value_1', 'token2' => 'value_2', 'token3' => 'value_3']);
 
     expect(fn (): BehinPayamDriver => $sms->send())
-        ->toThrow(UnsupportedMultiplePhonesException::class, 'Provider "behin_payam" only supports sending to one phone number at a time for "pattern" message.');
+        ->toThrow(UnsupportedMultiplePhonesException::class, 'Provider "behin_payam" only supports sending pattern SMS to one phone number at a time.');
 
     Http::assertNothingSent();
 });
@@ -145,6 +145,15 @@ it('returns failed status with error when the API returns HTTP 200 with an error
 
     expect($sms)
         ->toBeFailedSms('1', 'ApiKey نادرست است - کلید API نامعتبر است.'); // From the fake error body
+})->with('behin_payam_messages');
+
+it('returns successful status when the response has no expected fields', function (BehinPayamDriver $sms): void {
+    fakeHttp([]); // Only an error body has the `Success` field
+
+    $sms->send();
+
+    expect($sms)
+        ->successful()->toBeTrue();
 })->with('behin_payam_messages');
 
 it('throws an exception when the provider returns a server error', function (BehinPayamDriver $sms): void {

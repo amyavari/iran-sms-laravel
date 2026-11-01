@@ -42,7 +42,9 @@ final class PruneLogsCommand extends Command
 
         $this->components->task(
             "Pruning logs created before {$days} days ago ...",
-            fn () => SmsLog::query()->where('created_at', '<', now()->subDays($days))->delete()
+            fn () => SmsLog::query()
+                ->where('created_at', '<', now()->subDays($days))
+                ->delete()
         );
 
         $this->components->info("Logs created before [{$days} days] ago pruned successfully.");

@@ -117,7 +117,7 @@ final class TestDriver extends Driver
         return '5000555';
     }
 
-    protected function sendOtp(string $phone, string $message, string $from): static
+    protected function sendOtp(string $phone, string $message, string $from): void
     {
         $this->throwExceptionIfConfigured();
 
@@ -127,11 +127,9 @@ final class TestDriver extends Driver
             'message' => $message,
             'from' => $from,
         ];
-
-        return $this;
     }
 
-    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
+    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): void
     {
         $this->throwExceptionIfConfigured();
 
@@ -142,11 +140,9 @@ final class TestDriver extends Driver
             'variables' => $variables,
             'from' => $from,
         ];
-
-        return $this;
     }
 
-    protected function sendText(array $phones, string $message, string $from): static
+    protected function sendText(array $phones, string $message, string $from): void
     {
         $this->throwExceptionIfConfigured();
 
@@ -156,8 +152,6 @@ final class TestDriver extends Driver
             'message' => $message,
             'from' => $from,
         ];
-
-        return $this;
     }
 
     protected function isSuccessful(): bool

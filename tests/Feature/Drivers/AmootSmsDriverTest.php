@@ -86,7 +86,7 @@ it('throws an exception when sending pattern message to multiple phones', functi
     $sms = amootSmsDriver()->pattern(['09123456789', '09129876543'], 'pattern_code', ['code' => '12345']);
 
     expect(fn (): AmootSmsDriver => $sms->send())
-        ->toThrow(UnsupportedMultiplePhonesException::class, 'Provider "amoot_sms" only supports sending to one phone number at a time for "pattern" message.');
+        ->toThrow(UnsupportedMultiplePhonesException::class, 'Provider "amoot_sms" only supports sending pattern SMS to one phone number at a time.');
 
     Http::assertNothingSent();
 });
@@ -117,7 +117,16 @@ it('returns failed status with error when message is not sent', function (AmootS
     $sms->send();
 
     expect($sms)
-        ->toBeFailedSms('', 'CreditNotEnough'); // The API gives no error code, the message is the API status
+        ->toBeFailedSms('0', 'CreditNotEnough'); // The API gives no error code, the message is the API status
+})->with('amoot_sms_messages');
+
+it('returns failed status when the response has no expected fields', function (AmootSmsDriver $sms): void {
+    fakeHttp([]);
+
+    $sms->send();
+
+    expect($sms)
+        ->failed()->toBeTrue();
 })->with('amoot_sms_messages');
 
 it('throws an exception when the provider returns a server error', function (AmootSmsDriver $sms): void {

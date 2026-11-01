@@ -7,7 +7,6 @@ namespace AliYavari\IranSms\Drivers;
 use AliYavari\IranSms\Abstracts\Driver;
 use AliYavari\IranSms\Exceptions\InvalidPatternStructureException;
 use AliYavari\IranSms\Exceptions\UnsupportedMethodException;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 
 /**
@@ -20,7 +19,7 @@ final class MedianaDriver extends Driver
     /**
      * The base URL for the API.
      */
-    private string $baseUrl = 'https://edge.ippanel.com/v1/api/';
+    private const string BASE_URL = 'https://edge.ippanel.com/v1/api';
 
     /**
      * The sent status returned in the API response body (e.g., `meta.status` field).
@@ -47,7 +46,7 @@ final class MedianaDriver extends Driver
      */
     public function credit(): int
     {
-        $response = Http::baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
             ->withHeaders($this->credentials())
             ->asJson()
             ->get('payment/credit/mine')
@@ -69,7 +68,7 @@ final class MedianaDriver extends Driver
      *
      * @throws UnsupportedMethodException
      */
-    protected function sendOtp(string $phone, string $message, string $from): static
+    protected function sendOtp(string $phone, string $message, string $from): void
     {
         throw UnsupportedMethodException::make($this->getDriverName(), method: 'otp', alternative: 'pattern');
     }
@@ -79,9 +78,9 @@ final class MedianaDriver extends Driver
      *
      * @throws InvalidPatternStructureException
      */
-    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
+    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): void
     {
-        $this->validatePatternVariables($variables);
+        $this->ensureKeyValuePattern($variables);
 
         $data = [
             'sending_type' => 'pattern',
@@ -92,14 +91,12 @@ final class MedianaDriver extends Driver
         ];
 
         $this->execute($data);
-
-        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function sendText(array $phones, string $message, string $from): static
+    protected function sendText(array $phones, string $message, string $from): void
     {
         $data = [
             'sending_type' => 'webservice',
@@ -111,8 +108,6 @@ final class MedianaDriver extends Driver
         ];
 
         $this->execute($data);
-
-        return $this;
     }
 
     /**
@@ -146,16 +141,14 @@ final class MedianaDriver extends Driver
      */
     private function execute(array $data): void
     {
-        $response = Http::baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
             ->withHeaders($this->credentials())
             ->post('send', $data)
             ->throw();
 
-        $meta = $response->json('meta');
-
-        $this->isSuccessful = $meta['status'];
-        $this->apiStatusCode = $meta['message_code'];
-        $this->apiErrorMessage = $meta['message'];
+        $this->isSuccessful = (bool) $response->json('meta.status');
+        $this->apiStatusCode = (string) $response->json('meta.message_code');
+        $this->apiErrorMessage = (string) $response->json('meta.message');
     }
 
     /**
@@ -166,19 +159,5 @@ final class MedianaDriver extends Driver
         return [
             'Authorization' => $this->token,
         ];
-    }
-
-    /**
-     * @param  array<mixed>  $variables
-     *
-     * @throws InvalidPatternStructureException
-     */
-    private function validatePatternVariables(array $variables): void
-    {
-        if (Arr::isList($variables)) {
-            throw new InvalidPatternStructureException(
-                sprintf('Provider "%s" only accepts pattern data as key-value pairs.', $this->getDriverName())
-            );
-        }
     }
 }

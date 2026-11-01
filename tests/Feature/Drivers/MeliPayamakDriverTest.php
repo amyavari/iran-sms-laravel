@@ -90,7 +90,7 @@ it('throws an exception when sending pattern message to multiple phones', functi
     $sms = meliPayamakDriver()->pattern(['09123456789', '09129876543'], 'pattern_code', ['code' => '12345']);
 
     expect(fn (): MeliPayamakDriver => $sms->send())
-        ->toThrow(UnsupportedMultiplePhonesException::class, 'Provider "meli_payamak" only supports sending to one phone number at a time for "pattern" message.');
+        ->toThrow(UnsupportedMultiplePhonesException::class, 'Provider "meli_payamak" only supports sending pattern SMS to one phone number at a time.');
 
     Http::assertNothingSent();
 });
@@ -122,6 +122,15 @@ it('returns failed status with error when message is not sent', function (MeliPa
 
     expect($sms)
         ->toBeFailedSms('2', 'اعتبار کافی نمی‌باشد'); // Meli Payamak's message for status 2
+})->with('meli_payamak_messages');
+
+it('returns failed status when the response has no expected fields', function (MeliPayamakDriver $sms): void {
+    fakeHttp([]);
+
+    $sms->send();
+
+    expect($sms)
+        ->failed()->toBeTrue();
 })->with('meli_payamak_messages');
 
 it('throws an exception when the provider returns a server error', function (MeliPayamakDriver $sms): void {

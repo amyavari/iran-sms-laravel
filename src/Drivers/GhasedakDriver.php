@@ -7,7 +7,6 @@ namespace AliYavari\IranSms\Drivers;
 use AliYavari\IranSms\Abstracts\Driver;
 use AliYavari\IranSms\Exceptions\InvalidPatternStructureException;
 use AliYavari\IranSms\Exceptions\UnsupportedMethodException;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 
 /**
@@ -20,7 +19,7 @@ final class GhasedakDriver extends Driver
     /**
      * The base URL for the API.
      */
-    private string $baseUrl = 'https://gateway.ghasedak.me/rest/api/v1/WebService';
+    private const string BASE_URL = 'https://gateway.ghasedak.me/rest/api/v1/WebService';
 
     /**
      * The sent status returned in the API response body (e.g., `IsSuccess` field).
@@ -47,8 +46,8 @@ final class GhasedakDriver extends Driver
      */
     public function credit(): int
     {
-        $response = Http::withHeaders($this->credentials())
-            ->baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
+            ->withHeaders($this->credentials())
             ->get('GetAccountInformation')
             ->throw();
 
@@ -68,7 +67,7 @@ final class GhasedakDriver extends Driver
      *
      * @throws UnsupportedMethodException
      */
-    protected function sendOtp(string $phone, string $message, string $from): static
+    protected function sendOtp(string $phone, string $message, string $from): void
     {
         throw UnsupportedMethodException::make($this->getDriverName(), method: 'otp', alternative: 'pattern');
     }
@@ -78,9 +77,9 @@ final class GhasedakDriver extends Driver
      *
      * @throws InvalidPatternStructureException
      */
-    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
+    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): void
     {
-        $this->validatePatternVariables($variables);
+        $this->ensureKeyValuePattern($variables);
 
         $data = [
             'templateName' => $patternCode,
@@ -91,14 +90,12 @@ final class GhasedakDriver extends Driver
         ];
 
         $this->execute('SendOtpSMS', $data);
-
-        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function sendText(array $phones, string $message, string $from): static
+    protected function sendText(array $phones, string $message, string $from): void
     {
         $data = [
             'lineNumber' => $from,
@@ -111,8 +108,6 @@ final class GhasedakDriver extends Driver
         ];
 
         $this->execute('SendBulkSMS', $data);
-
-        return $this;
     }
 
     /**
@@ -146,16 +141,14 @@ final class GhasedakDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $response = Http::withHeaders($this->credentials())
-            ->baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
+            ->withHeaders($this->credentials())
             ->post($endpoint, $data)
             ->throw();
 
-        $response = $response->json();
-
-        $this->isSuccessful = (bool) $response['IsSuccess'];
-        $this->apiStatusCode = (int) $response['StatusCode'];
-        $this->apiErrorMessage = (string) $response['Message'];
+        $this->isSuccessful = (bool) $response->json('IsSuccess');
+        $this->apiStatusCode = (int) $response->json('StatusCode');
+        $this->apiErrorMessage = (string) $response->json('Message');
     }
 
     /**
@@ -203,19 +196,5 @@ final class GhasedakDriver extends Driver
             ])
             ->values()
             ->all();
-    }
-
-    /**
-     * @param  array<mixed>  $variables
-     *
-     * @throws InvalidPatternStructureException
-     */
-    private function validatePatternVariables(array $variables): void
-    {
-        if (Arr::isList($variables)) {
-            throw new InvalidPatternStructureException(
-                sprintf('Provider "%s" only accepts pattern data as key-value pairs.', $this->getDriverName())
-            );
-        }
     }
 }

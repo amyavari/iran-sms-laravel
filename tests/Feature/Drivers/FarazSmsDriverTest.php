@@ -100,7 +100,7 @@ it('throws an exception when sending pattern message to multiple phones', functi
     $sms = farazSmsDriver()->pattern(['09123456789', '09129876543'], 'pattern_code', ['code' => '12345']);
 
     expect(fn (): FarazSmsDriver => $sms->send())
-        ->toThrow(UnsupportedMultiplePhonesException::class, 'Provider "faraz_sms" only supports sending to one phone number at a time for "pattern" message.');
+        ->toThrow(UnsupportedMultiplePhonesException::class, 'Provider "faraz_sms" only supports sending pattern SMS to one phone number at a time.');
 
     Http::assertNothingSent();
 });
@@ -143,6 +143,15 @@ it('returns failed status with error when message is not sent', function (FarazS
 
     expect($sms)
         ->toBeFailedSms('0', 'Auth required'); // The API gives no error code, the driver uses `0`. The message is the API's
+})->with('faraz_sms_messages');
+
+it('returns failed status when the response has no expected fields', function (FarazSmsDriver $sms): void {
+    fakeHttp([]);
+
+    $sms->send();
+
+    expect($sms)
+        ->failed()->toBeTrue();
 })->with('faraz_sms_messages');
 
 it('throws an exception when the provider returns a server error', function (FarazSmsDriver $sms): void {

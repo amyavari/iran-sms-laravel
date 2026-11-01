@@ -93,7 +93,7 @@ it('throws an exception when sending pattern message to multiple phones', functi
     $sms = asanakDriver()->pattern(['09123456789', '09129876543'], 'pattern_code', ['code' => '12345']);
 
     expect(fn (): AsanakDriver => $sms->send())
-        ->toThrow(UnsupportedMultiplePhonesException::class, 'Provider "asanak" only supports sending to one phone number at a time for "pattern" message.');
+        ->toThrow(UnsupportedMultiplePhonesException::class, 'Provider "asanak" only supports sending pattern SMS to one phone number at a time.');
 
     Http::assertNothingSent();
 });
@@ -136,6 +136,15 @@ it('returns failed status with error when message is not sent', function (Asanak
 
     expect($sms)
         ->toBeFailedSms('1006', 'خطای مربوط به نداشتن اعتبار کافی برای ارسال'); // Asanak's message for status 1006
+})->with('asanak_messages');
+
+it('returns failed status when the response has no expected fields', function (AsanakDriver $sms): void {
+    fakeHttp([]);
+
+    $sms->send();
+
+    expect($sms)
+        ->failed()->toBeTrue();
 })->with('asanak_messages');
 
 it('throws an exception when the provider returns a server error', function (AsanakDriver $sms): void {

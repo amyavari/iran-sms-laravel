@@ -106,6 +106,15 @@ it('returns failed status with error when message is not sent', function (WebOne
         ->toBeFailedSms('8', 'اعتبار كافي نيست'); // Web One's message for result code 8
 })->with('web_one_messages');
 
+it('returns failed status when the response has no expected fields', function (WebOneDriver $sms): void {
+    fakeHttp([]);
+
+    $sms->send();
+
+    expect($sms)
+        ->failed()->toBeTrue();
+})->with('web_one_messages');
+
 it('throws an exception when the provider returns a server error', function (WebOneDriver $sms): void {
     fakeHttp(status: 500);
 

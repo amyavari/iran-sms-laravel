@@ -7,6 +7,7 @@ namespace AliYavari\IranSms\Drivers;
 use AliYavari\IranSms\Abstracts\Driver;
 use AliYavari\IranSms\Exceptions\UnsupportedMethodException;
 use AliYavari\IranSms\Exceptions\UnsupportedMultiplePhonesException;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 
 /**
@@ -19,7 +20,7 @@ final class AmootSmsDriver extends Driver
     /**
      * The base URL for the API.
      */
-    private string $baseUrl = 'https://portal.amootsms.com/rest';
+    private const string BASE_URL = 'https://portal.amootsms.com/rest';
 
     /**
      * The status returned in the API response body (e.g., `Status` field).
@@ -36,7 +37,7 @@ final class AmootSmsDriver extends Driver
      */
     public function credit(): int
     {
-        $response = Http::baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
             ->get('AccountStatus', $this->credentials())
             ->throw();
 
@@ -56,7 +57,7 @@ final class AmootSmsDriver extends Driver
      *
      * @throws UnsupportedMethodException
      */
-    protected function sendOtp(string $phone, string $message, string $from): static
+    protected function sendOtp(string $phone, string $message, string $from): void
     {
         throw UnsupportedMethodException::make($this->getDriverName(), method: 'otp', alternative: 'pattern');
     }
@@ -66,9 +67,9 @@ final class AmootSmsDriver extends Driver
      *
      * @throws UnsupportedMultiplePhonesException
      */
-    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
+    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): void
     {
-        $this->validatePatternPhones($phones);
+        $this->ensureOnePatternPhone($phones);
 
         $data = [
             'Mobile' => $phones[0],
@@ -77,25 +78,21 @@ final class AmootSmsDriver extends Driver
         ];
 
         $this->execute('SendWithPattern', $data);
-
-        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function sendText(array $phones, string $message, string $from): static
+    protected function sendText(array $phones, string $message, string $from): void
     {
         $data = [
             'LineNumber' => $from,
             'SMSMessageText' => $message,
-            'Mobiles' => $this->toApiPhones($phones),
+            'Mobiles' => $this->toCommaSeparatedPhones($phones),
             'SendDateTime' => now('Asia/Tehran')->toIso8601String(),
         ];
 
         $this->execute('SendSimple', $data);
-
-        return $this;
     }
 
     /**
@@ -119,7 +116,7 @@ final class AmootSmsDriver extends Driver
      */
     protected function getErrorCode(): string
     {
-        return '';
+        return '0';
     }
 
     /**
@@ -129,11 +126,11 @@ final class AmootSmsDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $response = Http::baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
             ->get($endpoint, array_merge($this->credentials(), $data))
             ->throw();
 
-        $this->apiStatus = $response->json('Status');
+        $this->apiStatus = (string) $response->json('Status');
     }
 
     /**
@@ -147,18 +144,6 @@ final class AmootSmsDriver extends Driver
     }
 
     /**
-     * Transforms phones into the API's expected phone structure.
-     *
-     * @param  list<string>  $phones
-     *
-     * @example - ['0913', '0914'] becomes "0913,0914"
-     */
-    private function toApiPhones(array $phones): string
-    {
-        return implode(',', $phones);
-    }
-
-    /**
      * Transforms variables into the API's expected pattern structure.
      *
      * @param  array<string, mixed>  $variables
@@ -167,19 +152,6 @@ final class AmootSmsDriver extends Driver
      */
     private function toApiPattern(array $variables): string
     {
-        return implode(',', $variables);
-    }
-
-    /**
-     * @param  array<string>  $phones
-     *
-     * @throws UnsupportedMultiplePhonesException
-     */
-    private function validatePatternPhones(array $phones): void
-    {
-        if (count($phones) !== 1) {
-            throw UnsupportedMultiplePhonesException::make($this->getDriverName(), method: 'pattern');
-        }
-
+        return Arr::join($variables, ',');
     }
 }

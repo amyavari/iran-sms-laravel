@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AliYavari\IranSms;
 
 use AliYavari\IranSms\Commands\PruneLogsCommand;
+use AliYavari\IranSms\Contracts\Sms;
 use AliYavari\IranSms\Drivers\AmootSmsDriver;
 use AliYavari\IranSms\Drivers\AsanakDriver;
 use AliYavari\IranSms\Drivers\BehinPayamDriver;
@@ -28,6 +29,27 @@ use Spatie\LaravelPackageTools\PackageServiceProvider;
  */
 final class IranSmsServiceProvider extends PackageServiceProvider
 {
+    /**
+     * All supported providers, with the driver they resolve to.
+     *
+     * @var array<string, class-string<Abstracts\Driver>>
+     */
+    private const array DRIVERS = [
+        'sms_ir' => SmsIrDriver::class,
+        'meli_payamak' => MeliPayamakDriver::class,
+        'payam_resan' => PayamResanDriver::class,
+        'kavenegar' => KavenegarDriver::class,
+        'faraz_sms' => FarazSmsDriver::class,
+        'raygan_sms' => RayganSmsDriver::class,
+        'web_one' => WebOneDriver::class,
+        'amoot_sms' => AmootSmsDriver::class,
+        'fara_payamak' => FaraPayamakDriver::class,
+        'ghasedak' => GhasedakDriver::class,
+        'behin_payam' => BehinPayamDriver::class,
+        'asanak' => AsanakDriver::class,
+        'mediana' => MedianaDriver::class,
+    ];
+
     public function configurePackage(Package $package): void
     {
         $package->name('iran-sms')
@@ -44,71 +66,18 @@ final class IranSmsServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
-        $this->app->singleton(SmsManager::class, fn (Application $app): SmsManager => new SmsManager($app));
+        $this->app->singleton(SmsManager::class, function (Application $app): SmsManager {
+            $manager = new SmsManager($app);
 
-        $this->app->bind(
-            SmsIrDriver::class,
-            fn (): SmsIrDriver => new SmsIrDriver(...config()->array('iran-sms.providers.sms_ir'))
-        );
+            foreach (self::DRIVERS as $driver => $class) {
+                $manager->extend($driver, fn (): Sms => $app->make($class));
+            }
 
-        $this->app->bind(
-            MeliPayamakDriver::class,
-            fn (): MeliPayamakDriver => new MeliPayamakDriver(...config()->array('iran-sms.providers.meli_payamak'))
-        );
+            return $manager;
+        });
 
-        $this->app->bind(
-            PayamResanDriver::class,
-            fn (): PayamResanDriver => new PayamResanDriver(...config()->array('iran-sms.providers.payam_resan'))
-        );
-
-        $this->app->bind(
-            KavenegarDriver::class,
-            fn (): KavenegarDriver => new KavenegarDriver(...config()->array('iran-sms.providers.kavenegar'))
-        );
-
-        $this->app->bind(
-            FarazSmsDriver::class,
-            fn (): FarazSmsDriver => new FarazSmsDriver(...config()->array('iran-sms.providers.faraz_sms'))
-        );
-
-        $this->app->bind(
-            RayganSmsDriver::class,
-            fn (): RayganSmsDriver => new RayganSmsDriver(...config()->array('iran-sms.providers.raygan_sms'))
-        );
-
-        $this->app->bind(
-            WebOneDriver::class,
-            fn (): WebOneDriver => new WebOneDriver(...config()->array('iran-sms.providers.web_one'))
-        );
-
-        $this->app->bind(
-            AmootSmsDriver::class,
-            fn (): AmootSmsDriver => new AmootSmsDriver(...config()->array('iran-sms.providers.amoot_sms'))
-        );
-
-        $this->app->bind(
-            FaraPayamakDriver::class,
-            fn (): FaraPayamakDriver => new FaraPayamakDriver(...config()->array('iran-sms.providers.fara_payamak'))
-        );
-
-        $this->app->bind(
-            GhasedakDriver::class,
-            fn (): GhasedakDriver => new GhasedakDriver(...config()->array('iran-sms.providers.ghasedak'))
-        );
-
-        $this->app->bind(
-            BehinPayamDriver::class,
-            fn (): BehinPayamDriver => new BehinPayamDriver(...config()->array('iran-sms.providers.behin_payam'))
-        );
-
-        $this->app->bind(
-            AsanakDriver::class,
-            fn (): AsanakDriver => new AsanakDriver(...config()->array('iran-sms.providers.asanak'))
-        );
-
-        $this->app->bind(
-            MedianaDriver::class,
-            fn (): MedianaDriver => new MedianaDriver(...config()->array('iran-sms.providers.mediana'))
-        );
+        foreach (self::DRIVERS as $driver => $class) {
+            $this->app->bind($class, fn (): Sms => new $class(...config()->array("iran-sms.providers.{$driver}")));
+        }
     }
 }
