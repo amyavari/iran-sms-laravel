@@ -171,9 +171,10 @@ trait HasLog
      */
     private function serializeContent(): array
     {
-        return is_string($this->content)
-        ? ['message' => $this->content]
-        : ['code' => $this->patternCode, 'variables' => $this->content];
+        return match ($this->type) {
+            Type::Otp, Type::Text => ['message' => $this->content],
+            Type::Pattern => ['code' => $this->patternCode, 'variables' => $this->content],
+        };
     }
 
     /**
@@ -183,7 +184,11 @@ trait HasLog
     {
         $this->typesToLog ??= [];
 
-        $this->typesToLog = collect($this->typesToLog)->push($type)->unique()->all();
+        $this->typesToLog = collect($this->typesToLog)
+            ->push($type)
+            ->unique()
+            ->values()
+            ->all();
     }
 
     /**
@@ -193,6 +198,9 @@ trait HasLog
     {
         $this->typesToLog ??= [];
 
-        $this->typesToLog = collect($this->typesToLog)->reject(fn (Type $value): bool => $value === $type)->all();
+        $this->typesToLog = collect($this->typesToLog)
+            ->reject(fn (Type $value): bool => $value === $type)
+            ->values()
+            ->all();
     }
 }
