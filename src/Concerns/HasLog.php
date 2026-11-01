@@ -173,7 +173,10 @@ trait HasLog
     {
         return match ($this->type) {
             Type::Otp, Type::Text => ['message' => $this->content],
-            Type::Pattern => ['code' => $this->patternCode, 'variables' => $this->content],
+            Type::Pattern => [
+                'code' => $this->patternCode,
+                'variables' => $this->content,
+            ],
         };
     }
 

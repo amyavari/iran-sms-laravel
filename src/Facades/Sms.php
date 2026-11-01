@@ -152,7 +152,10 @@ final class Sms extends Facade
         $smsManager = self::getFacadeRoot();
 
         $driverResponseMap->each(function (MockResponse $response, string $driver) use ($smsManager): void {
-            $smsManager->extend($driver, fn (Container $app): FakeDriver => $app->make(FakeDriver::class, ['response' => $response]));
+            $smsManager->extend(
+                $driver,
+                fn (Container $app): FakeDriver => $app->make(FakeDriver::class, ['response' => $response])
+            );
         });
     }
 }
