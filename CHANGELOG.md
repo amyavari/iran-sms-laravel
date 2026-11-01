@@ -14,6 +14,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - A faked provider now returns a new SMS instance on each call, so it can send more than one SMS.
+- The `iran-sms:prune-logs` command now fails on an invalid `--days` value, instead of deleting the logs.
+- A phone array with gaps in its keys no longer causes an `Undefined array key` error or a wrong request body.
+- **Mediana** text messages now use the documented `webservice` sending type.
+- **Faraz SMS** `credit()` now throws on a client error, such as a wrong API key, instead of returning `0`.
+- `Sms::failedConnection()` no longer records an extra HTTP request, and it now makes `credit()` throw too.
+- **Ghasedak** pattern messages no longer throw a `TypeError` when a variable is `null`.
+- **Payam Resan** and **Behin Payam** now report a provider error returned with HTTP 200 as a failed SMS, instead of a successful one.
 
 ## [1.5.0] - 2026-05-13
 
