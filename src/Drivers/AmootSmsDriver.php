@@ -69,7 +69,7 @@ final class AmootSmsDriver extends Driver
      */
     protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
     {
-        $this->validatePatternPhones($phones);
+        $this->ensureOnePatternPhone($phones);
 
         $data = [
             'Mobile' => $phones[0],
@@ -169,18 +169,5 @@ final class AmootSmsDriver extends Driver
     private function toApiPattern(array $variables): string
     {
         return Arr::join($variables, ',');
-    }
-
-    /**
-     * @param  array<string>  $phones
-     *
-     * @throws UnsupportedMultiplePhonesException
-     */
-    private function validatePatternPhones(array $phones): void
-    {
-        if (! collect($phones)->hasSole()) {
-            throw UnsupportedMultiplePhonesException::make($this->getDriverName(), method: 'pattern');
-        }
-
     }
 }

@@ -8,7 +8,6 @@ use AliYavari\IranSms\Abstracts\Driver;
 use AliYavari\IranSms\Exceptions\InvalidPatternStructureException;
 use AliYavari\IranSms\Exceptions\UnsupportedMethodException;
 use AliYavari\IranSms\Exceptions\UnsupportedMultiplePhonesException;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 
 /**
@@ -82,9 +81,11 @@ final class PayamResanDriver extends Driver
      */
     protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
     {
-        $this->validatePatternPhones($phones);
+        $this->ensureOnePatternPhone($phones);
 
-        $this->validatePatternVariables($variables);
+        $this->ensureKeyValuePattern($variables);
+
+        $this->ensureThreePatternVariables($variables);
 
         $data = array_merge([
             'Destination' => $phones[0],
@@ -164,34 +165,15 @@ final class PayamResanDriver extends Driver
     }
 
     /**
-     * @param  array<string>  $phones
-     *
-     * @throws UnsupportedMultiplePhonesException
-     */
-    private function validatePatternPhones(array $phones): void
-    {
-        if (! collect($phones)->hasSole()) {
-            throw UnsupportedMultiplePhonesException::make($this->getDriverName(), method: 'pattern');
-        }
-
-    }
-
-    /**
      * @param  array<mixed>  $variables
      *
      * @throws InvalidPatternStructureException
      */
-    private function validatePatternVariables(array $variables): void
+    private function ensureThreePatternVariables(array $variables): void
     {
         if (count($variables) !== 3) {
             throw new InvalidPatternStructureException(
                 sprintf('Provider "%s" only accepts pattern data with exactly 3 items.', $this->getDriverName())
-            );
-        }
-
-        if (Arr::isList($variables)) {
-            throw new InvalidPatternStructureException(
-                sprintf('Provider "%s" only accepts pattern data as key-value pairs.', $this->getDriverName())
             );
         }
     }

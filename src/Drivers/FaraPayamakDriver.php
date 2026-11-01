@@ -73,7 +73,7 @@ final class FaraPayamakDriver extends Driver
      */
     protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
     {
-        $this->validatePatternPhones($phones);
+        $this->ensureOnePatternPhone($phones);
 
         $data = [
             'to' => $phones[0],
@@ -202,18 +202,5 @@ final class FaraPayamakDriver extends Driver
     private function toApiPhones(array $phones): string
     {
         return Arr::join($phones, ',');
-    }
-
-    /**
-     * @param  array<string>  $phones
-     *
-     * @throws UnsupportedMultiplePhonesException
-     */
-    private function validatePatternPhones(array $phones): void
-    {
-        if (! collect($phones)->hasSole()) {
-            throw UnsupportedMultiplePhonesException::make($this->getDriverName(), method: 'pattern');
-        }
-
     }
 }

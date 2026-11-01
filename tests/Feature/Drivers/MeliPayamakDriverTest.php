@@ -90,7 +90,7 @@ it('throws an exception when sending pattern message to multiple phones', functi
     $sms = meliPayamakDriver()->pattern(['09123456789', '09129876543'], 'pattern_code', ['code' => '12345']);
 
     expect(fn (): MeliPayamakDriver => $sms->send())
-        ->toThrow(UnsupportedMultiplePhonesException::class, 'Provider "meli_payamak" only supports sending to one phone number at a time for "pattern" message.');
+        ->toThrow(UnsupportedMultiplePhonesException::class, 'Provider "meli_payamak" only supports sending pattern SMS to one phone number at a time.');
 
     Http::assertNothingSent();
 });

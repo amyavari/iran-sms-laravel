@@ -6,7 +6,6 @@ namespace AliYavari\IranSms\Drivers;
 
 use AliYavari\IranSms\Abstracts\Driver;
 use AliYavari\IranSms\Exceptions\InvalidPatternStructureException;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
@@ -97,7 +96,7 @@ final class RayganSmsDriver extends Driver
      */
     protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
     {
-        $this->validatePatternVariables($variables);
+        $this->ensureKeyValuePattern($variables);
 
         $data = array_merge([
             'AccessHash' => $this->token,
@@ -168,20 +167,6 @@ final class RayganSmsDriver extends Driver
             ->throw();
 
         $this->parseRestResponse($response->json());
-    }
-
-    /**
-     * @param  array<mixed>  $variables
-     *
-     * @throws InvalidPatternStructureException
-     */
-    private function validatePatternVariables(array $variables): void
-    {
-        if (Arr::isList($variables)) {
-            throw new InvalidPatternStructureException(
-                sprintf('Provider "%s" only accepts pattern data as key-value pairs.', $this->getDriverName())
-            );
-        }
     }
 
     /**

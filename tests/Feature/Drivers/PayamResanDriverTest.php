@@ -88,7 +88,7 @@ it('throws an exception when sending pattern message to multiple phones', functi
     $sms = payamResanDriver()->pattern(['09123456789', '09129876543'], 'pattern_code', ['token1' => 'value_1', 'token2' => 'value_2', 'token3' => 'value_3']);
 
     expect(fn (): PayamResanDriver => $sms->send())
-        ->toThrow(UnsupportedMultiplePhonesException::class, 'Provider "payam_resan" only supports sending to one phone number at a time for "pattern" message.');
+        ->toThrow(UnsupportedMultiplePhonesException::class, 'Provider "payam_resan" only supports sending pattern SMS to one phone number at a time.');
 
     Http::assertNothingSent();
 });

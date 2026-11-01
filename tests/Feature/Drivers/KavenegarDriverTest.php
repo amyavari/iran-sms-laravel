@@ -89,7 +89,7 @@ it('throws an exception when sending pattern message to multiple phones', functi
     $sms = kavenegarDriver()->pattern(['09123456789', '09129876543'], 'pattern_code', ['token' => 'value_1']);
 
     expect(fn (): KavenegarDriver => $sms->send())
-        ->toThrow(UnsupportedMultiplePhonesException::class, 'Provider "kavenegar" only supports sending to one phone number at a time for "pattern" message.');
+        ->toThrow(UnsupportedMultiplePhonesException::class, 'Provider "kavenegar" only supports sending pattern SMS to one phone number at a time.');
 
     Http::assertNothingSent();
 });

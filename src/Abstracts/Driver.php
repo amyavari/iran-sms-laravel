@@ -7,9 +7,12 @@ namespace AliYavari\IranSms\Abstracts;
 use AliYavari\IranSms\Concerns\HasLog;
 use AliYavari\IranSms\Contracts\Sms;
 use AliYavari\IranSms\Enums\Type;
+use AliYavari\IranSms\Exceptions\InvalidPatternStructureException;
 use AliYavari\IranSms\Exceptions\SmsContentNotDefinedException;
 use AliYavari\IranSms\Exceptions\SmsIsImmutableException;
 use AliYavari\IranSms\Exceptions\SmsNotSentYetException;
+use AliYavari\IranSms\Exceptions\UnsupportedMultiplePhonesException;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
 /**
@@ -224,6 +227,36 @@ abstract class Driver implements Sms
         }
 
         return sprintf('Code %s - %s', $this->getErrorCode(), $this->getErrorMessage());
+    }
+
+    /**
+     * Throw an exception if the pattern SMS does not have exactly one phone
+     *
+     * @param  list<string>  $phones
+     *
+     * @throws UnsupportedMultiplePhonesException
+     */
+    protected function ensureOnePatternPhone(array $phones): void
+    {
+        if (! collect($phones)->hasSole()) {
+            throw UnsupportedMultiplePhonesException::make($this->getDriverName());
+        }
+    }
+
+    /**
+     * Throw an exception if the pattern variables are not key-value pairs
+     *
+     * @param  array<mixed>  $variables
+     *
+     * @throws InvalidPatternStructureException
+     */
+    protected function ensureKeyValuePattern(array $variables): void
+    {
+        if (Arr::isList($variables)) {
+            throw new InvalidPatternStructureException(
+                sprintf('Provider "%s" only accepts pattern data as key-value pairs.', $this->getDriverName())
+            );
+        }
     }
 
     /**
