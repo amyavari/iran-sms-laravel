@@ -138,6 +138,15 @@ it('returns successful status when message is sent', function (PayamResanDriver 
         ->toBeSuccessfulSms();
 })->with('payam_resan_messages');
 
+it('returns failed status with error when the API returns HTTP 200 with an error body', function (PayamResanDriver $sms): void {
+    fakeHttp(['Success' => false, 'ErrorCode' => 1, 'Error' => 'ApiKey نادرست است - کلید API نامعتبر است.', 'Result' => null]); // The real API body for a wrong key
+
+    $sms->send();
+
+    expect($sms)
+        ->toBeFailedSms('1', 'ApiKey نادرست است - کلید API نامعتبر است.'); // From the fake error body
+})->with('payam_resan_messages');
+
 it('throws an exception when the provider returns a server error', function (PayamResanDriver $sms): void {
     fakeHttp(status: 500);
 

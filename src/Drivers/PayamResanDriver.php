@@ -24,9 +24,20 @@ final class PayamResanDriver extends Driver
     private string $baseUrl = 'https://api.sms-webservice.com/api/V3';
 
     /**
-     * The SMS ID returned in the API response body (e.g., `id` field).
+     * The status returned in the API response body (`Success` field).
+     * The docs show no such field, so a missing one means success.
      */
-    private int $smsId;
+    private bool $apiStatus;
+
+    /**
+     * The error code returned in the API response body (`ErrorCode` field).
+     */
+    private int $apiStatusCode;
+
+    /**
+     * The error message returned in the API response body (`Error` field).
+     */
+    private string $apiErrorMessage;
 
     public function __construct(
         private readonly string $token,
@@ -106,7 +117,7 @@ final class PayamResanDriver extends Driver
      */
     protected function isSuccessful(): bool
     {
-        return true;
+        return $this->apiStatus;
     }
 
     /**
@@ -114,7 +125,7 @@ final class PayamResanDriver extends Driver
      */
     protected function getErrorMessage(): string
     {
-        return sprintf('شناسه پیام برای پیگیری "%s" می باشد.', $this->smsId);
+        return $this->apiErrorMessage;
     }
 
     /**
@@ -122,7 +133,7 @@ final class PayamResanDriver extends Driver
      */
     protected function getErrorCode(): int
     {
-        return $this->smsId;
+        return $this->apiStatusCode;
     }
 
     /**
@@ -137,7 +148,9 @@ final class PayamResanDriver extends Driver
             ->get($endpoint, array_merge($this->credentials(), $data))
             ->throw();
 
-        $this->smsId = (int) $response->json('id');
+        $this->apiStatus = (bool) $response->json('Success', true);
+        $this->apiStatusCode = (int) $response->json('ErrorCode');
+        $this->apiErrorMessage = (string) $response->json('Error');
     }
 
     /**
