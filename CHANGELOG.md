@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - **Ghasedak** pattern messages no longer throw a `TypeError` when a variable is `null`.
 - **Payam Resan** and **Behin Payam** now report a provider error returned with HTTP 200 as a failed SMS, instead of a successful one.
 - A missing field in a provider's response now gives a failed SMS, instead of a `TypeError`.
+- Typos in the Persian error messages of **SMS.ir**, **Web One SMS**, **Asanak** and **Fara Payamak**.
 
 ## [1.5.0] - 2026-05-13
 
