@@ -90,7 +90,7 @@ final class AmootSmsDriver extends Driver
         $data = [
             'LineNumber' => $from,
             'SMSMessageText' => $message,
-            'Mobiles' => $this->toApiPhones($phones),
+            'Mobiles' => $this->toCommaSeparatedPhones($phones),
             'SendDateTime' => now('Asia/Tehran')->toIso8601String(),
         ];
 
@@ -145,18 +145,6 @@ final class AmootSmsDriver extends Driver
         return [
             'Token' => $this->token,
         ];
-    }
-
-    /**
-     * Transforms phones into the API's expected phone structure.
-     *
-     * @param  list<string>  $phones
-     *
-     * @example - ['0913', '0914'] becomes "0913,0914"
-     */
-    private function toApiPhones(array $phones): string
-    {
-        return Arr::join($phones, ',');
     }
 
     /**

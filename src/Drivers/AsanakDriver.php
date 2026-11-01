@@ -8,7 +8,6 @@ use AliYavari\IranSms\Abstracts\Driver;
 use AliYavari\IranSms\Exceptions\InvalidPatternStructureException;
 use AliYavari\IranSms\Exceptions\UnsupportedMethodException;
 use AliYavari\IranSms\Exceptions\UnsupportedMultiplePhonesException;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 
 /**
@@ -97,7 +96,7 @@ final class AsanakDriver extends Driver
         $data = [
             'source' => $from,
             'message' => $message,
-            'destination' => $this->toApiPhones($phones),
+            'destination' => $this->toCommaSeparatedPhones($phones),
             'send_to_blacklist' => 1,
         ];
 
@@ -167,17 +166,5 @@ final class AsanakDriver extends Driver
             'username' => $this->username,
             'password' => $this->password,
         ];
-    }
-
-    /**
-     * Transforms phones into the API's expected phone structure.
-     *
-     * @param  list<string>  $phones
-     *
-     * @example - ['0913', '0914'] becomes "0913,0914"
-     */
-    private function toApiPhones(array $phones): string
-    {
-        return Arr::join($phones, ',');
     }
 }

@@ -260,6 +260,18 @@ abstract class Driver implements Sms
     }
 
     /**
+     * Join phones into one comma-separated string
+     *
+     * @param  list<string>  $phones
+     *
+     * @example - ['0913', '0914'] becomes "0913,0914"
+     */
+    protected function toCommaSeparatedPhones(array $phones): string
+    {
+        return Arr::join($phones, ',');
+    }
+
+    /**
      * Get sender number to send SMS
      */
     private function getSender(): string

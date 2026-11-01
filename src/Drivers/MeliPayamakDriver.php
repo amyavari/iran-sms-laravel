@@ -95,7 +95,7 @@ final class MeliPayamakDriver extends Driver
         $data = [
             'from' => $from,
             'text' => $message,
-            'to' => $this->toApiPhones($phones),
+            'to' => $this->toCommaSeparatedPhones($phones),
         ];
 
         $this->execute('SendSMS', $data);
@@ -191,17 +191,5 @@ final class MeliPayamakDriver extends Driver
     private function toApiPattern(array $variables): string
     {
         return Arr::join($variables, ';');
-    }
-
-    /**
-     * Transforms phones into the API's expected phone structure.
-     *
-     * @param  list<string>  $phones
-     *
-     * @example - ['0913', '0914'] becomes "0913,0914"
-     */
-    private function toApiPhones(array $phones): string
-    {
-        return Arr::join($phones, ',');
     }
 }
