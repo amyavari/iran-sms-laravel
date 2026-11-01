@@ -33,6 +33,33 @@ it('uses 30 days when no days are given', function (): void {
     $this->assertModelExists($newLog);
 });
 
+it('deletes every log created before now when days is 0', function (): void {
+    $oldLog = createSmsLog('2025-12-10 18:30:09'); // One second before now
+    $newLog = createSmsLog('2025-12-10 18:30:10'); // Exactly now
+
+    $this->artisan('iran-sms:prune-logs --days=0')
+        ->expectsOutputToContain('Logs created before [0 days] ago pruned successfully.')
+        ->assertExitCode(0);
+
+    $this->assertModelMissing($oldLog);
+    $this->assertModelExists($newLog);
+});
+
+it('fails and deletes nothing when days is invalid', function (string $option): void {
+    $log = createSmsLog('2025-12-09 18:30:10'); // One day ago
+
+    $this->artisan("iran-sms:prune-logs {$option}")
+        ->expectsOutputToContain('The --days option must be a whole number of 0 or more.')
+        ->assertExitCode(1);
+
+    $this->assertModelExists($log);
+})->with([
+    'no value' => '--days',
+    'text' => '--days=abc',
+    'negative' => '--days=-5',
+    'decimal' => '--days=1.5',
+]);
+
 // ------------
 // Helpers
 // ------------
