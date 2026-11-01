@@ -86,7 +86,7 @@ final class Sms extends Facade
     private static function validateFakeSetupInputs(array $drivers, ?MockResponse $response): void
     {
         if (Arr::isAssoc($drivers)) {
-            if (! is_null($response)) {
+            if (filled($response)) {
                 throw new InvalidArgumentException(
                     'Invalid fake setup: you cannot provide both a global mock response and per-provider responses at the same time.'
                 );
@@ -108,7 +108,7 @@ final class Sms extends Facade
      */
     private static function ensureDriverResponseMapping(array $drivers, ?MockResponse $response): Collection
     {
-        if ($drivers === []) {
+        if (blank($drivers)) {
             $drivers = ['default'];
         }
 

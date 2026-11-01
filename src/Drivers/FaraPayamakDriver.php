@@ -7,7 +7,9 @@ namespace AliYavari\IranSms\Drivers;
 use AliYavari\IranSms\Abstracts\Driver;
 use AliYavari\IranSms\Exceptions\UnsupportedMethodException;
 use AliYavari\IranSms\Exceptions\UnsupportedMultiplePhonesException;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 /**
  * @internal
@@ -105,7 +107,7 @@ final class FaraPayamakDriver extends Driver
      */
     protected function isSuccessful(): bool
     {
-        return mb_strlen($this->apiStatusCode) >= 15;
+        return Str::length($this->apiStatusCode) >= 15;
     }
 
     /**
@@ -187,7 +189,7 @@ final class FaraPayamakDriver extends Driver
      */
     private function toApiPattern(array $variables): string
     {
-        return implode(';', $variables);
+        return Arr::join($variables, ';');
     }
 
     /**
@@ -199,7 +201,7 @@ final class FaraPayamakDriver extends Driver
      */
     private function toApiPhones(array $phones): string
     {
-        return implode(',', $phones);
+        return Arr::join($phones, ',');
     }
 
     /**
@@ -209,7 +211,7 @@ final class FaraPayamakDriver extends Driver
      */
     private function validatePatternPhones(array $phones): void
     {
-        if (count($phones) !== 1) {
+        if (! collect($phones)->hasSole()) {
             throw UnsupportedMultiplePhonesException::make($this->getDriverName(), method: 'pattern');
         }
 

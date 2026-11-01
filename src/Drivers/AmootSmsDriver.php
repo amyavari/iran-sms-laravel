@@ -7,6 +7,7 @@ namespace AliYavari\IranSms\Drivers;
 use AliYavari\IranSms\Abstracts\Driver;
 use AliYavari\IranSms\Exceptions\UnsupportedMethodException;
 use AliYavari\IranSms\Exceptions\UnsupportedMultiplePhonesException;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 
 /**
@@ -155,7 +156,7 @@ final class AmootSmsDriver extends Driver
      */
     private function toApiPhones(array $phones): string
     {
-        return implode(',', $phones);
+        return Arr::join($phones, ',');
     }
 
     /**
@@ -167,7 +168,7 @@ final class AmootSmsDriver extends Driver
      */
     private function toApiPattern(array $variables): string
     {
-        return implode(',', $variables);
+        return Arr::join($variables, ',');
     }
 
     /**
@@ -177,7 +178,7 @@ final class AmootSmsDriver extends Driver
      */
     private function validatePatternPhones(array $phones): void
     {
-        if (count($phones) !== 1) {
+        if (! collect($phones)->hasSole()) {
             throw UnsupportedMultiplePhonesException::make($this->getDriverName(), method: 'pattern');
         }
 

@@ -211,7 +211,7 @@ final class SmsIrDriver extends Driver
      */
     private function validatePatternPhones(array $phones): void
     {
-        if (count($phones) !== 1) {
+        if (! collect($phones)->hasSole()) {
             throw UnsupportedMultiplePhonesException::make($this->getDriverName(), method: 'pattern');
         }
 

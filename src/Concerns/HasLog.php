@@ -7,7 +7,6 @@ namespace AliYavari\IranSms\Concerns;
 use AliYavari\IranSms\Enums\Type;
 use AliYavari\IranSms\Models\SmsLog;
 use Illuminate\Support\Str;
-use ReflectionClass;
 
 /**
  * @internal
@@ -121,9 +120,7 @@ trait HasLog
      */
     protected function getDriverName(): string
     {
-        $class = new ReflectionClass(static::class);
-
-        return Str::of($class->getShortName())
+        return Str::of(class_basename(static::class))
             ->before('Driver')
             ->snake()
             ->toString();
@@ -134,17 +131,17 @@ trait HasLog
      */
     private function handleLog(): void
     {
-        if (! isset($this->typesToLog) || $this->typesToLog === []) {
+        if (! isset($this->typesToLog) || blank($this->typesToLog)) {
             return;
         }
 
-        if (! in_array($this->type, $this->typesToLog, strict: true)) {
+        if (! collect($this->typesToLog)->containsStrict($this->type)) {
             return;
         }
 
         $statusText = $this->successful() ? 'successful' : 'failed';
 
-        if (! in_array($statusText, $this->statusesToLog, strict: true)) {
+        if (! collect($this->statusesToLog)->containsStrict($statusText)) {
             return;
         }
 

@@ -18,7 +18,6 @@ use AliYavari\IranSms\Drivers\PayamResanDriver;
 use AliYavari\IranSms\Drivers\RayganSmsDriver;
 use AliYavari\IranSms\Drivers\SmsIrDriver;
 use AliYavari\IranSms\Drivers\WebOneDriver;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Manager;
 use InvalidArgumentException;
 use Override;
@@ -39,12 +38,10 @@ final class SmsManager extends Manager
     #[Override]
     public function driver($driver = null): Sms
     {
-        $driver ??= $this->getDefaultDriver();
-
         /**
          * Make sure we get a new SMS instance each time by removing it from the manager cache.
          */
-        Arr::forget($this->drivers, $driver);
+        $this->forgetDrivers();
 
         return parent::driver($driver);
     }

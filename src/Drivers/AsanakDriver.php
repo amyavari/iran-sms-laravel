@@ -178,7 +178,7 @@ final class AsanakDriver extends Driver
      */
     private function toApiPhones(array $phones): string
     {
-        return implode(',', $phones);
+        return Arr::join($phones, ',');
     }
 
     /**
@@ -188,7 +188,7 @@ final class AsanakDriver extends Driver
      */
     private function validatePatternPhones(array $phones): void
     {
-        if (count($phones) !== 1) {
+        if (! collect($phones)->hasSole()) {
             throw UnsupportedMultiplePhonesException::make($this->getDriverName(), method: 'pattern');
         }
 
