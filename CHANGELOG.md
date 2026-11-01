@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Removed
 
 - Support for PHP `8.2`
+- Support for Laravel `11` due to security advisories.
+
+### Changed
+
+- Increased minimum Laravel version support due to security advisories.
 
 ### Fixed
 
