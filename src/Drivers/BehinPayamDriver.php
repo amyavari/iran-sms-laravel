@@ -151,7 +151,7 @@ final class BehinPayamDriver extends Driver
     }
 
     /**
-     * @return array{ApiKey: string,}
+     * @return array{ApiKey: string}
      */
     private function credentials(): array
     {

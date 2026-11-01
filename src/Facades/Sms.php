@@ -16,12 +16,18 @@ use UnexpectedValueException;
 
 /**
  * @method static int credit() Get SMS provider credit balance in Rials
- * @method static \AliYavari\IranSms\Contracts\Sms driver(string $driver = null) Get SMS instance for sending by specified driver
- * @method static \AliYavari\IranSms\Contracts\Sms provider(string $provider = null) Get SMS instance for sending by specified provider
+ * @method static \AliYavari\IranSms\Contracts\Sms driver(?string $driver = null) Get SMS instance for sending by specified driver
+ * @method static \AliYavari\IranSms\Contracts\Sms provider(?string $provider = null) Get SMS instance for sending by specified provider
  * @method static \AliYavari\IranSms\Contracts\Sms otp(string $phone, string $message) Create OTP SMS instance.
  * @method static \AliYavari\IranSms\Contracts\Sms pattern(string|list<string> $phones, string $patternCode, array<mixed> $variables) Create Pattern SMS instance
  * @method static \AliYavari\IranSms\Contracts\Sms text(string|list<string> $phones, string $message) Create regular text SMS instance
  * @method static \AliYavari\IranSms\Contracts\Sms from(string $from) Set the sender number for the SMS
+ * @method static \AliYavari\IranSms\Contracts\Sms log(bool $log = true) Specify whether to log all SMS types
+ * @method static \AliYavari\IranSms\Contracts\Sms logOtp(bool $log = true) Specify whether to log OTP messages
+ * @method static \AliYavari\IranSms\Contracts\Sms logPattern(bool $log = true) Specify whether to log pattern messages
+ * @method static \AliYavari\IranSms\Contracts\Sms logText(bool $log = true) Specify whether to log text messages
+ * @method static \AliYavari\IranSms\Contracts\Sms logSuccessful() Log only successful SMS messages
+ * @method static \AliYavari\IranSms\Contracts\Sms logFailed() Log only failed SMS messages
  *
  * @see \AliYavari\IranSms\Abstracts\Driver
  */

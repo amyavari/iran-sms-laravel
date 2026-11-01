@@ -151,7 +151,7 @@ final class PayamResanDriver extends Driver
     }
 
     /**
-     * @return array{ApiKey: string,}
+     * @return array{ApiKey: string}
      */
     private function credentials(): array
     {
