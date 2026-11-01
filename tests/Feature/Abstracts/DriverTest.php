@@ -65,6 +65,18 @@ it('wraps a single phone in a list for pattern and text SMS', function (Type $ty
     'Text' => ['type' => Type::Text],
 ]);
 
+it('re-indexes a phone array with gaps in its keys for pattern and text SMS', function (string $method, array $arguments): void {
+    $phones = collect([null, '09123456789', '09129876543'])->filter()->all(); // Keys are 1 and 2
+
+    $driver = testDriver()->{$method}($phones, ...$arguments)->send();
+
+    expect($driver)
+        ->receivedParameters('phones')->toBe(['09123456789', '09129876543']);
+})->with([
+    'Pattern' => ['method' => 'pattern', 'arguments' => ['pattern_code', ['code' => '1234']]],
+    'Text' => ['method' => 'text', 'arguments' => ['Text message']],
+]);
+
 it('sends the SMS with the sender set at runtime', function (Type $type): void {
     $driver = testDriver()->prepare($type)->from('1000111')->send();
 
