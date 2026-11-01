@@ -17,7 +17,7 @@
 | 1.0.0 | `kavenegar`      | [kavenegar.com]     | کاوه نگار             | Kavenegar               |
 | 1.0.0 | `faraz_sms`      | [farazsms.com]      | فراز اس ام اس         | Faraz SMS               |
 | 1.0.0 | `raygan_sms`     | [raygansms.com]     | رایگان اس ام اس       | Raygan SMS              |
-| 1.1.0 | `web_one`        | [webone-sms.com]    | وب وان                | Web One SMS             |
+| 1.1.0 | `web_one`        | [webone-sms.ir]     | وب وان                | Web One SMS             |
 | 1.1.0 | `amoot_sms`      | [amootsms.com]      | پیامک آموت            | Amoot SMS               |
 | 1.2.0 | `fara_payamak`   | [farapayamak.ir]    | فراپیامک              | Fara Payamak            |
 | 1.2.0 | `ghasedak`       | [ghasedak.me]       | قاصدک                 | Ghasedak                |
@@ -380,7 +380,7 @@ Sms::fake([
 [kavenegar.com]: https://kavenegar.com/
 [farazsms.com]: https://farazsms.com/
 [raygansms.com]: https://raygansms.com/
-[webone-sms.com]: https://webone-sms.com/
+[webone-sms.ir]: https://webone-sms.ir/
 [amootsms.com]: https://www.amootsms.com/
 [farapayamak.ir]: https://farapayamak.ir/
 [ghasedak.me]: https://ghasedak.me/

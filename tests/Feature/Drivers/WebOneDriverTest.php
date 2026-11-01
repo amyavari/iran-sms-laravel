@@ -103,7 +103,7 @@ it('returns failed status with error when message is not sent', function (WebOne
     $sms->send();
 
     expect($sms)
-        ->toBeFailedSms('8', 'اعتبار كافي نيست'); // Web One's message for result code 8
+        ->toBeFailedSms('8', 'اعتبار کافی نیست'); // Web One's message for result code 8
 })->with('web_one_messages');
 
 it('returns failed status when the response has no expected fields', function (WebOneDriver $sms): void {
