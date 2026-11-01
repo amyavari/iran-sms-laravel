@@ -117,7 +117,7 @@ it('returns failed status with error when message is not sent', function (AmootS
     $sms->send();
 
     expect($sms)
-        ->toBeFailedSms('', 'CreditNotEnough'); // The API gives no error code, the message is the API status
+        ->toBeFailedSms('0', 'CreditNotEnough'); // The API gives no error code, the message is the API status
 })->with('amoot_sms_messages');
 
 it('returns failed status when the response has no expected fields', function (AmootSmsDriver $sms): void {

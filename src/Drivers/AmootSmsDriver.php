@@ -116,7 +116,7 @@ final class AmootSmsDriver extends Driver
      */
     protected function getErrorCode(): string
     {
-        return '';
+        return '0';
     }
 
     /**
