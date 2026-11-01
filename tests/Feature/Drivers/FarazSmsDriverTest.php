@@ -169,6 +169,17 @@ it('returns credit', function (): void {
         ->header('Api-Key')->toBe(['sms_token']); // Config token
 });
 
+it('throws an exception on credit when the provider returns an error status', function (int $status): void {
+    fakeHttp(status: $status);
+
+    // Only the class is asserted, Laravel builds the message
+    expect(fn (): int => farazSmsDriver()->credit())
+        ->toThrow(RequestException::class);
+})->with([
+    'client error' => 401,
+    'server error' => 500,
+]);
+
 // ------------
 // Helpers
 // ------------

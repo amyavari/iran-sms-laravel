@@ -6,6 +6,7 @@ namespace AliYavari\IranSms\Commands;
 
 use AliYavari\IranSms\Models\SmsLog;
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 
 /**
  * @internal
@@ -29,15 +30,23 @@ final class PruneLogsCommand extends Command
      */
     public function handle(): int
     {
-        $days = (int) $this->option('days');
+        $days = $this->option('days');
+
+        if (! Str::isMatch('/^\d+$/', (string) $days)) {
+            $this->components->error('The --days option must be a whole number of 0 or more.');
+
+            return self::FAILURE;
+        }
+
+        $days = (int) $days;
 
         $this->components->task(
             "Pruning logs created before {$days} days ago ...",
-            fn () => SmsLog::where('created_at', '<', now()->subDays($days))->delete()
+            fn () => SmsLog::query()->where('created_at', '<', now()->subDays($days))->delete()
         );
 
         $this->components->info("Logs created before [{$days} days] ago pruned successfully.");
 
-        return 0;
+        return self::SUCCESS;
     }
 }

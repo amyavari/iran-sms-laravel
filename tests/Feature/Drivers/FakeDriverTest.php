@@ -7,6 +7,7 @@ use AliYavari\IranSms\Drivers\FakeDriver;
 use AliYavari\IranSms\Facades\Sms;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Http;
 
 beforeEach(function (): void {
     Config::set('iran-sms.default', 'kavenegar'); // Any real provider, the tests only need a known default
@@ -72,6 +73,33 @@ it('fakes every listed provider with the given failed connection for any type', 
         expect(fn (): SmsContract => Sms::provider($provider)->text('09123456789', 'Text message')->send())
             ->toThrow(ConnectionException::class);
     }
+});
+
+it('sends no HTTP request when it fakes a failed connection', function (): void {
+    Http::fake(); // A user's own HTTP fake
+
+    Sms::fake(['sms_ir'], Sms::failedConnection());
+
+    // Only the class is asserted, the message is not part of the behaviour
+    expect(fn (): SmsContract => Sms::provider('sms_ir')->otp('09123456789', 'OTP message')->send())
+        ->toThrow(ConnectionException::class);
+
+    Http::assertNothingSent();
+});
+
+it('throws a connection exception on credit when it fakes a failed connection', function (): void {
+    Sms::fake(['sms_ir'], Sms::failedConnection());
+
+    // Only the class is asserted, the message is not part of the behaviour
+    expect(fn (): int => Sms::provider('sms_ir')->credit())
+        ->toThrow(ConnectionException::class);
+});
+
+it('returns 0 credit when it does not fake a failed connection', function (): void {
+    Sms::fake(['sms_ir']);
+
+    expect(Sms::provider('sms_ir')->credit())
+        ->toBe(0);
 });
 
 it('fakes each provider with its own response', function (): void {

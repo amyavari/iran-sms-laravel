@@ -105,6 +105,23 @@ it('sends pattern message to multiple phones', function (): void {
         ]);
 });
 
+it('sends non-string pattern values as strings', function (mixed $value, string $expected): void {
+    fakeHttp(['IsSuccess' => true, 'Message' => '', 'StatusCode' => 200]);
+
+    ghasedakDriver()->pattern('09123456789', 'pattern_code', ['code' => $value])->send();
+
+    // Only what differs from the pattern test
+    expect(getRecordedHttpRequest()->data())
+        ->inputs->toBe([
+            ['param' => 'code', 'value' => $expected],
+        ]);
+})->with([
+    'null' => ['value' => null, 'expected' => ''],
+    'int' => ['value' => 12345, 'expected' => '12345'],
+    'float' => ['value' => 1.5, 'expected' => '1.5'],
+    'bool' => ['value' => true, 'expected' => '1'],
+]);
+
 it('throws an exception when pattern variables are not key-value pairs', function (): void {
     fakeHttp();
 

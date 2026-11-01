@@ -10,6 +10,7 @@ use AliYavari\IranSms\Enums\Type;
 use AliYavari\IranSms\Exceptions\SmsContentNotDefinedException;
 use AliYavari\IranSms\Exceptions\SmsIsImmutableException;
 use AliYavari\IranSms\Exceptions\SmsNotSentYetException;
+use Illuminate\Support\Collection;
 
 /**
  * @internal
@@ -246,13 +247,13 @@ abstract class Driver implements Sms
     }
 
     /**
-     * Wrap data to array if it's not
+     * Wrap data to a list if it's not
      *
      * @return list<string>
      */
     private function ensureIsArray(mixed $data): array
     {
-        return is_array($data) ? $data : [$data];
+        return Collection::wrap($data)->values()->all();
     }
 
     /**
