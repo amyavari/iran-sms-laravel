@@ -59,7 +59,7 @@ final class WebOneDriver extends Driver
     /**
      * {@inheritdoc}
      */
-    protected function sendOtp(string $phone, string $message, string $from): static
+    protected function sendOtp(string $phone, string $message, string $from): void
     {
         $data = [
             'ToNumber' => $phone,
@@ -67,8 +67,6 @@ final class WebOneDriver extends Driver
         ];
 
         $this->execute('SMS/SmartOTP', $data);
-
-        return $this;
     }
 
     /**
@@ -76,7 +74,7 @@ final class WebOneDriver extends Driver
      *
      * @throws UnsupportedMethodException
      */
-    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
+    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): void
     {
         throw UnsupportedMethodException::make($this->getDriverName(), method: 'pattern', alternative: 'text');
     }
@@ -84,7 +82,7 @@ final class WebOneDriver extends Driver
     /**
      * {@inheritdoc}
      */
-    protected function sendText(array $phones, string $message, string $from): static
+    protected function sendText(array $phones, string $message, string $from): void
     {
         $data = [
             'From' => $from,
@@ -93,8 +91,6 @@ final class WebOneDriver extends Driver
         ];
 
         $this->execute('SMS/Send', $data);
-
-        return $this;
     }
 
     /**

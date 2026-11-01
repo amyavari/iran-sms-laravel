@@ -68,7 +68,7 @@ final class MedianaDriver extends Driver
      *
      * @throws UnsupportedMethodException
      */
-    protected function sendOtp(string $phone, string $message, string $from): static
+    protected function sendOtp(string $phone, string $message, string $from): void
     {
         throw UnsupportedMethodException::make($this->getDriverName(), method: 'otp', alternative: 'pattern');
     }
@@ -78,7 +78,7 @@ final class MedianaDriver extends Driver
      *
      * @throws InvalidPatternStructureException
      */
-    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
+    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): void
     {
         $this->ensureKeyValuePattern($variables);
 
@@ -91,14 +91,12 @@ final class MedianaDriver extends Driver
         ];
 
         $this->execute($data);
-
-        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function sendText(array $phones, string $message, string $from): static
+    protected function sendText(array $phones, string $message, string $from): void
     {
         $data = [
             'sending_type' => 'webservice',
@@ -110,8 +108,6 @@ final class MedianaDriver extends Driver
         ];
 
         $this->execute($data);
-
-        return $this;
     }
 
     /**

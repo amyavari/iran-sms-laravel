@@ -71,7 +71,7 @@ abstract class Driver implements Sms
     /**
      * Send OTP SMS
      */
-    abstract protected function sendOtp(string $phone, string $message, string $from): static;
+    abstract protected function sendOtp(string $phone, string $message, string $from): void;
 
     /**
      * Send pattern SMS
@@ -79,14 +79,14 @@ abstract class Driver implements Sms
      * @param  list<string>  $phones
      * @param  array<mixed>  $variables
      */
-    abstract protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static;
+    abstract protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): void;
 
     /**
      * Send regular text SMS
      *
      * @param  list<string>  $phones
      */
-    abstract protected function sendText(array $phones, string $message, string $from): static;
+    abstract protected function sendText(array $phones, string $message, string $from): void;
 
     /**
      * Check if SMS sending was successful

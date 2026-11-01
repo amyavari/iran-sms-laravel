@@ -73,7 +73,7 @@ final class RayganSmsDriver extends Driver
     /**
      * {@inheritdoc}
      */
-    protected function sendOtp(string $phone, string $message, string $from): static
+    protected function sendOtp(string $phone, string $message, string $from): void
     {
         $data = [
             'Username' => $this->username,
@@ -86,8 +86,6 @@ final class RayganSmsDriver extends Driver
             ->throw();
 
         $this->parseOtpResponse($response->body());
-
-        return $this;
     }
 
     /**
@@ -95,7 +93,7 @@ final class RayganSmsDriver extends Driver
      *
      * @throws InvalidPatternStructureException
      */
-    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
+    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): void
     {
         $this->ensureKeyValuePattern($variables);
 
@@ -109,14 +107,12 @@ final class RayganSmsDriver extends Driver
         ], $variables);
 
         $this->execute('smsApiWithPattern/SendMessage', $data);
-
-        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function sendText(array $phones, string $message, string $from): static
+    protected function sendText(array $phones, string $message, string $from): void
     {
         $data = [
             'PhoneNumber' => $from,
@@ -127,8 +123,6 @@ final class RayganSmsDriver extends Driver
         ];
 
         $this->execute('smsAPI/SendMessage', $data);
-
-        return $this;
     }
 
     /**

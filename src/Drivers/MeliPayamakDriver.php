@@ -62,7 +62,7 @@ final class MeliPayamakDriver extends Driver
      *
      * @throws UnsupportedMethodException
      */
-    protected function sendOtp(string $phone, string $message, string $from): static
+    protected function sendOtp(string $phone, string $message, string $from): void
     {
         throw UnsupportedMethodException::make($this->getDriverName(), method: 'otp', alternative: 'pattern');
     }
@@ -72,7 +72,7 @@ final class MeliPayamakDriver extends Driver
      *
      * @throws UnsupportedMultiplePhonesException
      */
-    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
+    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): void
     {
         $this->ensureOnePatternPhone($phones);
 
@@ -83,14 +83,12 @@ final class MeliPayamakDriver extends Driver
         ];
 
         $this->execute('BaseServiceNumber', $data);
-
-        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function sendText(array $phones, string $message, string $from): static
+    protected function sendText(array $phones, string $message, string $from): void
     {
         $data = [
             'from' => $from,
@@ -99,8 +97,6 @@ final class MeliPayamakDriver extends Driver
         ];
 
         $this->execute('SendSMS', $data);
-
-        return $this;
     }
 
     /**
