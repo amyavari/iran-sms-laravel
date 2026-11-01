@@ -137,6 +137,15 @@ it('returns failed status with error when message is not sent', function (SmsIrD
         ->toBeFailedSms('102', 'اعتبار کافی نمیباشد'); // Sms.ir's message for status 102
 })->with('sms_ir_messages');
 
+it('returns failed status when the response has no expected fields', function (SmsIrDriver $sms): void {
+    fakeHttp([]);
+
+    $sms->send();
+
+    expect($sms)
+        ->failed()->toBeTrue();
+})->with('sms_ir_messages');
+
 it('throws an exception when the provider returns a server error', function (SmsIrDriver $sms): void {
     fakeHttp(status: 500);
 

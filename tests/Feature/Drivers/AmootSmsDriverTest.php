@@ -120,6 +120,15 @@ it('returns failed status with error when message is not sent', function (AmootS
         ->toBeFailedSms('', 'CreditNotEnough'); // The API gives no error code, the message is the API status
 })->with('amoot_sms_messages');
 
+it('returns failed status when the response has no expected fields', function (AmootSmsDriver $sms): void {
+    fakeHttp([]);
+
+    $sms->send();
+
+    expect($sms)
+        ->failed()->toBeTrue();
+})->with('amoot_sms_messages');
+
 it('throws an exception when the provider returns a server error', function (AmootSmsDriver $sms): void {
     fakeHttp(status: 500);
 

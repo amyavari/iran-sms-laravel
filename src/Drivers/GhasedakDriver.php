@@ -150,11 +150,9 @@ final class GhasedakDriver extends Driver
             ->post($endpoint, $data)
             ->throw();
 
-        $response = $response->json();
-
-        $this->isSuccessful = (bool) $response['IsSuccess'];
-        $this->apiStatusCode = (int) $response['StatusCode'];
-        $this->apiErrorMessage = (string) $response['Message'];
+        $this->isSuccessful = (bool) $response->json('IsSuccess');
+        $this->apiStatusCode = (int) $response->json('StatusCode');
+        $this->apiErrorMessage = (string) $response->json('Message');
     }
 
     /**

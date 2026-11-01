@@ -149,7 +149,7 @@ final class FarazSmsDriver extends Driver
             ->post($endpoint, $data)
             ->throwIfServerError();
 
-        $this->apiStatus = $response->json('status');
+        $this->apiStatus = (string) $response->json('status');
         $this->apiErrorMessage = (string) $response->json('messages');
     }
 

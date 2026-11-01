@@ -134,6 +134,15 @@ it('returns failed status with error when message is not sent', function (Kavene
         ->toBeFailedSms('412', 'ارسال کننده نامعتبر است'); // Kavenegar's message for status 412
 })->with('kavenegar_messages');
 
+it('returns failed status when the response has no expected fields', function (KavenegarDriver $sms): void {
+    fakeHttp([]);
+
+    $sms->send();
+
+    expect($sms)
+        ->failed()->toBeTrue();
+})->with('kavenegar_messages');
+
 it('throws an exception when the provider returns a server error', function (KavenegarDriver $sms): void {
     fakeHttp(status: 500);
 

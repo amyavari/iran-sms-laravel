@@ -6,6 +6,7 @@ namespace AliYavari\IranSms\Drivers;
 
 use AliYavari\IranSms\Abstracts\Driver;
 use AliYavari\IranSms\Exceptions\InvalidPatternStructureException;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
@@ -166,7 +167,7 @@ final class RayganSmsDriver extends Driver
             ->post($endpoint, $data)
             ->throw();
 
-        $this->parseRestResponse($response->json());
+        $this->parseRestResponse($response);
     }
 
     /**
@@ -182,13 +183,11 @@ final class RayganSmsDriver extends Driver
 
     /**
      * Extracts REST API response data into status properties.
-     *
-     * @param  array<string,mixed>  $response
      */
-    private function parseRestResponse(array $response): void
+    private function parseRestResponse(Response $response): void
     {
-        $this->apiStatusCode = (int) $response['Code'];
-        $this->apiErrorMessage = $response['Message'];
+        $this->apiStatusCode = (int) $response->json('Code', -1);
+        $this->apiErrorMessage = (string) $response->json('Message');
 
         $this->isSuccessful = $this->apiStatusCode === 0;
     }

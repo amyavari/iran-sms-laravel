@@ -124,6 +124,15 @@ it('returns failed status with error when message is not sent', function (FaraPa
         ->toBeFailedSms('2', 'اعتبار کافی نمی‌باشد'); // Fara Payamak's message for status 2
 })->with('fara_payamak_messages');
 
+it('returns failed status when the response has no expected fields', function (FaraPayamakDriver $sms): void {
+    fakeHttp([]);
+
+    $sms->send();
+
+    expect($sms)
+        ->failed()->toBeTrue();
+})->with('fara_payamak_messages');
+
 it('throws an exception when the provider returns a server error', function (FaraPayamakDriver $sms): void {
     fakeHttp(status: 500);
 

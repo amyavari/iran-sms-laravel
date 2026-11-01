@@ -145,6 +145,15 @@ it('returns failed status with error when message is not sent', function (FarazS
         ->toBeFailedSms('0', 'Auth required'); // The API gives no error code, the driver uses `0`. The message is the API's
 })->with('faraz_sms_messages');
 
+it('returns failed status when the response has no expected fields', function (FarazSmsDriver $sms): void {
+    fakeHttp([]);
+
+    $sms->send();
+
+    expect($sms)
+        ->failed()->toBeTrue();
+})->with('faraz_sms_messages');
+
 it('throws an exception when the provider returns a server error', function (FarazSmsDriver $sms): void {
     fakeHttp(status: 500);
 

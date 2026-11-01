@@ -124,6 +124,15 @@ it('returns failed status with error when message is not sent', function (MeliPa
         ->toBeFailedSms('2', 'اعتبار کافی نمی‌باشد'); // Meli Payamak's message for status 2
 })->with('meli_payamak_messages');
 
+it('returns failed status when the response has no expected fields', function (MeliPayamakDriver $sms): void {
+    fakeHttp([]);
+
+    $sms->send();
+
+    expect($sms)
+        ->failed()->toBeTrue();
+})->with('meli_payamak_messages');
+
 it('throws an exception when the provider returns a server error', function (MeliPayamakDriver $sms): void {
     fakeHttp(status: 500);
 

@@ -147,6 +147,15 @@ it('returns failed status with error when the API returns HTTP 200 with an error
         ->toBeFailedSms('1', 'ApiKey نادرست است - کلید API نامعتبر است.'); // From the fake error body
 })->with('behin_payam_messages');
 
+it('returns successful status when the response has no expected fields', function (BehinPayamDriver $sms): void {
+    fakeHttp([]); // Only an error body has the `Success` field
+
+    $sms->send();
+
+    expect($sms)
+        ->successful()->toBeTrue();
+})->with('behin_payam_messages');
+
 it('throws an exception when the provider returns a server error', function (BehinPayamDriver $sms): void {
     fakeHttp(status: 500);
 

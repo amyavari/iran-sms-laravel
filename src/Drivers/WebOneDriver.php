@@ -154,11 +154,10 @@ final class WebOneDriver extends Driver
         $response = Http::withHeaders($this->credentials())
             ->baseUrl($this->baseUrl)
             ->post($endpoint, $data)
-            ->throw()
-            ->json();
+            ->throw();
 
-        $this->isSuccessful = (bool) $response['succeeded'];
-        $this->apiStatusCode = (int) $response['resultCode'];
+        $this->isSuccessful = (bool) $response->json('succeeded');
+        $this->apiStatusCode = (int) $response->json('resultCode', -1);
     }
 
     /**

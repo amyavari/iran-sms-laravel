@@ -134,7 +134,7 @@ final class AmootSmsDriver extends Driver
             ->get($endpoint, array_merge($this->credentials(), $data))
             ->throw();
 
-        $this->apiStatus = $response->json('Status');
+        $this->apiStatus = (string) $response->json('Status');
     }
 
     /**

@@ -162,6 +162,15 @@ it('returns failed status with error when message is not sent', function (Ghased
         ->toBeFailedSms('400', 'پارامتر های ورودی صحیح نمی باشد'); // The API gives the error code and message
 })->with('ghasedak_messages');
 
+it('returns failed status when the response has no expected fields', function (GhasedakDriver $sms): void {
+    fakeHttp([]);
+
+    $sms->send();
+
+    expect($sms)
+        ->failed()->toBeTrue();
+})->with('ghasedak_messages');
+
 it('throws an exception when the provider returns a server error', function (GhasedakDriver $sms): void {
     fakeHttp(status: 500);
 

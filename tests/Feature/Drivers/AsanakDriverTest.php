@@ -138,6 +138,15 @@ it('returns failed status with error when message is not sent', function (Asanak
         ->toBeFailedSms('1006', 'خطای مربوط به نداشتن اعتبار کافی برای ارسال'); // Asanak's message for status 1006
 })->with('asanak_messages');
 
+it('returns failed status when the response has no expected fields', function (AsanakDriver $sms): void {
+    fakeHttp([]);
+
+    $sms->send();
+
+    expect($sms)
+        ->failed()->toBeTrue();
+})->with('asanak_messages');
+
 it('throws an exception when the provider returns a server error', function (AsanakDriver $sms): void {
     fakeHttp(status: 500);
 

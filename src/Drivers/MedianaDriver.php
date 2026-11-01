@@ -150,11 +150,9 @@ final class MedianaDriver extends Driver
             ->post('send', $data)
             ->throw();
 
-        $meta = $response->json('meta');
-
-        $this->isSuccessful = $meta['status'];
-        $this->apiStatusCode = $meta['message_code'];
-        $this->apiErrorMessage = $meta['message'];
+        $this->isSuccessful = (bool) $response->json('meta.status');
+        $this->apiStatusCode = (string) $response->json('meta.message_code');
+        $this->apiErrorMessage = (string) $response->json('meta.message');
     }
 
     /**
