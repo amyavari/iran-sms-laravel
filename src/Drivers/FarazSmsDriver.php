@@ -47,7 +47,7 @@ final class FarazSmsDriver extends Driver
             ->withHeaders($this->credentials())
             ->asJson()
             ->get('account/balance')
-            ->throwIfServerError();
+            ->throw();
 
         return (int) $response->json('data.balanceAmount');
     }
