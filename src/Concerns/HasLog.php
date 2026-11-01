@@ -7,7 +7,6 @@ namespace AliYavari\IranSms\Concerns;
 use AliYavari\IranSms\Enums\Type;
 use AliYavari\IranSms\Models\SmsLog;
 use Illuminate\Support\Str;
-use ReflectionClass;
 
 /**
  * @internal
@@ -25,7 +24,7 @@ use ReflectionClass;
  * @method ?string error()
  * @method bool successful()
  * @method string getSender()
- * @method list<string> ensureIsArray(string|list<string> $phones)
+ * @method list<string> wrapInList(string|list<string> $phones)
  *
  * @property Type $type
  * @property string|list<string> $phones
@@ -121,9 +120,7 @@ trait HasLog
      */
     protected function getDriverName(): string
     {
-        $class = new ReflectionClass(static::class);
-
-        return Str::of($class->getShortName())
+        return Str::of(class_basename(static::class))
             ->before('Driver')
             ->snake()
             ->toString();
@@ -134,17 +131,17 @@ trait HasLog
      */
     private function handleLog(): void
     {
-        if (! isset($this->typesToLog) || $this->typesToLog === []) {
+        if (! isset($this->typesToLog) || blank($this->typesToLog)) {
             return;
         }
 
-        if (! in_array($this->type, $this->typesToLog, strict: true)) {
+        if (! collect($this->typesToLog)->containsStrict($this->type)) {
             return;
         }
 
         $statusText = $this->successful() ? 'successful' : 'failed';
 
-        if (! in_array($statusText, $this->statusesToLog, strict: true)) {
+        if (! collect($this->statusesToLog)->containsStrict($statusText)) {
             return;
         }
 
@@ -160,7 +157,7 @@ trait HasLog
             'type' => $this->type,
             'driver' => $this->getDriverName(),
             'from' => $this->getSender(),
-            'to' => $this->ensureIsArray($this->phones),
+            'to' => $this->wrapInList($this->phones),
             'content' => $this->serializeContent(),
             'is_successful' => $this->successful(),
             'error' => $this->error(),
@@ -174,9 +171,13 @@ trait HasLog
      */
     private function serializeContent(): array
     {
-        return is_string($this->content)
-        ? ['message' => $this->content]
-        : ['code' => $this->patternCode, 'variables' => $this->content];
+        return match ($this->type) {
+            Type::Otp, Type::Text => ['message' => $this->content],
+            Type::Pattern => [
+                'code' => $this->patternCode,
+                'variables' => $this->content,
+            ],
+        };
     }
 
     /**
@@ -186,7 +187,11 @@ trait HasLog
     {
         $this->typesToLog ??= [];
 
-        $this->typesToLog = collect($this->typesToLog)->push($type)->unique()->all();
+        $this->typesToLog = collect($this->typesToLog)
+            ->push($type)
+            ->unique()
+            ->values()
+            ->all();
     }
 
     /**
@@ -196,6 +201,9 @@ trait HasLog
     {
         $this->typesToLog ??= [];
 
-        $this->typesToLog = collect($this->typesToLog)->reject(fn (Type $value): bool => $value === $type)->all();
+        $this->typesToLog = collect($this->typesToLog)
+            ->reject(fn (Type $value): bool => $value === $type)
+            ->values()
+            ->all();
     }
 }

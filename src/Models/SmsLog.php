@@ -6,10 +6,9 @@ namespace AliYavari\IranSms\Models;
 
 use AliYavari\IranSms\Enums\Type;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
- * @internal
- *
  * @property-read int $id
  * @property-read Type $type
  * @property-read string $driver
@@ -18,6 +17,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read array<string, mixed> $content
  * @property-read bool $is_successful
  * @property-read ?string $error
+ * @property-read Carbon $created_at
+ * @property-read Carbon $updated_at
  */
 final class SmsLog extends Model
 {

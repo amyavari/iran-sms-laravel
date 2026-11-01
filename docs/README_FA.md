@@ -4,8 +4,8 @@
 
 ## پیش‌نیازها
 
-- نسخه PHP `8.2` یا بالاتر
-- نسخه Laravel `^11.44`, `^12.4` یا `^13.0`
+- نسخه PHP `8.3` یا بالاتر
+- نسخه Laravel `^12.69` یا `^13.30`
 
 ## فهرست ارائه‌دهندگان پیامک
 
@@ -17,7 +17,7 @@
 | 1.0.0 | `kavenegar`      | [kavenegar.com]     | کاوه نگار             | Kavenegar               |
 | 1.0.0 | `faraz_sms`      | [farazsms.com]      | فراز اس ام اس         | Faraz SMS               |
 | 1.0.0 | `raygan_sms`     | [raygansms.com]     | رایگان اس ام اس       | Raygan SMS              |
-| 1.1.0 | `web_one`        | [webone-sms.com]    | وب وان                | Web One SMS             |
+| 1.1.0 | `web_one`        | [webone-sms.ir]     | وب وان                | Web One SMS             |
 | 1.1.0 | `amoot_sms`      | [amootsms.com]      | پیامک آموت            | Amoot SMS               |
 | 1.2.0 | `fara_payamak`   | [farapayamak.ir]    | فراپیامک              | Fara Payamak            |
 | 1.2.0 | `ghasedak`       | [ghasedak.me]       | قاصدک                 | Ghasedak                |
@@ -204,6 +204,8 @@ $sms->logFailed();       // فقط اگر ارسال ناموفق باشد
 $sms->log()->logOtp(false)->logSuccessful();
 ```
 
+**نکته:** لاگ‌ها در جدول `sms_logs` ذخیره می‌شوند. برای خواندن یا کوئری گرفتن از آنها از مدل `AliYavari\IranSms\Models\SmsLog` استفاده کنید.
+
 #### پاک‌سازی لاگ‌های قدیمی:
 
 برای تمیز نگه داشتن جدول لاگ، این بسته یک دستور Artisan برای حذف لاگ‌های قدیمی فراهم کرده است. می‌توانید این دستور را با استفاده از [Laravel's task scheduler] زمان‌بندی کنید.
@@ -378,7 +380,7 @@ Sms::fake([
 [kavenegar.com]: https://kavenegar.com/
 [farazsms.com]: https://farazsms.com/
 [raygansms.com]: https://raygansms.com/
-[webone-sms.com]: https://webone-sms.com/
+[webone-sms.ir]: https://webone-sms.ir/
 [amootsms.com]: https://www.amootsms.com/
 [farapayamak.ir]: https://farapayamak.ir/
 [ghasedak.me]: https://ghasedak.me/

@@ -18,12 +18,12 @@ final class WebOneDriver extends Driver
     /**
      * The base URL for the API.
      */
-    private string $baseUrl = 'https://api.payamakapi.ir/api/v1';
+    private const string BASE_URL = 'https://api.payamakapi.ir/api/v1';
 
     /**
      * The sent status returned in the API response body (e.g., `succeeded` field).
      */
-    private bool $apiStatus;
+    private bool $isSuccessful;
 
     /**
      * The status code returned in the API response body (e.g., `resultCode` field).
@@ -40,8 +40,8 @@ final class WebOneDriver extends Driver
      */
     public function credit(): int
     {
-        $response = Http::withHeaders($this->credentials())
-            ->baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
+            ->withHeaders($this->credentials())
             ->get('SMS/GetCredit')
             ->throw();
 
@@ -59,7 +59,7 @@ final class WebOneDriver extends Driver
     /**
      * {@inheritdoc}
      */
-    protected function sendOtp(string $phone, string $message, string $from): static
+    protected function sendOtp(string $phone, string $message, string $from): void
     {
         $data = [
             'ToNumber' => $phone,
@@ -67,8 +67,6 @@ final class WebOneDriver extends Driver
         ];
 
         $this->execute('SMS/SmartOTP', $data);
-
-        return $this;
     }
 
     /**
@@ -76,7 +74,7 @@ final class WebOneDriver extends Driver
      *
      * @throws UnsupportedMethodException
      */
-    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
+    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): void
     {
         throw UnsupportedMethodException::make($this->getDriverName(), method: 'pattern', alternative: 'text');
     }
@@ -84,7 +82,7 @@ final class WebOneDriver extends Driver
     /**
      * {@inheritdoc}
      */
-    protected function sendText(array $phones, string $message, string $from): static
+    protected function sendText(array $phones, string $message, string $from): void
     {
         $data = [
             'From' => $from,
@@ -93,8 +91,6 @@ final class WebOneDriver extends Driver
         ];
 
         $this->execute('SMS/Send', $data);
-
-        return $this;
     }
 
     /**
@@ -102,7 +98,7 @@ final class WebOneDriver extends Driver
      */
     protected function isSuccessful(): bool
     {
-        return $this->apiStatus;
+        return $this->isSuccessful;
     }
 
     /**
@@ -111,27 +107,27 @@ final class WebOneDriver extends Driver
     protected function getErrorMessage(): string
     {
         return match ($this->apiStatusCode) {
-            0 => 'ارسال با موفقيت انجام شد',
-            1 => 'نام كاربر يا كلمه عبور نامعتبر مي باشد',
-            2 => 'كاربر مسدود شده است',
-            3 => 'محدوديت در ارسال روزانه',
+            0 => 'ارسال با موفقیت انجام شد',
+            1 => 'نام کاربر یا کلمه عبور نامعتبر می باشد',
+            2 => 'کاربر مسدود شده است',
+            3 => 'محدودیت در ارسال روزانه',
             4 => 'شماره فرستنده نامعتبر است',
-            5 => 'تعداد گيرندگان حداكثر 100 شماره مي باشد',
-            6 => 'خط فرستنده غيرفعال است',
-            7 => 'متن پيامك شامل كلمات فيلتر شده است',
-            8 => 'اعتبار كافي نيست',
-            9 => 'سامانه در حال بروز رساني است',
-            10 => 'وب سرويس غيرفعال است',
-            12 => 'تعداد پيامها و شماره ها بايد يكسان باشد',
-            13 => 'حداكثر تعداد مجاز در يك درخواست ارسال متناظر 500 شماره مي باشد',
-            14 => 'كاربر فاقد تعرفه مي باشد',
-            15 => 'ارسال تكراري متن مشابه به شماره مشابه در مدت زمان مشخص',
-            16 => 'موبايل گيرنده يافت نشد',
-            17 => 'خط OTP براي كاربر يافت نشد',
-            18 => 'با اين شماره فقط ارسال تكي مجاز است',
-            19 => 'متن ارسالي شما با الگوي تعريفي شما مطابقت ندارد',
-            21 => 'آي پي شما براي ارسال از وب سرويس مجاز نمي باشد',
-            22 => 'عدم تاييد يا ارسال كارت ملي كاربر',
+            5 => 'تعداد گیرندگان حداکثر 100 شماره می باشد',
+            6 => 'خط فرستنده غیرفعال است',
+            7 => 'متن پیامک شامل کلمات فیلتر شده است',
+            8 => 'اعتبار کافی نیست',
+            9 => 'سامانه در حال بروز رسانی است',
+            10 => 'وب سرویس غیرفعال است',
+            12 => 'تعداد پیامها و شماره ها باید یکسان باشد',
+            13 => 'حداکثر تعداد مجاز در یک درخواست ارسال متناظر 500 شماره می باشد',
+            14 => 'کاربر فاقد تعرفه می باشد',
+            15 => 'ارسال تکراری متن مشابه به شماره مشابه در مدت زمان مشخص',
+            16 => 'موبایل گیرنده یافت نشد',
+            17 => 'خط OTP برای کاربر یافت نشد',
+            18 => 'با این شماره فقط ارسال تکی مجاز است',
+            19 => 'متن ارسالی شما با الگوی تعریفی شما مطابقت ندارد',
+            21 => 'آی پی شما برای ارسال از وب سرویس مجاز نمی باشد',
+            22 => 'عدم تایید یا ارسال کارت ملی کاربر',
             default => "خطای ناشناخته با کد {$this->apiStatusCode} رخ داده است"
         };
     }
@@ -151,14 +147,13 @@ final class WebOneDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $response = Http::withHeaders($this->credentials())
-            ->baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
+            ->withHeaders($this->credentials())
             ->post($endpoint, $data)
-            ->throw()
-            ->json();
+            ->throw();
 
-        $this->apiStatus = (bool) $response['succeeded'];
-        $this->apiStatusCode = (int) $response['resultCode'];
+        $this->isSuccessful = (bool) $response->json('succeeded');
+        $this->apiStatusCode = (int) $response->json('resultCode', -1);
     }
 
     /**

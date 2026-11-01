@@ -7,9 +7,13 @@ namespace AliYavari\IranSms\Abstracts;
 use AliYavari\IranSms\Concerns\HasLog;
 use AliYavari\IranSms\Contracts\Sms;
 use AliYavari\IranSms\Enums\Type;
+use AliYavari\IranSms\Exceptions\InvalidPatternStructureException;
 use AliYavari\IranSms\Exceptions\SmsContentNotDefinedException;
 use AliYavari\IranSms\Exceptions\SmsIsImmutableException;
 use AliYavari\IranSms\Exceptions\SmsNotSentYetException;
+use AliYavari\IranSms\Exceptions\UnsupportedMultiplePhonesException;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 
 /**
  * @internal
@@ -28,7 +32,7 @@ abstract class Driver implements Sms
     /**
      * User defined sender number
      */
-    private string $from;
+    private string $sender;
 
     /**
      * Phone(s) to send message to
@@ -67,7 +71,7 @@ abstract class Driver implements Sms
     /**
      * Send OTP SMS
      */
-    abstract protected function sendOtp(string $phone, string $message, string $from): static;
+    abstract protected function sendOtp(string $phone, string $message, string $from): void;
 
     /**
      * Send pattern SMS
@@ -75,14 +79,14 @@ abstract class Driver implements Sms
      * @param  list<string>  $phones
      * @param  array<mixed>  $variables
      */
-    abstract protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static;
+    abstract protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): void;
 
     /**
      * Send regular text SMS
      *
      * @param  list<string>  $phones
      */
-    abstract protected function sendText(array $phones, string $message, string $from): static;
+    abstract protected function sendText(array $phones, string $message, string $from): void;
 
     /**
      * Check if SMS sending was successful
@@ -106,7 +110,7 @@ abstract class Driver implements Sms
      */
     final public function otp(string $phone, string $message): static
     {
-        $this->checkSmsIsNotSet();
+        $this->ensureSmsIsNotSet();
 
         $this->type = Type::Otp;
 
@@ -123,11 +127,11 @@ abstract class Driver implements Sms
      */
     final public function pattern(string|array $phones, string $patternCode, array $variables): static
     {
-        $this->checkSmsIsNotSet();
+        $this->ensureSmsIsNotSet();
 
         $this->type = Type::Pattern;
 
-        $this->phones = $this->ensureIsArray($phones);
+        $this->phones = $this->wrapInList($phones);
         $this->patternCode = $patternCode;
         $this->content = $variables;
 
@@ -141,11 +145,11 @@ abstract class Driver implements Sms
      */
     final public function text(string|array $phones, string $message): static
     {
-        $this->checkSmsIsNotSet();
+        $this->ensureSmsIsNotSet();
 
         $this->type = Type::Text;
 
-        $this->phones = $this->ensureIsArray($phones);
+        $this->phones = $this->wrapInList($phones);
         $this->content = $message;
 
         return $this;
@@ -156,7 +160,7 @@ abstract class Driver implements Sms
      */
     final public function from(string $from): static
     {
-        $this->from = $from;
+        $this->sender = $from;
 
         return $this;
     }
@@ -192,7 +196,7 @@ abstract class Driver implements Sms
      */
     final public function successful(): bool
     {
-        $this->checkSmsIsSent();
+        $this->ensureSmsIsSent();
 
         return $this->isSuccessful();
     }
@@ -204,7 +208,7 @@ abstract class Driver implements Sms
      */
     final public function failed(): bool
     {
-        $this->checkSmsIsSent();
+        $this->ensureSmsIsSent();
 
         return ! $this->isSuccessful();
     }
@@ -216,7 +220,7 @@ abstract class Driver implements Sms
      */
     final public function error(): ?string
     {
-        $this->checkSmsIsSent();
+        $this->ensureSmsIsSent();
 
         if ($this->isSuccessful()) {
             return null;
@@ -226,11 +230,53 @@ abstract class Driver implements Sms
     }
 
     /**
+     * Throw an exception if the pattern SMS does not have exactly one phone
+     *
+     * @param  list<string>  $phones
+     *
+     * @throws UnsupportedMultiplePhonesException
+     */
+    protected function ensureOnePatternPhone(array $phones): void
+    {
+        if (! collect($phones)->hasSole()) {
+            throw UnsupportedMultiplePhonesException::make($this->getDriverName());
+        }
+    }
+
+    /**
+     * Throw an exception if the pattern variables are not key-value pairs
+     *
+     * @param  array<mixed>  $variables
+     *
+     * @throws InvalidPatternStructureException
+     */
+    protected function ensureKeyValuePattern(array $variables): void
+    {
+        if (Arr::isList($variables)) {
+            throw new InvalidPatternStructureException(
+                sprintf('Provider "%s" only accepts pattern data as key-value pairs.', $this->getDriverName())
+            );
+        }
+    }
+
+    /**
+     * Join phones into one comma-separated string
+     *
+     * @param  list<string>  $phones
+     *
+     * @example - ['0913', '0914'] becomes "0913,0914"
+     */
+    protected function toCommaSeparatedPhones(array $phones): string
+    {
+        return Arr::join($phones, ',');
+    }
+
+    /**
      * Get sender number to send SMS
      */
     private function getSender(): string
     {
-        return $this->from ?? $this->getDefaultSender();
+        return $this->sender ?? $this->getDefaultSender();
     }
 
     /**
@@ -238,7 +284,7 @@ abstract class Driver implements Sms
      *
      * @throws SmsIsImmutableException
      */
-    private function checkSmsIsNotSet(): void
+    private function ensureSmsIsNotSet(): void
     {
         if (isset($this->type)) {
             throw new SmsIsImmutableException('SMS object is immutable, to create new SMS content you need to create new instance.');
@@ -246,13 +292,13 @@ abstract class Driver implements Sms
     }
 
     /**
-     * Wrap data to array if it's not
+     * Wrap data to a list if it's not
      *
      * @return list<string>
      */
-    private function ensureIsArray(mixed $data): array
+    private function wrapInList(mixed $data): array
     {
-        return is_array($data) ? $data : [$data];
+        return Collection::wrap($data)->values()->all();
     }
 
     /**
@@ -260,7 +306,7 @@ abstract class Driver implements Sms
      *
      * @throws SmsNotSentYetException
      */
-    private function checkSmsIsSent(): void
+    private function ensureSmsIsSent(): void
     {
         if (! $this->isSent) {
             throw new SmsNotSentYetException('To check SMS status, you first must send it with "send".');

@@ -17,8 +17,8 @@ To view the Persian documentation, please refer to [README_FA.md](./docs/README_
 
 ## Requirements
 
-- PHP version `8.2` or higher
-- Laravel `^11.44`, `^12.4`, or `^13.0`
+- PHP version `8.3` or higher
+- Laravel `^12.69` or `^13.30`
 
 ## List of Available SMS Providers
 
@@ -30,7 +30,7 @@ To view the Persian documentation, please refer to [README_FA.md](./docs/README_
 | Kavenegar          | کاوه نگار          | [kavenegar.com]   | `kavenegar`    | 1.0.0   |
 | Faraz SMS          | فراز اس ام اس      | [farazsms.com]    | `faraz_sms`    | 1.0.0   |
 | Raygan SMS         | رایگان اس ام اس    | [raygansms.com]   | `raygan_sms`   | 1.0.0   |
-| Web One SMS        | وب وان             | [webone-sms.com]  | `web_one`      | 1.1.0   |
+| Web One SMS        | وب وان             | [webone-sms.ir]   | `web_one`      | 1.1.0   |
 | Amoot SMS          | پیامک آموت         | [amootsms.com]    | `amoot_sms`    | 1.1.0   |
 | Fara Payamak       | فراپیامک           | [farapayamak.ir]  | `fara_payamak` | 1.2.0   |
 | Ghasedak           | قاصدک              | [ghasedak.me]     | `ghasedak`     | 1.2.0   |
@@ -222,6 +222,8 @@ You can chain the logging methods to define custom logic fluently:
 $sms->log()->logOtp(false)->logSuccessful();
 ```
 
+**Note:** Logs are stored in the `sms_logs` table. To read or query them, use `AliYavari\IranSms\Models\SmsLog` model.
+
 #### Prune Old Logs
 
 To help keep your log table clean, this package provides an Artisan command to prune old log records. You can schedule this command using [Laravel's task scheduler]
@@ -412,8 +414,8 @@ Thank you for considering contributing to the Iran SMS Laravel! The contribution
 [kavenegar.com]: https://kavenegar.com/
 [farazsms.com]: https://farazsms.com/
 [raygansms.com]: https://raygansms.com/
-[webone-sms.com]: https://webone-sms.com/
-[amootsms.com]: https://www.amootsms.com/P
+[webone-sms.ir]: https://webone-sms.ir/
+[amootsms.com]: https://www.amootsms.com/
 [farapayamak.ir]: https://farapayamak.ir/
 [ghasedak.me]: https://ghasedak.me/
 [behinpayam.com]: https://behinpayam.com/

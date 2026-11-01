@@ -7,7 +7,9 @@ namespace AliYavari\IranSms\Drivers;
 use AliYavari\IranSms\Abstracts\Driver;
 use AliYavari\IranSms\Exceptions\UnsupportedMethodException;
 use AliYavari\IranSms\Exceptions\UnsupportedMultiplePhonesException;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 /**
  * @internal
@@ -20,7 +22,7 @@ final class MeliPayamakDriver extends Driver
     /**
      * The base URL for the API.
      */
-    private string $baseUrl = 'https://rest.payamak-panel.com/api/SendSMS';
+    private const string BASE_URL = 'https://rest.payamak-panel.com/api/SendSMS';
 
     /**
      * The status code returned in the API response body (e.g., `Value` field).
@@ -38,7 +40,7 @@ final class MeliPayamakDriver extends Driver
      */
     public function credit(): int
     {
-        $response = Http::baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
             ->asForm()
             ->acceptJson()
             ->post('GetCredit2', $this->credentials())
@@ -60,7 +62,7 @@ final class MeliPayamakDriver extends Driver
      *
      * @throws UnsupportedMethodException
      */
-    protected function sendOtp(string $phone, string $message, string $from): static
+    protected function sendOtp(string $phone, string $message, string $from): void
     {
         throw UnsupportedMethodException::make($this->getDriverName(), method: 'otp', alternative: 'pattern');
     }
@@ -70,9 +72,9 @@ final class MeliPayamakDriver extends Driver
      *
      * @throws UnsupportedMultiplePhonesException
      */
-    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
+    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): void
     {
-        $this->validatePatternPhones($phones);
+        $this->ensureOnePatternPhone($phones);
 
         $data = [
             'to' => $phones[0],
@@ -81,24 +83,20 @@ final class MeliPayamakDriver extends Driver
         ];
 
         $this->execute('BaseServiceNumber', $data);
-
-        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function sendText(array $phones, string $message, string $from): static
+    protected function sendText(array $phones, string $message, string $from): void
     {
         $data = [
             'from' => $from,
             'text' => $message,
-            'to' => $this->toApiPhones($phones),
+            'to' => $this->toCommaSeparatedPhones($phones),
         ];
 
         $this->execute('SendSMS', $data);
-
-        return $this;
     }
 
     /**
@@ -106,7 +104,7 @@ final class MeliPayamakDriver extends Driver
      */
     protected function isSuccessful(): bool
     {
-        return mb_strlen($this->apiStatusCode) >= 15;
+        return Str::length($this->apiStatusCode) >= 15;
     }
 
     /**
@@ -158,7 +156,7 @@ final class MeliPayamakDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $response = Http::baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
             ->asForm()
             ->acceptJson()
             ->post($endpoint, array_merge($this->credentials(), $data))
@@ -188,31 +186,6 @@ final class MeliPayamakDriver extends Driver
      */
     private function toApiPattern(array $variables): string
     {
-        return implode(';', $variables);
-    }
-
-    /**
-     * Transforms phones into the API's expected phone structure.
-     *
-     * @param  list<string>  $phones
-     *
-     * @example - ['0913', '0914'] becomes "0913,0914"
-     */
-    private function toApiPhones(array $phones): string
-    {
-        return implode(',', $phones);
-    }
-
-    /**
-     * @param  array<string>  $phones
-     *
-     * @throws UnsupportedMultiplePhonesException
-     */
-    private function validatePatternPhones(array $phones): void
-    {
-        if (count($phones) !== 1) {
-            throw UnsupportedMultiplePhonesException::make($this->getDriverName(), method: 'pattern');
-        }
-
+        return Arr::join($variables, ';');
     }
 }

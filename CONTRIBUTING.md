@@ -82,7 +82,7 @@ Add your driver configuration to [`./config/iran-sms.php`](./config/iran-sms.php
 
 Create a new class for your provider inside [`./src/Drivers/`](./src/Drivers/). The class must extend `AliYavari\IranSms\Abstracts\Driver` and implement the required methods using the simplest and most efficient approach supported by your provider.
 
-**Note:** Fetch configuration values in the constructor.
+**Note:** The constructor receives the configuration values by name, so its parameter names must match the config keys.
 
 **Note:** If a message type is not supported by your provider, throw `AliYavari\IranSms\Exceptions\UnsupportedMethodException` using its static make() method. To get the driver name dynamically within your class, use `$this->getDriverName()`.
 
@@ -99,27 +99,29 @@ final class YourNameDriver extends Driver
         private readonly string $from,
     ) {}
 
+    public function credit(): int
+    {
+        // Return the provider credit balance in Rials
+    }
+
     protected function getDefaultSender(): string
     {
         return $this->from;
     }
 
-    protected function sendOtp(string $phone, string $message, string $from): static
+    protected function sendOtp(string $phone, string $message, string $from): void
     {
         // Implement OTP sending logic here
-        return $this;
     }
 
-    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
+    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): void
     {
         // Implement pattern SMS logic here
-        return $this;
     }
 
-    protected function sendText(array $phones, string $message, string $from): static
+    protected function sendText(array $phones, string $message, string $from): void
     {
         // Implement plain text SMS logic here
-        return $this;
     }
 
     protected function isSuccessful(): bool
@@ -132,7 +134,7 @@ final class YourNameDriver extends Driver
         // Return a human-readable error message from the provider
     }
 
-    protected function getErrorCode(): string
+    protected function getErrorCode(): string|int
     {
         // Return raw error code from the provider
     }
@@ -142,34 +144,14 @@ final class YourNameDriver extends Driver
 
 ### Step 3: Register the Driver in the Service Provider
 
-Bind your driver in [`./src/IranSmsServiceProvider.php`](./src/IranSmsServiceProvider.php)
-
-```php
-public function packageRegistered(): void
-{
-    // Other driver bindings...
-
-    $this->app->bind(
-        YourNameDriver::class,
-        fn () => new YourNameDriver(...config('iran-sms.providers.your_name'))
-    );
-}
-```
-
-### Step 4: Add Factory Method to SmsManager
-
-Add a method in [`./src/SmsManager.php`](./src/SmsManager.php). The method name must follow the pattern: `create*Driver()` (replace `*` with your driver name in **studly case**).
+Add your driver to the `DRIVERS` map in [`./src/IranSmsServiceProvider.php`](./src/IranSmsServiceProvider.php). The key must be the same as the config key from Step 1.
 
 ```php
 use AliYavari\IranSms\Drivers\YourNameDriver;
 
-final class SmsManager extends Manager
-{
-    // Other methods...
+private const array DRIVERS = [
+    // Other drivers...
 
-    protected function createYourNameDriver(): YourNameDriver
-    {
-        return $this->container->make(YourNameDriver::class);
-    }
-}
+    'your_name' => YourNameDriver::class,
+];
 ```

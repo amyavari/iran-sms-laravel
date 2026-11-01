@@ -8,7 +8,6 @@ use AliYavari\IranSms\Abstracts\Driver;
 use AliYavari\IranSms\Exceptions\InvalidPatternStructureException;
 use AliYavari\IranSms\Exceptions\UnsupportedMethodException;
 use AliYavari\IranSms\Exceptions\UnsupportedMultiplePhonesException;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 
 /**
@@ -21,7 +20,7 @@ final class SmsIrDriver extends Driver
     /**
      * The base URL for the API.
      */
-    private string $baseUrl = 'https://api.sms.ir/v1/';
+    private const string BASE_URL = 'https://api.sms.ir/v1';
 
     /**
      * The status code returned in the API response body (e.g., `status` field).
@@ -38,7 +37,7 @@ final class SmsIrDriver extends Driver
      */
     public function credit(): int
     {
-        $response = Http::baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
             ->withHeaders($this->credentials())
             ->acceptJson()
             ->get('credit')
@@ -60,7 +59,7 @@ final class SmsIrDriver extends Driver
      *
      * @throws UnsupportedMethodException
      */
-    protected function sendOtp(string $phone, string $message, string $from): static
+    protected function sendOtp(string $phone, string $message, string $from): void
     {
         throw UnsupportedMethodException::make($this->getDriverName(), method: 'otp', alternative: 'pattern');
     }
@@ -71,11 +70,11 @@ final class SmsIrDriver extends Driver
      * @throws UnsupportedMultiplePhonesException
      * @throws InvalidPatternStructureException
      */
-    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
+    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): void
     {
-        $this->validatePatternPhones($phones);
+        $this->ensureOnePatternPhone($phones);
 
-        $this->validatePatternVariables($variables);
+        $this->ensureKeyValuePattern($variables);
 
         $data = [
             'mobile' => $phones[0],
@@ -84,14 +83,12 @@ final class SmsIrDriver extends Driver
         ];
 
         $this->execute('send/verify', $data);
-
-        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function sendText(array $phones, string $message, string $from): static
+    protected function sendText(array $phones, string $message, string $from): void
     {
         $data = [
             'lineNumber' => $from,
@@ -101,8 +98,6 @@ final class SmsIrDriver extends Driver
         ];
 
         $this->execute('send/bulk', $data);
-
-        return $this;
     }
 
     /**
@@ -121,9 +116,9 @@ final class SmsIrDriver extends Driver
         return match ($this->apiStatusCode) {
             1 => 'عملیات با موفقیت انجام شد',
             0 => 'مشکلی در سامانه رخ داده است، لطفا با پشتیبانی در تماس باشید',
-            10 => 'کلیدوب سرویس نامعتبر است شد',
+            10 => 'کلید وب سرویس نامعتبر است',
             11 => 'کلید وب سرویس غیرفعال است',
-            12 => 'کلیدوب‌ سرویس محدود به  IP های تعریف شده می‌باشد',
+            12 => 'کلید وب سرویس محدود به IP های تعریف شده می‌باشد',
             13 => 'حساب کاربری غیر فعال است',
             14 => 'حساب کاربری در حالت تعلیق قرار دارد',
             20 => 'تعداد درخواست بیشتر از حد مجاز است',
@@ -166,7 +161,7 @@ final class SmsIrDriver extends Driver
      */
     private function execute(string $endpoint, array $data): void
     {
-        $response = Http::baseUrl($this->baseUrl)
+        $response = Http::baseUrl(self::BASE_URL)
             ->withHeaders($this->credentials())
             ->acceptJson()
             ->post($endpoint, $data)
@@ -202,32 +197,5 @@ final class SmsIrDriver extends Driver
             ])
             ->values()
             ->all();
-    }
-
-    /**
-     * @param  array<string>  $phones
-     *
-     * @throws UnsupportedMultiplePhonesException
-     */
-    private function validatePatternPhones(array $phones): void
-    {
-        if (count($phones) !== 1) {
-            throw UnsupportedMultiplePhonesException::make($this->getDriverName(), method: 'pattern');
-        }
-
-    }
-
-    /**
-     * @param  array<mixed>  $variables
-     *
-     * @throws InvalidPatternStructureException
-     */
-    private function validatePatternVariables(array $variables): void
-    {
-        if (Arr::isList($variables)) {
-            throw new InvalidPatternStructureException(
-                sprintf('Provider "%s" only accepts pattern data as key-value pairs.', $this->getDriverName())
-            );
-        }
     }
 }

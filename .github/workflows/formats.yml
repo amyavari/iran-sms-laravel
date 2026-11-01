@@ -21,10 +21,10 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        php: [8.2, 8.3, 8.4, 8.5]
+        php: [8.3, 8.4, 8.5]
 
     name: PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -37,7 +37,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: dom, mbstring, zip
-          coverage: pcov
+          coverage: none
 
       - name: Get Composer cache directory
         id: composer-cache
@@ -48,8 +48,8 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: dependencies-php-${{ matrix.php }}-os-${{ matrix.os }}-version-${{ matrix.dependency-version }}-composer-${{ hashFiles('composer.json') }}
-          restore-keys: dependencies-php-${{ matrix.php }}-os-${{ matrix.os }}-version-${{ matrix.dependency-version }}-
+          key: dependencies-php-${{ matrix.php }}-os-${{ matrix.os }}-composer-${{ hashFiles('composer.json') }}
+          restore-keys: dependencies-php-${{ matrix.php }}-os-${{ matrix.os }}-
 
       - name: Remove Laravel Pao (local dev only)
         run: composer remove laravel/pao --dev --no-update --no-interaction
@@ -60,5 +60,11 @@ jobs:
       - name: Coding Style Checks
         run: composer test:lint
 
+      - name: Refactor Checks
+        run: composer test:refactor
+
       - name: Type Checks
         run: composer test:types
+
+      - name: Type Coverage Checks
+        run: composer test:type-coverage

@@ -6,7 +6,7 @@ namespace AliYavari\IranSms\Drivers;
 
 use AliYavari\IranSms\Abstracts\Driver;
 use AliYavari\IranSms\Dtos\MockResponse;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Client\ConnectionException;
 
 /**
  * @internal
@@ -22,6 +22,8 @@ final class FakeDriver extends Driver
      */
     public function credit(): int
     {
+        $this->throwConnectionExceptionIfRequired();
+
         return 0;
     }
 
@@ -36,31 +38,25 @@ final class FakeDriver extends Driver
     /**
      * {@inheritdoc}
      */
-    protected function sendOtp(string $phone, string $message, string $from): static
+    protected function sendOtp(string $phone, string $message, string $from): void
     {
-        $this->fakeHttpExceptionIfRequired();
-
-        return $this;
+        $this->throwConnectionExceptionIfRequired();
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): static
+    protected function sendPattern(array $phones, string $patternCode, array $variables, string $from): void
     {
-        $this->fakeHttpExceptionIfRequired();
-
-        return $this;
+        $this->throwConnectionExceptionIfRequired();
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function sendText(array $phones, string $message, string $from): static
+    protected function sendText(array $phones, string $message, string $from): void
     {
-        $this->fakeHttpExceptionIfRequired();
-
-        return $this;
+        $this->throwConnectionExceptionIfRequired();
     }
 
     /**
@@ -89,15 +85,13 @@ final class FakeDriver extends Driver
 
     /**
      * Throw a connection exception if defined by the user.
+     *
+     * @throws ConnectionException
      */
-    private function fakeHttpExceptionIfRequired(): void
+    private function throwConnectionExceptionIfRequired(): void
     {
         if ($this->response->shouldThrow()) {
-            Http::fake([
-                'sms/fake/driver' => Http::failedConnection(),
-            ]);
-
-            Http::get('sms/fake/driver');
+            throw new ConnectionException('Faked SMS provider connection failure.');
         }
     }
 }

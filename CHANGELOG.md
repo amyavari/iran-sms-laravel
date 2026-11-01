@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- The `SmsLog` model is now public, so you can query your SMS logs directly.
+
+### Removed
+
+- Support for PHP `8.2`
+- Support for Laravel `11` due to security advisories.
+
+### Changed
+
+- Increased minimum Laravel version support due to security advisories.
+- **Breaking:** `UnsupportedMultiplePhonesException` has a new message: `Provider "%s" only supports sending pattern SMS to one phone number at a time.`
+
+### Fixed
+
+- A faked provider now returns a new SMS instance on each call, so it can send more than one SMS.
+- The `iran-sms:prune-logs` command now fails on an invalid `--days` value, instead of deleting the logs.
+- A phone array with gaps in its keys no longer causes an `Undefined array key` error or a wrong request body.
+- **Mediana** text messages now use the documented `webservice` sending type.
+- **Faraz SMS** `credit()` now throws on a client error, such as a wrong API key, instead of returning `0`.
+- `Sms::failedConnection()` no longer records an extra HTTP request, and it now makes `credit()` throw too.
+- **Ghasedak** pattern messages no longer throw a `TypeError` when a variable is `null`.
+- **Payam Resan** and **Behin Payam** now report a provider error returned with HTTP 200 as a failed SMS, instead of a successful one.
+- A missing field in a provider's response now gives a failed SMS, instead of a `TypeError`.
+- Typos in the Persian error messages of **SMS.ir**, **Web One SMS**, **Asanak** and **Fara Payamak**.
+
 ## [1.5.0] - 2026-05-13
 
 ### Added
@@ -77,6 +106,7 @@ Supported Providers:
 - Faraz SMS
 - Raygan SMS
 
+[Unreleased]: https://github.com/amyavari/iran-sms-laravel/compare/v1.5.0...HEAD
 [1.5.0]: https://github.com/amyavari/iran-sms-laravel/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/amyavari/iran-sms-laravel/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/amyavari/iran-sms-laravel/compare/v1.2.0...v1.3.0
