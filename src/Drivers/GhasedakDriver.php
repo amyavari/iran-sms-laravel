@@ -190,16 +190,16 @@ final class GhasedakDriver extends Driver
      * Transforms variables into the API's expected pattern structure.
      *
      * @param  array<string, mixed>  $variables
-     * @return array<array{param: string, value: mixed}>
+     * @return array<array{param: string, value: string}>
      *
      * @example - ['key_one' => 'value_one', 'key_two' => 'value_two'] becomes "[['param' => key_one, 'value' => 'value_one], ['param' => key_two, 'value' => 'value_two]]"
      */
     private function toApiPattern(array $variables): array
     {
         return collect($variables)
-            ->map(fn (string $value, string $key): array => [
+            ->map(fn (mixed $value, string $key): array => [
                 'param' => $key,
-                'value' => $value,
+                'value' => (string) $value,
             ])
             ->values()
             ->all();
