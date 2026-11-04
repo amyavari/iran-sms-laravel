@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-11-04
+
 ### Added
 
 - The `SmsLog` model is now public, so you can query your SMS logs directly.
@@ -18,7 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-- Increased minimum Laravel version support due to security advisories.
+- Increased minimum Laravel versions to `12.69` and `13.30` due to security advisories.
 - **Breaking:** `UnsupportedMultiplePhonesException` has a new message: `Provider "%s" only supports sending pattern SMS to one phone number at a time.`
 
 ### Fixed
@@ -106,7 +108,8 @@ Supported Providers:
 - Faraz SMS
 - Raygan SMS
 
-[Unreleased]: https://github.com/amyavari/iran-sms-laravel/compare/v1.5.0...HEAD
+[Unreleased]: https://github.com/amyavari/iran-sms-laravel/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/amyavari/iran-sms-laravel/compare/v1.5.0...v2.0.0
 [1.5.0]: https://github.com/amyavari/iran-sms-laravel/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/amyavari/iran-sms-laravel/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/amyavari/iran-sms-laravel/compare/v1.2.0...v1.3.0
