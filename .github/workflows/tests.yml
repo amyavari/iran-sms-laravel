@@ -25,7 +25,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        php: [8.3, 8.4, 8.5]
+        php: [8.3, 8.4, 8.5, 8.6]
         laravel: ["^12.69.0", "^13.30.0"]
         dependency-version: [prefer-lowest, prefer-stable]
         include:
@@ -33,6 +33,11 @@ jobs:
             testbench: "^10.2"
           - laravel: "^13.30.0"
             testbench: "^11.0"
+        exclude:
+          # PHP 8.6 needs Pest 5 (Pest 4's Paratest doesn't support it), and Pest 5 needs PHPUnit 13.
+          # Laravel 12 pins Testbench 10, which allows PHPUnit 12 at most, so this combination can't be installed.
+          - php: 8.6
+            laravel: "^12.69.0"
 
     name: PHP${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.os }} - ${{ matrix.dependency-version }}
 
